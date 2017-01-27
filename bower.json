@@ -2,17 +2,6 @@
   "name": "mapbox-gl",
   "description": "Polymer 1.0 custom element for mapbox-gl-js. mapbox-gl element uses WebGL to render interactive maps from vector tiles and Mapbox styles. mapbox-gl element is compatible with deck-gl, the Polymer 1.0 element for uber's deck.gl library.",
   "main": "mapbox-gl.html",
-  "dependencies": {
-    "polymer": "Polymer/polymer#^1.4.0",
-    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5",
-    "mapbox-gl-js": "^0.11.0"
-  },
-  "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
-    "web-component-tester": "^4.0.0",
-    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
-  },
   "keywords": [
     "polymer",
     "web-components",
@@ -26,5 +15,23 @@
   "authors": [
      "eterna2 <eterna2@hotmail.com>"
    ],
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0",
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5",
+    "mapbox-gl-js": "^0.11.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  },
+  "ignore": [
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "demo"
+  ]
 }
