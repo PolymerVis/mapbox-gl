@@ -1,0 +1,353 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
+
+<!--
+[Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js/api/) is a JavaScript library
+that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
+
+`mapbox-gl` is the Polymer element that wraps around mapbox-gl-js to provide powerful
+mapping capabilities to your app as a webcomponent.
+
+<b>Example</b>:
+```
+<mapbox-gl id="map"
+  interactive
+  access-token="<ACCESS_TOKEN_HERE"
+  latitude=1.3521 longitude=103.8198
+  zoom=10 pitch=60
+  bearing=0></mapbox-gl>
+```
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+--- | --- | ---
+`--mapbox-map` | mixin applied to the map div element | `{}`
+
+@demo demo/index.html
+-->
+
+<dom-module id="mapbox-gl">
+  <template>
+    <style>
+      @import url('../../mapbox-gl-js/mapbox-gl.css');
+      :host {
+        display: block;
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+        @apply(--mapbox-map);
+      }
+
+    </style>
+    <div id="map"></div>
+    <content id="deckgl" select="deck-gl"></content>
+
+  </template>
+
+  <script>
+    Polymer({
+
+      is: 'mapbox-gl',
+      behaviors: [
+        Polymer.IronResizableBehavior
+      ],
+      properties: {
+        /*
+         * If the attribute is present no mouse, touch, or keyboard listeners will be attached to the map, so it will not respond to interaction.
+         */
+        interactive: Boolean,
+        /*
+         * Your [access token](https://www.mapbox.com/help/define-access-token/) to mapbox
+         */
+        accessToken: String,
+        /*
+         * You can enter the url to ur mapbox-gl-js script if it is hosted external (e.g. cdn)
+         */
+        scriptSrc: {
+          type: String,
+          value: '../../mapbox-gl-js/mapbox-gl.js'
+        },
+        /*
+         * A latitude to center the map on.
+         */
+        latitude: {
+          type: Number,
+          notify: true,
+          value: 1.3521
+        },
+        /*
+         * A longitude to center the map on.
+         */
+        longitude: {
+          type: Number,
+          notify: true,
+          value: 103.8198
+        },
+        /*
+         * The initial zoom level of the map.
+         */
+        zoom: {
+          type: Number,
+          notify: true,
+          value: 11
+        },
+        /*
+         * The maximum zoom level of the map (1-20).
+         */
+        maxZoom: {
+          type: Number,
+          notify: true,
+          value: 20
+        },
+        /*
+         * The minimum  zoom level of the map (1-20).
+         */
+        minZoom: {
+          type: Number,
+          notify: true,
+          value: 1
+        },
+        /*
+         * The initial pitch (tilt) of the map, measured in degrees away from the plane of the screen (0-60).
+         */
+        pitch: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        /*
+         * The initial bearing (rotation) of the map, measured in degrees counter-clockwise from north.
+         */
+        bearing: {
+          type: Number,
+          notify: true,
+          value: 0
+        },
+        /*
+         * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance returned by mapboxgl-js
+         */
+        map: {
+          type: Object,
+          notify: true,
+          readonly: true
+        },
+        /*
+         * The map's Mapbox style. This must be an a JSON object conforming to
+         * the schema described in the Mapbox Style Specification , or a URL to such JSON.
+         *
+         * To load a style from the Mapbox API, you can use a URL of the form
+         * `mapbox://styles/:owner/:style`, where :owner is your Mapbox account
+         * name and :style is the style ID. Or you can use one of the following
+         * the predefined Mapbox styles:
+         * - mapbox://styles/mapbox/streets-v9
+         * - mapbox://styles/mapbox/outdoors-v9
+         * - mapbox://styles/mapbox/light-v9
+         * - mapbox://styles/mapbox/dark-v9
+         * - mapbox://styles/mapbox/satellite-v9
+         * - mapbox://styles/mapbox/satellite-streets-v9
+         *
+         * Tilesets hosted with Mapbox can be style-optimized if you append
+         * ?optimize=true to the end of your style URL, like `mapbox://styles/mapbox/streets-v9?optimize=true`.
+         */
+        mapStyle: {
+          type: Object,
+          value: 'mapbox://styles/mapbox/dark-v9'
+        },
+        /*
+         * `true` if mapboxgl-js script has been loaded
+         */
+        loaded: {
+          type: Boolean,
+          notify: true,
+          value: false
+        },
+        /*
+         * `mapbox-gl` accepts `deck-gl` element as a child.
+         */
+        targets: {
+          type: Array,
+          readonly: true,
+          value: function() {
+            return [];
+          }
+        },
+        /*
+         * A string with space delimited (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to listen to.
+         * The corresponding event with be prefix with `mapbox-gl-`
+         * e.g. `move` will result with `mapbox-gl-move` event to be fired.
+         */
+        eventsToWatch: {
+          type: String,
+          observer: '_eventsToWatchChanged'
+        },
+        _childrenObserver: Object,
+        _mapListener: Object,
+        _listeners: Object
+      },
+
+      observers: [
+        '_updateMap(loaded, accessToken)'
+      ],
+
+      listeners: {
+        'iron-resize': '_resize',
+        'tap': '_onTap',
+        'mousemove': '_onMouseMove'
+      },
+
+      attached: function() {
+        var self = this;
+        this.loaded = window.mapboxgl && true;
+        // mapboxgl not loaded, load mapboxgl
+        if (!this.loaded) {
+          var script = document.createElement('script');
+          script.src = this.scriptSrc;
+          script.onload = function() {
+            self.loaded = true;
+          };
+          this.appendChild(script);
+        }
+        this._updateChildren();
+      },
+
+      detached: function() {
+        if (this._childrenObserver) {
+          this._childrenObserver.disconnect();
+          this._childrenObserver = null;
+        }
+      },
+
+      // watch for future updates for the layers
+      _observeChildren: function() {
+        if (this._childrenObserver) {
+          return;
+        }
+        this._childrenObserver = new MutationObserver(
+          this._updateChildren.bind(this));
+        this._childrenObserver.observe(this, {
+          childList: true
+        });
+      },
+
+      _updateChildren: function() {
+        var targets = Array.prototype.slice.call(
+          Polymer.dom(this.$.deckgl).getDistributedNodes());
+        // Do not recompute if objects have not been added or removed.
+        if (targets.length === this.targets.length) {
+          var added = targets.filter(function(l) {
+            return this.targets.indexOf(l) === -1;
+          }.bind(this));
+          if (added.length === 0) {
+            // Set up observer first time around.
+            this._observeChildren();
+            return;
+          }
+        }
+        this._observeChildren();
+        this.targets = targets;
+      },
+
+      _onTap: function(event, info) {
+        var targets = this.targets;
+        if (!targets || targets.length < 1) return;
+        this.fire('tap', info, {node: targets[0]});
+      },
+
+      _onMouseMove: function(event, info) {
+        var targets = this.targets;
+        if (!targets || targets.length < 1) return;
+        this.fire('mousemove', event, {node: targets[0]});
+      },
+
+      _updateMap: function() {
+        if (this.map) return;
+        this.debounce('create-map', function() {
+          this._createMap();
+        }, 250);
+      },
+
+      _resize: function() {
+        if (this.map) {
+          this.map.resize();
+        }
+      },
+
+      _createMap: function() {
+        var self = this;
+        var mod = function(value, divisor) {
+          var modulus = value % divisor;
+          return modulus < 0 ? divisor + modulus : modulus;
+        };
+        this._listeners = Object.create(null);
+        mapboxgl.accessToken = this.accessToken;
+        var opts = {
+          container: this.$.map,
+          style: this.mapStyle,
+          center: [this.longitude, this.latitude],
+          zoom: this.zoom,
+          pitch: this.pitch,
+          bearing: this.bearing,
+          interactive: this.interactive && true,
+          maxZoom: this.maxZoom,
+          minZoom: this.minZoom
+        };
+        var mapMoveListener = function(event) {
+          var transform = map.transform;
+          self.latitude = transform.center.lat;
+          self.longitude = mod(transform.center.lng + 180, 360) - 180;
+          self.zoom = transform.zoom;
+          self.pitch = transform.pitch;
+          self.bearing = mod(transform.bearing + 180, 360) - 180;
+        };
+        var map = new mapboxgl.Map(opts);
+        this.map = map;
+        this._forwardEvent('move', mapMoveListener);
+        this.fire('mapbox-gl-ready', this.map);
+      },
+
+      _eventsToWatchChanged: function(newstr, oldstr) {
+        if (oldstr.trim()) {
+          var oevents = oldstr.trim().split(' ');
+          for (var i=0, len=oevents.length; i<len; ++i) {
+            this._clearListener(oevents[i].trim());
+          }
+        }
+
+        if (newstr.trim()) {
+          var newstr = eventstr.trim().split(' ');
+          for (var i=0, len=events.length; i<len; ++i) {
+            this._forwardEvent(events[i].trim());
+          }
+        }
+      },
+
+      _clearListener: function(name) {
+        if (this._listeners[name]) {
+          this.map.off(name, this._listeners[name]);
+          this._listeners[name] = null;
+        }
+      },
+
+      _forwardEvent: function(name, fn) {
+        if (fn) {
+          this._listeners[name] = function(event) {
+            fn(event);
+            this.fire('mapbox-gl-' + name, event);
+          }.bind(this);
+        } else {
+          this._listeners[name] = function(event) {
+            this.fire('mapbox-gl-' + name, event);
+          }.bind(this);
+        }
+
+        this.map.on(name, this._listeners[name]);
+      }
+
+    });
+  </script>
+</dom-module>

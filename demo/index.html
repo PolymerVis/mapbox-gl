@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../mapbox-gl.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      #map{
+        width: 320px;
+        height: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic mapbox-gl demo</h3>
+      <demo-snippet>
+        <template>
+          <mapbox-gl id="map"
+            interactive
+            access-token="pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpbG10dnA3NzY3OTZ0dmtwejN2ZnUycjYifQ.1W5oTOnWXQ9R1w8u3Oo1yA"
+            latitude=1.3521 longitude=103.8198
+            zoom=10 pitch=60
+            bearing=0></mapbox-gl>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
