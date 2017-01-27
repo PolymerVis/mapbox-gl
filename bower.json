@@ -13,8 +13,18 @@
     "web-component-tester": "^4.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
   },
+  "keywords": [
+    "polymer",
+    "web-components",
+    "deck.gl",
+    "mapboxgl",
+    "webgl",
+    "visualization",
+    "geospatial",
+    "map"
+  ],
   "authors": [
      "eterna2 <eterna2@hotmail.com>"
    ],
-  "license": "MIT"  
+  "license": "MIT"
 }
