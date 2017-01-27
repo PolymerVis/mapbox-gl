@@ -10,6 +10,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 <custom-element-demo>
   <template>
     <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
     <link rel="import" href="mapbox-gl.html">
     <style>
       #map {
@@ -25,6 +26,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 ```html
 <mapbox-gl id="map"
   interactive
+  script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
   access-token="pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpbG10dnA3NzY3OTZ0dmtwejN2ZnUycjYifQ.1W5oTOnWXQ9R1w8u3Oo1yA"
   latitude=1.3521 longitude=103.8198
   zoom=10 pitch=60
