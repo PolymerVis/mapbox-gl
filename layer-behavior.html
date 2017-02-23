@@ -1,0 +1,93 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<script>
+  (function(MapboxGLPolymer) {
+    /*
+     * @polymerBehavior
+     */
+    MapboxGLPolymer.LayerBehavior = {
+      properties: {
+        /*
+         * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance returned by mapboxgl-js
+         */
+        map: {
+          type: Object
+        },
+        /*
+         * Unique layer name. (Required)
+         */
+        layerId: {
+          type: String
+        },
+        /*
+         * Rendering type of this layer.
+         * (fill, line, symbol, circle, fill-extrusion, raster, background)
+         */
+        renderingType: {
+          type: String,
+        },
+        /*
+         * Name of a source description to be used for this layer.
+         */
+        source: {
+          type: String
+        },
+        /*
+         * Layer to use from a vector tile source. Required if the source
+         * supports multiple layers.
+         */
+        sourceLayer: {
+          type: String
+        },
+        /*
+         * The minimum zoom level on which the layer gets parsed and appears on.
+         */
+        minZoom: {
+          type: Number,
+          value: 0
+        },
+        /*
+         * The maximum zoom level on which the layer gets parsed and appears on.
+         */
+        maxZoom: {
+          type: Number,
+          value: 22
+        },
+        /*
+         * A expression specifying conditions on source features. Only features
+         * that match the filter are displayed.
+         */
+        filter: {
+          type: Array
+        },
+        _added: Boolean,
+        _layer: Object
+      },
+
+      observers: [
+        '_generateLayerProp(layerId, renderingType, minZoom, maxZoom)',
+        '_updateLayerProp("source", source, _layer)',
+        '_updateLayerProp("source-layer", sourceLayer, _layer)',
+        '_updateLayerProp("filter", filter, _layer)'
+      ],
+
+      _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {
+        this._layer = {
+          id: layerId,
+          type: renderingType,
+          minzoom: minZoom,
+          maxzoom: maxZoom
+        };
+      },
+
+      _updateLayerProp: function(key, value, _layer) {
+        if (!_layer) return;
+        if (value) {
+          _layer[key] = value;
+        } else if (_layer[key]) {
+          delete _layer[key];
+        }
+      }
+    };
+  })(window.MapboxGLPolymer = window.MapboxGLPolymer || {});
+</script>

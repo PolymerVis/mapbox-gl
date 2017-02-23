@@ -1,0 +1,19 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+Fill extrusion layer for mapbox-gl.
+  
+See https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-fill-extrusion for
+more details.
+-->
+
+<dom-module id="mapbox-fill-extrusion-layer">
+  <script>
+    Polymer({
+
+      is: 'mapbox-fill-extrusion-layer',
+      behaviors: [MapboxGLPolymer.FillExtrusionLayerBehavior]
+
+    });
+  </script>
+</dom-module>

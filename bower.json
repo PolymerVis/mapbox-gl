@@ -18,8 +18,7 @@
   "license": "MIT",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",
-    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5",
-    "mapbox-gl-js": "^0.11.0"
+    "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^1.0.5"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

@@ -24,13 +24,24 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 ```
 -->
 ```html
-<mapbox-gl id="map"
-  interactive
-  script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
-  access-token="pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpbG10dnA3NzY3OTZ0dmtwejN2ZnUycjYifQ.1W5oTOnWXQ9R1w8u3Oo1yA"
-  latitude=1.3521 longitude=103.8198
-  zoom=10 pitch=60
-  bearing=0></mapbox-gl>
+<template is="dom-bind">
+  <mapbox-gl id="map"
+    interactive
+    map="{{map}}"
+    script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
+    map-style="mapbox://styles/mapbox/dark-v9"
+    access-token="<MAPBOX_ACCESS_TOKEN>"
+    latitude=1.3521
+    longitude=103.8698
+    zoom=16
+    pitch=45
+    bearing=0></mapbox-gl>
+
+  <mapbox-building-layer layer-id="buildings"
+    map="[[map]]"
+    fill-extrusion-opacity=0.6
+    fill-extrusion-color="#666"></mapbox-building-layer>
+</template>
 ```
 
 
@@ -49,11 +60,18 @@ that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
 mapping capabilities to your app as a webcomponent.
 
 <b>Example</b>:
-```
-<mapbox-gl id="map" access-token="[[key]]"
-  latitude="{{lat}}" longitude="{{lng}}"
-  zoom="{{zoom}}" pitch="{{pitch}}"
-  bearing="{{bearing}}"></mapbox-gl>
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=16
+  pitch=45
+  bearing=0></mapbox-gl>
 ```
 
 ### Styling
