@@ -1,6 +1,9 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
+<link rel="import" href="./mapbox-building-layer.html">
+<link rel="import" href="./mapbox-fill-extrusion-layer.html">
+
 <!--
 [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js/api/) is a JavaScript library
 that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
@@ -9,12 +12,17 @@ that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
 mapping capabilities to your app as a webcomponent.
 
 <b>Example</b>:
-```
+```html
 <mapbox-gl id="map"
   interactive
-  access-token="<ACCESS_TOKEN_HERE"
-  latitude=1.3521 longitude=103.8198
-  zoom=10 pitch=60
+  map="{{map}}"
+  script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=16
+  pitch=45
   bearing=0></mapbox-gl>
 ```
 
@@ -32,7 +40,6 @@ Custom property | Description | Default
 <dom-module id="mapbox-gl">
   <template>
     <style>
-      @import url('../../mapbox-gl-js/mapbox-gl.css');
       :host {
         display: block;
       }
@@ -70,7 +77,14 @@ Custom property | Description | Default
          */
         scriptSrc: {
           type: String,
-          value: '../../mapbox-gl-js/mapbox-gl.js'
+          value: 'https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'
+        },
+        /*
+         * You can enter the url to ur mapbox-gl-js stylesheet if it is hosted external (e.g. cdn)
+         */
+        cssSrc: {
+          type: String,
+          value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css'
         },
         /*
          * A latitude to center the map on.
@@ -191,7 +205,8 @@ Custom property | Description | Default
       },
 
       observers: [
-        '_updateMap(loaded, accessToken)'
+        '_updateMap(loaded, accessToken)',
+        '_updateStyle(map, mapStyle)'
       ],
 
       listeners: {
@@ -210,7 +225,12 @@ Custom property | Description | Default
           script.onload = function() {
             self.loaded = true;
           };
+          var css = document.createElement('link');
+          css.href = this.cssSrc;
+          css.rel = 'stylesheet'
+
           this.appendChild(script);
+          this.appendChild(css);
         }
         this._updateChildren();
       },
@@ -269,6 +289,11 @@ Custom property | Description | Default
         this.debounce('create-map', function() {
           this._createMap();
         }, 250);
+      },
+
+      _updateStyle: function(map, mapStyle) {
+        if (!map || !mapStyle) return;
+        map.setStyle(mapStyle);
       },
 
       _resize: function() {
