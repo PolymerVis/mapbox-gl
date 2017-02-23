@@ -28,9 +28,8 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
   <mapbox-gl id="map"
     interactive
     map="{{map}}"
-    script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
     map-style="mapbox://styles/mapbox/dark-v9"
-    access-token="<MAPBOX_ACCESS_TOKEN>"
+    access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
     latitude=1.3521
     longitude=103.8698
     zoom=16
