@@ -8,7 +8,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 <!---
 ```
 <custom-element-demo>
-  <template>
+  <template is="dom-bind">
     <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
     <link rel="import" href="mapbox-gl.html">
@@ -48,9 +48,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
       }
 
     </style>
-    <template is="dom-bind">
-      <next-code-block></next-code-block>
-    </template>
+    <next-code-block></next-code-block>
   </template>
 </custom-element-demo>
 ```
