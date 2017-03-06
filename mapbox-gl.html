@@ -1,13 +1,14 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
+<link rel="import" href="./mapbox-gl-marker.html">
 <link rel="import" href="./mapbox-building-layer.html">
 <link rel="import" href="./mapbox-fill-extrusion-layer.html">
 
 <!--
 [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js/api/) is a JavaScript library
 that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
-
+  
 `mapbox-gl` is the Polymer element that wraps around mapbox-gl-js to provide powerful
 mapping capabilities to your app as a webcomponent.
 
@@ -24,6 +25,50 @@ mapping capabilities to your app as a webcomponent.
   zoom=16
   pitch=45
   bearing=0></mapbox-gl>
+```
+
+### Add building layer
+To add a building layer, just bind the corresponding `map` object from
+`mapbox-gl` selement to the `mapbox-building-layer` element.
+
+<b>Example</b>:
+```html
+<mapbox-building-layer layer-id="buildings"
+  map="[[map]]"
+  fill-extrusion-opacity=0.6
+  fill-extrusion-color="#666"></mapbox-building-layer>
+```
+
+### Add marker
+To add a marker layer, just include the `mapbox-gl-marker` element as a child
+of the `mapbox-gl` element.
+
+<b>Example</b>:
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=16
+  pitch=45
+  bearing=0>
+
+    <mapbox-gl-marker class="big_kitten"
+      latitude=1.3521 longitude=103.8698
+      offset-left=-32 offset-top=-32>
+    </mapbox-gl-marker>
+
+    <mapbox-gl-marker
+      latitude=1.3541 longitude=103.8718
+      offset-left=-64 offset-top=-30>
+      <div class="textbox">Some text here</div>
+      <div class="arrow-down"></div>
+    </mapbox-gl-marker>
+
+</mapbox-gl>
 ```
 
 ### Styling
@@ -53,6 +98,7 @@ Custom property | Description | Default
     </style>
     <div id="map"></div>
     <content id="deckgl" select="deck-gl"></content>
+    <content id="markers" select="mapbox-gl-marker"></content>
 
   </template>
 
@@ -191,6 +237,16 @@ Custom property | Description | Default
           }
         },
         /*
+         * `mapbox-gl` accepts elements with attribute `mapbox-gl-marker` as a child.
+         */
+        markers: {
+          type: Array,
+          readonly: true,
+          value: function() {
+            return [];
+          }
+        },
+        /*
          * A string with space delimited (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to listen to.
          * The corresponding event with be prefix with `mapbox-gl-`
          * e.g. `move` will result with `mapbox-gl-move` event to be fired.
@@ -255,21 +311,41 @@ Custom property | Description | Default
       },
 
       _updateChildren: function() {
+        var map = this.map;
+        // update deck-gl
         var targets = Array.prototype.slice.call(
           Polymer.dom(this.$.deckgl).getDistributedNodes());
         // Do not recompute if objects have not been added or removed.
         if (targets.length === this.targets.length) {
-          var added = targets.filter(function(l) {
-            return this.targets.indexOf(l) === -1;
+          var added = targets.filter(function(node) {
+            return this.targets.indexOf(node) === -1;
           }.bind(this));
-          if (added.length === 0) {
-            // Set up observer first time around.
-            this._observeChildren();
-            return;
+          if (added.length > 0) {
+            this.targets = targets;
           }
+        } else {
+          this.targets = targets;
+        }
+
+        // update mapbox-gl-marker
+        var markers = Array.prototype.slice.call(
+          Polymer.dom(this.$.markers).getDistributedNodes());
+        // Do not recompute if objects have not been added or removed.
+        if (markers.length === this.markers.length) {
+          var added = markers.filter(function(node) {
+            var isNew = this.markers.indexOf(node) === -1;
+            if (isNew && map) {
+              node.map = map;
+            }
+            return isNew;
+          }.bind(this));
+          if (added.length > 0) {
+            this.markers = markers;
+          }
+        } else {
+          this.markers = markers;
         }
         this._observeChildren();
-        this.targets = targets;
       },
 
       _onTap: function(event, info) {
@@ -331,6 +407,9 @@ Custom property | Description | Default
         };
         var map = new mapboxgl.Map(opts);
         this.map = map;
+        this.markers.forEach(function(node) {
+          node.map = map;
+        });
         this._forwardEvent('move', mapMoveListener);
         this.fire('mapbox-gl-ready', this.map);
       },

@@ -5,10 +5,11 @@
 A variant of the `mapbox-fill-extrusion-layer` where the building info is
 derive from the building layers in mapbox's street map.
 
-https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-fill-extrusion
+To add a building layer, just bind the corresponding `map` object from
+`mapbox-gl` selement to the `mapbox-building-layer` element.
 
 <b>Example</b>:
-```
+```html
 <mapbox-gl id="map"
   interactive
   map="{{map}}"

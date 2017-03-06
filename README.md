@@ -17,6 +17,36 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
         height: 300px;
         width: 420px
       }
+
+      div.textbox {
+        background-color: #eee;
+        color: #444;
+        padding: 5px;
+        line-height: 20px;
+        width: 128px;
+        height: 20px;
+        border-radius: 5px;
+        text-align: center;
+      }
+
+      div.arrow-down {
+        margin-left: 60px;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 10px solid #eee;
+      }
+
+      mapbox-gl-marker.big_kitten {
+        background-image: url('https://placekitten.com/g/64/64');
+        border: 2px solid #eee;
+        border-radius: 50%;
+        padding: 0;
+        width: 64px;
+        height: 64px;
+      }
+
     </style>
     <next-code-block></next-code-block>
   </template>
@@ -25,6 +55,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 -->
 ```html
 <template is="dom-bind">
+  <!-- please use your own mapbox access token!! -->
   <mapbox-gl id="map"
     interactive
     map="{{map}}"
@@ -34,8 +65,25 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
     longitude=103.8698
     zoom=16
     pitch=45
-    bearing=0></mapbox-gl>
+    bearing=0>
 
+      <!-- style mapbox-gl-marker directly -->
+      <mapbox-gl-marker class="big_kitten"
+        latitude=1.3521 longitude=103.8698
+        offset-left=-32 offset-top=-32>
+      </mapbox-gl-marker>
+
+      <!-- you can also insert any dom element -->
+      <mapbox-gl-marker
+        latitude=1.3541 longitude=103.8718
+        offset-left=-64 offset-top=-30>
+        <div class="textbox">Some text here</div>
+        <div class="arrow-down"></div>
+      </mapbox-gl-marker>
+
+  </mapbox-gl>
+
+  <!-- bind map to the building layer -->
   <mapbox-building-layer layer-id="buildings"
     map="[[map]]"
     fill-extrusion-opacity=0.6
@@ -73,6 +121,50 @@ mapping capabilities to your app as a webcomponent.
   bearing=0></mapbox-gl>
 ```
 
+### Add building layer
+To add a building layer, just bind the corresponding `map` object from
+`mapbox-gl` selement to the `mapbox-building-layer` element.
+
+<b>Example</b>:
+```html
+<mapbox-building-layer layer-id="buildings"
+  map="[[map]]"
+  fill-extrusion-opacity=0.6
+  fill-extrusion-color="#666"></mapbox-building-layer>
+```
+
+### Add marker
+To add a marker layer, just include the `mapbox-gl-marker` element as a child
+of the `mapbox-gl` element.
+
+<b>Example</b>:
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=16
+  pitch=45
+  bearing=0>
+
+    <mapbox-gl-marker class="big_kitten"
+      latitude=1.3521 longitude=103.8698
+      offset-left=-32 offset-top=-32>
+    </mapbox-gl-marker>
+
+    <mapbox-gl-marker
+      latitude=1.3541 longitude=103.8718
+      offset-left=-64 offset-top=-30>
+      <div class="textbox">Some text here</div>
+      <div class="arrow-down"></div>
+    </mapbox-gl-marker>
+
+</mapbox-gl>
+```
+  
 ### Styling
 
 The following custom properties and mixins are available for styling:
