@@ -48,13 +48,14 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
       }
 
     </style>
-    <next-code-block></next-code-block>
+    <template is="dom-bind">
+      <next-code-block></next-code-block>
+    </template>
   </template>
 </custom-element-demo>
 ```
 -->
 ```html
-<template is="dom-bind">
   <!-- please use your own mapbox access token!! -->
   <mapbox-gl id="map"
     interactive
@@ -88,7 +89,6 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
     map="[[map]]"
     fill-extrusion-opacity=0.6
     fill-extrusion-color="#666"></mapbox-building-layer>
-</template>
 ```
 
 
@@ -164,7 +164,7 @@ of the `mapbox-gl` element.
 
 </mapbox-gl>
 ```
-  
+
 ### Styling
 
 The following custom properties and mixins are available for styling:

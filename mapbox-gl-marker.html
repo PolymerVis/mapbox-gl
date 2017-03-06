@@ -129,7 +129,6 @@ more details.
       },
 
       _createMarker: function(map, lat, lng, offsetLeft, offsetTop) {
-        console.log('create')
         return new mapboxgl.Marker(this, {offset: [offsetLeft, offsetTop]})
           .setLngLat([lng, lat])
           .addTo(map);
