@@ -66,32 +66,24 @@
        *
        * e.g. `["==", "$type", "Polygon"]` to render Polygon only.
        */
-      filter: {
-        type: Array
-      },
+      filter: Array,
       /*
        * Optional number.  Defaults to 1.
        * The opacity of the layer.
        */
-      opacity: {
-        type: Number
-      },
+      opacity: Number,
       /*
        * Optional color.  Defaults to #000000. This color can be specified
        * as rgba with an alpha component and the color's opacity will not
        * affect the opacity of the 1px stroke, if it is used.
        */
-      color: {
-        type: String
-      },
+      color: String,
       /*
        * Optional array.  Units in pixels. Defaults to 0,0.
        * The geometry's offset. Values are [x, y] where negatives indicate
        * left and up, respectively.
        */
-      translate: {
-        type: Array
-      },
+      translate: Array,
       /*
        * Optional enum.  One of `map` or `viewport`. Defaults to map.
        * Requires `fill-translate`.
@@ -99,32 +91,24 @@
        * - `map`: The fill is translated relative to the map.
        * - `viewport`: The fill is translated relative to the viewport.
        */
-      translateAnchor: {
-        type: String
-      },
+      translateAnchor: String,
       /*
        * Optional string.
        * Name of image in sprite to use for drawing image fills or lines. For
        * seamless patterns, image width and height must be a factor of two
        * (2, 4, 8, ..., 512).
        */
-      pattern: {
-        type: String
-      },
+      pattern: String,
       /*
        * no antialiasing for fill if set to true.
        */
-      noAntialias: {
-        type: Boolean
-      },
+      noAntialias: Boolean,
       /*
        * The outline color of the fill. Matches the value of color if
        * unspecified.
        * Disabled if `pattern` or `no-antialias` is set.
        */
-      outlineColor: {
-        type: String
-      },
+      outlineColor: String,
 
       /*
        * Optional enum.  One of `butt`, `round`, `square`. Defaults to `butt`.
@@ -138,9 +122,7 @@
        * endpoint of the line at a distance of one-half of the line's width.
        *
        */
-      lineCap: {
-        type: String
-      },
+      lineCap: String,
       /*
        * Optional enum.  One of `bevel`, `round`, `miter`. Defaults to `miter`.
        * The display of lines when joining.
@@ -155,32 +137,24 @@
        * A join with a sharp, angled corner which is drawn with the outer sides
        * beyond the endpoint of the path until they meet.
        */
-      lineJoin: {
-        type: String
-      },
+      lineJoin: String,
       /*
        * Optional number.  Defaults to 2. Requires line-join = `miter`.
        * Used to automatically convert `miter` joins to bevel joins for sharp
        * angles.
        */
-      lineMiterLimit: {
-        type: Number
-      },
+      lineMiterLimit: Number,
       /*
        * Optional number.  Defaults to 1.05. Requires line-join = `round`.
        * Used to automatically convert round joins to miter joins for shallow
        * angles.
        */
-      lineRoundLimit: {
-        type: Number
-      },
+      lineRoundLimit: Number,
       /*
        * Optional number.  Units in pixels. Defaults to 1.
        * Stroke thickness.
        */
-      lineWidth: {
-        type: Number
-      },
+      lineWidth: Number,
       /*
        * Optional number.  Units in pixels. Defaults to 0.
        * The line's offset. For linear features, a positive value offsets the
@@ -188,16 +162,13 @@
        * negative value to the left. For polygon features, a positive value
        * results in an inset, and a negative value results in an outset.
        */
-      lineOffset: {
-        type: Number
-      },
+      lineOffset: Number,
       /*
       * Optional number.  Units in pixels. Defaults to 0.
-      * Blur applied to the line, in pixels.
-       */
-      lineBlur: {
-        type: Number
-      },
+      * Blur applied to the `rendering-type` = `line` or `circle`, in pixels.
+      * 1 blurs the circle such that only the centerpoint is full opacity.
+      */
+      blur: Number,
       /*
       * Optional array.  Units in line widths. Disabled by line-pattern.
       * Specifies the lengths of the alternating dashes and gaps that form the
@@ -205,17 +176,42 @@
       * convert a dash length to pixels, multiply the length by the current
       * line width.
        */
-      lineDasharray: {
-        type: Array
-      },
+      lineDasharray: Array,
       /*
        * Optional number.  Units in pixels. Defaults to 0.
        * Draws a line casing outside of a line's actual path. Value indicates
        * the width of the inner gap.
        */
-      lineGapWidth: {
-        type: Number
-      },
+      lineGapWidth: Number,
+      /*
+       * Optional number.  Units in pixels. Defaults to 5.
+       * Circle radius.
+       */
+      radius: Number,
+      /*
+       * Optional enum.  One of `map` or `viewport`. Defaults to map.
+       * Controls the scaling behavior of the circle when the map is pitched.
+       * - `map`: Circles are scaled according to their apparent distance to
+       * the camera.
+       * - `viewport`: Circles are not scaled.
+       */
+      circlePitchScale: String,
+      /*
+       * Optional number.  Units in pixels. Defaults to 0.
+       * The width of the circle's stroke. Strokes are placed outside of the
+       * circle-radius.
+       */
+      circleStrokeWidth: Number,
+      /*
+       * Optional color.  Defaults to #000000.
+       * The stroke color of the circle.
+       */
+      circleStrokeColor: String,
+      /*
+       * Optional number.  Defaults to 1.
+       * The opacity of the circle's stroke.
+       */
+      circleStrokeOpacity: Number,
       _antialias: {
         type: Boolean,
         computed: '_not(noAntialias)'
@@ -239,6 +235,8 @@
       '_setPaintProperty(layerId, "translate", translate, renderingType, _added)',
       '_setPaintProperty(layerId, "translate-anchor", translateAnchor, renderingType, _added)',
       '_setPaintProperty(layerId, "pattern", pattern, renderingType, _added)',
+      '_setPaintProperty(layerId, "blur", blur, renderingType, _added)',
+      '_setPaintProperty(layerId, "circle-radius", radius, _added)',
 
       '_setPaintProperty(layerId, "fill-antialias", _antialias, _added)',
       '_setPaintProperty(layerId, "fill-outline-color", outlineColor, _added)',
@@ -246,14 +244,17 @@
       '_setPaintProperty(layerId, "line-dasharray", lineDasharray, _added)',
       '_setPaintProperty(layerId, "line-width", lineWidth, _added)',
       '_setPaintProperty(layerId, "line-gap-width", lineGapWidth, _added)',
-      '_setPaintProperty(layerId, "line-blur", lineBlur, _added)',
       '_setPaintProperty(layerId, "line-offset", lineOffset, _added)',
 
       '_setLayoutProperty(layerId, "visibility", _visibility, _added)',
       '_setLayoutProperty(layerId, "line-cap", lineCap, _added)',
       '_setLayoutProperty(layerId, "line-join", lineJoin, _added)',
       '_setLayoutProperty(layerId, "line-miter-limit", lineMiterLimit, _added)',
-      '_setLayoutProperty(layerId, "line-round-limit", lineRoundLimit, _added)'
+      '_setLayoutProperty(layerId, "line-round-limit", lineRoundLimit, _added)',
+
+      '_setLayoutProperty(layerId, "circle-pitch-scale", circlePitchScale, _added)',
+      '_setLayoutProperty(layerId, "circle-stroke-width", circleStrokeWidth, _added)',
+      '_setLayoutProperty(layerId, "circle-stroke-color", circleStrokeColor, _added)'
     ],
 
     _not: function(val) {
