@@ -1,0 +1,84 @@
+{
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "Polymer": false,
+    "MapboxGLPolymer": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "html",
+    "prettier"
+  ],
+  "rules": {
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "max-len": [
+      "error",
+      {
+        "ignoreStrings": true
+      }
+    ],
+    "one-var": [
+      "warn",
+      {
+        "initialized": "never",
+        "uninitialized": "always"
+      }
+    ],
+    "no-var": ["off"],
+    "guard-for-in":[
+      "warn"
+    ],
+    "block-scoped-var":[
+      "warn"
+    ],
+    "camelcase": [
+      "off",
+      {
+        "properties": "always"
+      }
+    ],
+    "no-console": [
+      "off"
+    ],
+    "require-jsdoc": [
+      "warn",
+      {
+        "require": {
+          "FunctionDeclaration": true,
+          "MethodDefinition": false,
+          "ClassDeclaration": false
+        }
+      }
+    ],
+    "no-redeclare":[
+      "error",
+      {
+        "builtinGlobals": true
+      }
+    ],
+    "new-cap": [
+      "error",
+      {
+        "capIsNewExceptions": [
+          "Polymer"
+        ]
+      }
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ]
+  }
+}

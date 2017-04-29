@@ -119,6 +119,50 @@ mapping capabilities to your app as a webcomponent.
   bearing=0></mapbox-gl>
 ```
 
+### Add geojson layer
+To add a geojson layer, you first need to create a `geojson-source` element to
+load the geojson. The data can be a JSON object or the url to a GeoJSON file.
+
+Then you can render the geojson via the `mapbox-layer`
+(e.g. rendering-type = line or fill).
+
+Note that you will need to bind the corresponding `map` object from
+`mapbox-gl` element to both `geojson-source` element and `mapbox-layer` element.
+
+<b>Example</b>
+
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=2></mapbox-gl>
+
+<mapbox-layer
+  map="[[map]]"
+  layer-id="coastline_fill"
+  rendering-type="fill"
+  source="geojsonsrc"
+  color="#009688"
+  opacity=0.7></mapbox-layer>
+
+<mapbox-layer
+  map="[[map]]"
+  layer-id="coastline_outline"
+  rendering-type="line"
+  source="geojsonsrc"
+  color="#eee"
+  line-width=2></mapbox-layer>
+
+<geojson-source
+  map="[[map]]"
+  source-id="geojsonsrc"
+  source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson"></geojson-source>
+```
+
 ### Add building layer
 To add a building layer, just bind the corresponding `map` object from
 `mapbox-gl` selement to the `mapbox-building-layer` element.

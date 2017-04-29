@@ -1,0 +1,100 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="./layer-behavior.html">
+
+<!--
+A generic mapbox layer.
+
+<b>Example</b>
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=2></mapbox-gl>
+
+<mapbox-layer
+  map="[[map]]"
+  layer-id="coastline_fill"
+  rendering-type="fill"
+  source="geojsonsrc"
+  color="#009688"
+  opacity=0.7></mapbox-layer>
+
+<mapbox-layer
+  map="[[map]]"
+  layer-id="coastline_outline"
+  rendering-type="line"
+  source="geojsonsrc"
+  color="#eee"
+  line-width=2></mapbox-layer>
+
+<geojson-source
+  map="[[map]]"
+  source-id="geojsonsrc"
+  source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson"></geojson-source>
+```
+
+@demo demo/geojson.html
+-->
+
+<dom-module id="mapbox-layer">
+  <script>
+  Polymer({
+  is: 'mapbox-layer',
+  behaviors: [MapboxGLPolymer.LayerBehavior],
+  properties: {
+    /*
+     * Name of a source description to be used for this layer.
+     */
+    source: {
+      type: String
+    },
+    /*
+     * Layer to use from a vector tile source. Required if the source
+     * supports multiple layers.
+     */
+    sourceLayer: {
+      type: String
+    }
+  },
+
+  observers: ['_mapReady(map, _layer)'],
+
+  _mapReady: function(map, _layer) {
+    if (!map || !_layer) return;
+    var self = this;
+    var loaded = map.loaded();
+
+    if (loaded) {
+      return this._sourceReady();
+    }
+
+    map.on('load', function() {
+      self._sourceReady();
+    });
+  },
+
+  _addLayer: function() {
+    if (this._added) return;
+    this.map.addLayer(this._layer);
+    this._added = true;
+  },
+
+  _sourceReady: function() {
+    if (!this.source) return this._addLayer();
+    var self = this;
+    var src = this.map.getSource(this.source);
+    if (!src) {
+      this.map.on('sourcedata', function() {
+        self._addLayer();
+      });
+    } else {
+      this._addLayer();
+    }
+  }
+});
+</script>
+</dom-module>
