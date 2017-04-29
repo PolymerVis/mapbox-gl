@@ -66,29 +66,8 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
     longitude=103.8698
     zoom=16
     pitch=45
-    bearing=0>
+    bearing=0></mapbox-gl>
 
-      <!-- style mapbox-gl-marker directly -->
-      <mapbox-gl-marker class="big_kitten"
-        latitude=1.3521 longitude=103.8698
-        offset-left=-32 offset-top=-32>
-      </mapbox-gl-marker>
-
-      <!-- you can also insert any dom element -->
-      <mapbox-gl-marker
-        latitude=1.3541 longitude=103.8718
-        offset-left=-64 offset-top=-30>
-        <div class="textbox">Some text here</div>
-        <div class="arrow-down"></div>
-      </mapbox-gl-marker>
-
-  </mapbox-gl>
-
-  <!-- bind map to the building layer -->
-  <mapbox-building-layer layer-id="buildings"
-    map="[[map]]"
-    fill-extrusion-opacity=0.6
-    fill-extrusion-color="#666"></mapbox-building-layer>
 ```
 
 
