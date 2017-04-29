@@ -120,6 +120,50 @@ of the `mapbox-gl` element.
 </mapbox-gl>
 ```
 
+### Create a heatmap
+To create a heatmap, create a `geojson-source` with `cluster` to loaded a
+clustered data. Then create a `mapbox-heatmap-layer` with the corresponding
+`source`.
+
+<b>Example</b>
+```html
+
+  <mapbox-gl id="map"
+    interactive
+    map="{{map}}"
+    map-style="mapbox://styles/mapbox/dark-v9"
+    access-token="<MAPBOX_ACCESS_TOKEN>"
+    latitude=40.66995747013945
+    longitude=-103.59179687498357
+    zoom=3></mapbox-gl>
+
+  <mapbox-heatmap-layer
+    map="[[map]]"
+    layer-id="heatmap"
+    source="geojsonsrc"
+    radius=80
+    color="rgba(0, 200, 0, 0.3)"
+    opacity=0.2
+    levels="[[levels]]"></mapbox-heatmap-layer>
+
+  <geojson-source
+    cluster
+    cluster-max-zoom=15
+    cluster-radius=20
+    map="[[map]]"
+    source-id="geojsonsrc"
+    source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_parks_and_protected_lands_point.geojson"></geojson-source>
+```
+
+```javascript
+levels = [{"count": 0, "color": "#EEEEEE", "radius": 2, "opacity": 0.5},
+          {"count": 5, "color": "#2196F3"},
+          {"count": 8, "color": "#FFC107"},
+          {"count": 10, "color": "#F44336"}];
+
+```
+
+
 ### Styling
 
 The following custom properties and mixins are available for styling:
@@ -130,6 +174,7 @@ Custom property | Description | Default
 
 @demo demo/index.html
 @demo demo/geojson.html
+@demo demo/heatmap.html
 -->
 
 <dom-module id="mapbox-gl">
