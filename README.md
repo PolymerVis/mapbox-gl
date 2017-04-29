@@ -10,6 +10,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 <custom-element-demo>
   <template is="dom-bind">
     <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
     <link rel="import" href="mapbox-gl.html">
     <style>
@@ -59,6 +60,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
     interactive
     map="{{map}}"
     map-style="mapbox://styles/mapbox/dark-v9"
+    script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
     access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
     latitude=1.3521
     longitude=103.8698
