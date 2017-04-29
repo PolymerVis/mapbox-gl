@@ -34,7 +34,7 @@
     "map"
   ],
   "author": "eterna2 <eterna2@hotmail.com>",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/PolymerVis/mapbox-gl/issues"
   },
