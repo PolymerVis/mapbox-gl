@@ -1,0 +1,54 @@
+{
+  "name": "mapbox-gl",
+  "description": "Polymer 1.0 custom element for mapbox-gl-js. mapbox-gl element uses WebGL to render interactive maps from vector tiles and Mapbox styles. mapbox-gl element is compatible with deck-gl, the Polymer 1.0 element for uber's deck.gl library.",
+  "main": "mapbox-gl.html",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "eslint *.html && polymer lint",
+    "pretest": "npm run lint",
+    "test": "npm run wct",
+    "wct": "xvfb-run polymer test --expanded",
+    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/PolymerVis/mapbox-gl.git"
+  },
+  "keywords": [
+    "polymer",
+    "web-components",
+    "deck.gl",
+    "mapboxgl",
+    "webgl",
+    "visualization",
+    "geospatial",
+    "map"
+  ],
+  "author": "eterna2 <eterna2@hotmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/PolymerVis/mapbox-gl/issues"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-prettier": "^1.7.0",
+    "eslint-plugin-html": "^2.0.1",
+    "husky": "^0.13.3",
+    "lint-staged": "^3.4.1",
+    "polymer-cli": "^0.18.1",
+    "prettier": "^1.2.2"
+  },
+  "homepage": "https://www.webcomponents.org/element/PolymerVis/mapbox-gl",
+  "dependencies": {
+    "eslint-plugin-prettier": "^2.0.1"
+  }
+}
