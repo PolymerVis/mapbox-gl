@@ -339,20 +339,36 @@ Custom property | Description | Default
       }
     },
     /*
-         * A string with space delimited (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to listen to.
-         * The corresponding event with be prefix with `mapbox-gl-`
-         * e.g. `move` will result with `mapbox-gl-move` event to be fired.
-         */
+     * A string with space delimited (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to listen to.
+     * NOTE: `move` is watched by default, aka, a `mapbox-gl-move` event will be fired whenever the map moves.
+     * The corresponding event with be prefix with `mapbox-gl-`.
+     * e.g. `move` will result with `mapbox-gl-move` event to be fired.
+     *
+     * ```html
+     * <mapbox-gl events-to-watch="rotate zoomend"
+     *  on-mapbox-gl-move="handleMove"
+     *  on-mapbox-gl-rotate="handleRotate"
+     *  on-mapbox-gl-zoomend="handleZoomend"></mapbox-gl>
+     * ```
+     *
+     */
     eventsToWatch: {
       type: String,
       observer: '_eventsToWatchChanged'
     },
     _childrenObserver: Object,
     _mapListener: Object,
-    _listeners: Object
+    _listeners: Object,
+    _clearEvents: Array,
+    _watchEvents: Array
   },
 
-  observers: ['_updateMap(loaded, accessToken)', '_updateStyle(map, mapStyle)'],
+  observers: [
+    '_updateMap(loaded, accessToken)',
+    '_updateStyle(map, mapStyle)',
+    '_clearListeners(map, _clearEvents)',
+    '_forwardEvents(map, _watchEvents)'
+  ],
 
   listeners: {
     'iron-resize': '_resize',
@@ -515,18 +531,19 @@ Custom property | Description | Default
   },
 
   _eventsToWatchChanged: function(newstr, oldstr) {
-    if (oldstr.trim()) {
-      var oevents = oldstr.trim().split(' ');
-      for (var i = 0, len = oevents.length; i < len; ++i) {
-        this._clearListener(oevents[i].trim());
-      }
+    if (oldstr) {
+      this._clearEvents = oldstr.trim().split(' ');
     }
 
-    if (newstr.trim()) {
-      var newstr = eventstr.trim().split(' ');
-      for (var i = 0, len = events.length; i < len; ++i) {
-        this._forwardEvent(events[i].trim());
-      }
+    if (newstr) {
+      this._watchEvents = newstr.trim().split(' ');
+    }
+  },
+
+  _clearListeners: function(map, _clearEvents) {
+    if (!_clearEvents) return;
+    for (var i = 0, len = _clearEvents.length; i < len; ++i) {
+      this._clearListener(_clearEvents[i].trim());
     }
   },
 
@@ -537,7 +554,15 @@ Custom property | Description | Default
     }
   },
 
+  _forwardEvents: function(map, _watchEvents) {
+    if (!_watchEvents) return;
+    for (var i = 0, len = _watchEvents.length; i < len; ++i) {
+      this._forwardEvent(_watchEvents[i].trim());
+    }
+  },
+
   _forwardEvent: function(name, fn) {
+    console.log(name);
     if (fn) {
       this._listeners[name] = function(event) {
         fn(event);

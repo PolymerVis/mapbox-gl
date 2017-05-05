@@ -55,7 +55,7 @@
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <template is="dom-bind">
+      <template is="dom-bind" id="app">
         <!-- please use your own mapbox access token!! -->
         <mapbox-gl id="map"
           interactive
@@ -66,7 +66,9 @@
           longitude=103.8698
           zoom=16
           pitch=45
-          bearing=0>
+          bearing=0
+          events-to-watch="boxzoomend "
+          on-mapbox-gl-boxzoomend ="_handleMapBoxZoomEvent">
 
             <!-- style mapbox-gl-marker directly -->
             <mapbox-gl-marker class="big_kitten"
@@ -92,5 +94,11 @@
 
       </template>
     </div>
+<script>
+var app = document.querySelector('#app');
+app._handleMapBoxZoomEvent = function(e, info) {
+  alert(info.boxZoomBounds);
+};
+</script>
   </body>
 </html>
