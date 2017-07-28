@@ -230,6 +230,8 @@
       '_updateLayerProp("source-layer", sourceLayer, _layer)',
       '_updateLayerProp("filter", filter, _layer)',
 
+      '_setFilter(map, layerId, filter)',
+
       '_setPaintProperty(layerId, "color", color, renderingType, _added)',
       '_setPaintProperty(layerId, "opacity", opacity, renderingType, _added)',
       '_setPaintProperty(layerId, "translate", translate, renderingType, _added)',
@@ -252,9 +254,9 @@
       '_setLayoutProperty(layerId, "line-miter-limit", lineMiterLimit, _added)',
       '_setLayoutProperty(layerId, "line-round-limit", lineRoundLimit, _added)',
 
-      '_setLayoutProperty(layerId, "circle-pitch-scale", circlePitchScale, _added)',
-      '_setLayoutProperty(layerId, "circle-stroke-width", circleStrokeWidth, _added)',
-      '_setLayoutProperty(layerId, "circle-stroke-color", circleStrokeColor, _added)'
+      '_setPaintProperty(layerId, "circle-pitch-scale", circlePitchScale, _added)',
+      '_setPaintProperty(layerId, "circle-stroke-width", circleStrokeWidth, _added)',
+      '_setPaintProperty(layerId, "circle-stroke-color", circleStrokeColor, _added)'
     ],
 
     _not: function(val) {
@@ -263,6 +265,11 @@
 
     _if: function(predicate, valtrue, valfalse) {
       return predicate ? valtrue : valfalse;
+    },
+
+    _setFilter: function(map, layerId, filter) {
+      if (!map || !layerId || !this._added) return;
+      return map.setFilter(layerId, filter);      
     },
 
     _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {

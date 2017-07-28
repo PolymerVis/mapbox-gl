@@ -81,6 +81,7 @@ A generic mapbox layer.
     if (this._added) return;
     this.map.addLayer(this._layer);
     this._added = true;
+    this.fire('layer-added', this.map);
   },
 
   _sourceReady: function() {
