@@ -187,7 +187,39 @@ of the `mapbox-gl` element.
 
 </mapbox-gl>
 ```
+  
+### Data-driven styling
+To create a data-driven style for a attribute, just pass in a JSON object 
+instead of a constant variable. 
+  
+more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
+  
+<b>Example</b>
+```html
 
+  <mapbox-gl id="map"
+    interactive
+    map="{{map}}"
+    map-style="mapbox://styles/mapbox/dark-v9"
+    access-token="<MAPBOX_ACCESS_TOKEN>"
+    latitude=40.66995747013945
+    longitude=-103.59179687498357
+    zoom=3></mapbox-gl>
+
+  <mapbox-layer
+    map="[[map]]"
+    layer-id="country"
+    rendering-type="fill"
+    source="geojsonsrc"
+    color="{property: 'type', type: 'categorical', stops: [['Africa', '#FAA"], ['Asia', '#AAF']]}"
+    filter="['in', 'continent', 'Africa', 'Asia']"></mapbox-layer>
+
+  <geojson-source
+    map="[[map]]"
+    source-id="geojsonsrc"
+    source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
+```
+  
 ### Create a heatmap
 To create a heatmap, create a `geojson-source` with `cluster` to loaded a
 clustered data. Then create a `mapbox-heatmap-layer` with the corresponding
