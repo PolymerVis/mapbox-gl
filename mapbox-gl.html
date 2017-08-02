@@ -203,124 +203,124 @@ Custom property | Description | Default
   behaviors: [Polymer.IronResizableBehavior],
   properties: {
     /*
-         * If the attribute is present no mouse, touch, or keyboard listeners will be attached to the map, so it will not respond to interaction.
-         */
+     * If the attribute is present no mouse, touch, or keyboard listeners will be attached to the map, so it will not respond to interaction.
+     */
     interactive: Boolean,
     /*
-         * Your [access token](https://www.mapbox.com/help/define-access-token/) to mapbox
-         */
+     * Your [access token](https://www.mapbox.com/help/define-access-token/) to mapbox
+     */
     accessToken: String,
     /*
-         * You can enter the url to ur mapbox-gl-js script if it is hosted external (e.g. cdn)
-         */
+     * You can enter the url to ur mapbox-gl-js script if it is hosted external (e.g. cdn)
+     */
     scriptSrc: {
       type: String,
       value: 'https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'
     },
     /*
-         * You can enter the url to ur mapbox-gl-js stylesheet if it is hosted external (e.g. cdn)
-         */
+     * You can enter the url to ur mapbox-gl-js stylesheet if it is hosted external (e.g. cdn)
+     */
     cssSrc: {
       type: String,
       value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css'
     },
     /*
-         * A latitude to center the map on.
-         */
+     * A latitude to center the map on.
+     */
     latitude: {
       type: Number,
       notify: true,
       value: 1.3521
     },
     /*
-         * A longitude to center the map on.
-         */
+     * A longitude to center the map on.
+     */
     longitude: {
       type: Number,
       notify: true,
       value: 103.8198
     },
     /*
-         * The initial zoom level of the map.
-         */
+     * The initial zoom level of the map.
+     */
     zoom: {
       type: Number,
       notify: true,
       value: 11
     },
     /*
-         * The maximum zoom level of the map (1-20).
-         */
+     * The maximum zoom level of the map (1-20).
+     */
     maxZoom: {
       type: Number,
       notify: true,
       value: 20
     },
     /*
-         * The minimum  zoom level of the map (1-20).
-         */
+     * The minimum  zoom level of the map (1-20).
+     */
     minZoom: {
       type: Number,
       notify: true,
       value: 1
     },
     /*
-         * The initial pitch (tilt) of the map, measured in degrees away from the plane of the screen (0-60).
-         */
+     * The initial pitch (tilt) of the map, measured in degrees away from the plane of the screen (0-60).
+     */
     pitch: {
       type: Number,
       notify: true,
       value: 0
     },
     /*
-         * The initial bearing (rotation) of the map, measured in degrees counter-clockwise from north.
-         */
+     * The initial bearing (rotation) of the map, measured in degrees counter-clockwise from north.
+     */
     bearing: {
       type: Number,
       notify: true,
       value: 0
     },
     /*
-         * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance returned by mapboxgl-js
-         */
+     * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance returned by mapboxgl-js
+     */
     map: {
       type: Object,
       notify: true,
       readonly: true
     },
     /*
-         * The map's Mapbox style. This must be an a JSON object conforming to
-         * the schema described in the Mapbox Style Specification , or a URL to such JSON.
-         *
-         * To load a style from the Mapbox API, you can use a URL of the form
-         * `mapbox://styles/:owner/:style`, where :owner is your Mapbox account
-         * name and :style is the style ID. Or you can use one of the following
-         * the predefined Mapbox styles:
-         * - mapbox://styles/mapbox/streets-v9
-         * - mapbox://styles/mapbox/outdoors-v9
-         * - mapbox://styles/mapbox/light-v9
-         * - mapbox://styles/mapbox/dark-v9
-         * - mapbox://styles/mapbox/satellite-v9
-         * - mapbox://styles/mapbox/satellite-streets-v9
-         *
-         * Tilesets hosted with Mapbox can be style-optimized if you append
-         * ?optimize=true to the end of your style URL, like `mapbox://styles/mapbox/streets-v9?optimize=true`.
-         */
+     * The map's Mapbox style. This must be an a JSON object conforming to
+     * the schema described in the Mapbox Style Specification , or a URL to such JSON.
+     *
+     * To load a style from the Mapbox API, you can use a URL of the form
+     * `mapbox://styles/:owner/:style`, where :owner is your Mapbox account
+     * name and :style is the style ID. Or you can use one of the following
+     * the predefined Mapbox styles:
+     * - mapbox://styles/mapbox/streets-v9
+     * - mapbox://styles/mapbox/outdoors-v9
+     * - mapbox://styles/mapbox/light-v9
+     * - mapbox://styles/mapbox/dark-v9
+     * - mapbox://styles/mapbox/satellite-v9
+     * - mapbox://styles/mapbox/satellite-streets-v9
+     *
+     * Tilesets hosted with Mapbox can be style-optimized if you append
+     * ?optimize=true to the end of your style URL, like `mapbox://styles/mapbox/streets-v9?optimize=true`.
+     */
     mapStyle: {
       type: Object,
       value: 'mapbox://styles/mapbox/dark-v9'
     },
     /*
-         * `true` if mapboxgl-js script has been loaded
-         */
+     * `true` if mapboxgl-js script has been loaded
+     */
     loaded: {
       type: Boolean,
       notify: true,
       value: false
     },
     /*
-         * `mapbox-gl` accepts `deck-gl` element as a child.
-         */
+     * `mapbox-gl` accepts `deck-gl` element as a child.
+     */
     targets: {
       type: Array,
       readonly: true,
@@ -329,8 +329,8 @@ Custom property | Description | Default
       }
     },
     /*
-         * `mapbox-gl` accepts elements with attribute `mapbox-gl-marker` as a child.
-         */
+     * `mapbox-gl` accepts elements with attribute `mapbox-gl-marker` as a child.
+     */
     markers: {
       type: Array,
       readonly: true,
@@ -366,6 +366,7 @@ Custom property | Description | Default
   observers: [
     '_updateMap(loaded, accessToken)',
     '_updateStyle(map, mapStyle)',
+    '_setCenter(map, latitude, longitude)',
     '_clearListeners(map, _clearEvents)',
     '_forwardEvents(map, _watchEvents)'
   ],
@@ -494,6 +495,13 @@ Custom property | Description | Default
     }
   },
 
+  _setCenter: function(map, latitude, longitude) {
+    if (!map) return;
+    this.debounce('setCenter', function() {
+      map.setCenter([this.longitude, this.latitude]);
+    }, 500);
+  },
+
   _createMap: function() {
     var self = this;
     var mod = function(value, divisor) {
@@ -514,6 +522,7 @@ Custom property | Description | Default
       minZoom: this.minZoom
     };
     var mapMoveListener = function(event) {
+      self.cancelDebouncer('setCenter');
       var transform = map.transform;
       self.latitude = transform.center.lat;
       self.longitude = mod(transform.center.lng + 180, 360) - 180;
