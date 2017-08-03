@@ -212,6 +212,57 @@
        * The opacity of the circle's stroke.
        */
       circleStrokeOpacity: Number,
+      /*
+       * Requires renderingType to be 'symbol'. Value to use for a text label.
+       * Feature properties are specified using
+       * tokens like {field_name}. (Token replacement is only supported for
+       * literal text-field values--not for property functions.)
+       */
+      textField: String,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * Font stack to use for displaying text.
+       */
+      textFont: String,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * Font size. Defaults to 16px;
+       */
+      textSize: Number,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * The maximum line width for text wrapping. Defaults to 10;
+       */
+      textMaxWidth: Number,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * Text leading value for multi-line text. Defaults to 1.2;
+       */
+      textLineHeight: Number,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * text justification options. "left", "right", or "center" (default).
+       */
+      textJustify: String,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * Part of the text placed closest to the anchor.
+       * One of center, left, right, top, bottom, top-left, top-right,
+       * bottom-left, bottom-right. Defaults to center.
+       */
+      textAnchor: String,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * Offset distance of text from its anchor.
+       * Positive values indicate right and down, while negative values
+       * indicate left and up.
+       */
+      textOffset: Array,
+      /*
+       * Requires renderingType to be 'symbol'.
+       * The color with which the text will be drawn. Defaults to #000000
+       */
+      textColor: String,
       _antialias: {
         type: Boolean,
         computed: '_not(noAntialias)'
@@ -254,6 +305,17 @@
       '_setLayoutProperty(layerId, "line-miter-limit", lineMiterLimit, _added)',
       '_setLayoutProperty(layerId, "line-round-limit", lineRoundLimit, _added)',
 
+      '_setLayoutProperty(layerId, "text-field", textField, _added)',
+      '_setLayoutProperty(layerId, "text-font", textFont, _added)',
+      '_setLayoutProperty(layerId, "text-size", textSize, _added)',
+      '_setLayoutProperty(layerId, "text-line-height", textLineHeight, _added)',
+      '_setLayoutProperty(layerId, "text-max-width", textMaxWidth, _added)',
+      '_setLayoutProperty(layerId, "text-justify", textJustify, _added)',
+      '_setLayoutProperty(layerId, "text-anchor", textAnchor, _added)',
+      '_setLayoutProperty(layerId, "text-offset", textOffset, _added)',
+
+      '_setPaintProperty(layerId, "text-color", textColor, _added)',
+
       '_setPaintProperty(layerId, "circle-pitch-scale", circlePitchScale, _added)',
       '_setPaintProperty(layerId, "circle-stroke-width", circleStrokeWidth, _added)',
       '_setPaintProperty(layerId, "circle-stroke-color", circleStrokeColor, _added)'
@@ -269,7 +331,7 @@
 
     _setFilter: function(map, layerId, filter) {
       if (!map || !layerId || !this._added) return;
-      return map.setFilter(layerId, filter);      
+      return map.setFilter(layerId, filter);
     },
 
     _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {
