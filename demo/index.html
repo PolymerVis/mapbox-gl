@@ -37,7 +37,7 @@
       }
 
 
-      mapbox-gl-marker.big_kitten {
+      .mapbox-gl-marker.big_kitten {
         background-image: url('https://placekitten.com/g/64/64');
         border: 2px solid #eee;
         border-radius: 50%;
@@ -72,14 +72,13 @@
 
             <!-- style mapbox-gl-marker directly -->
             <mapbox-gl-marker class="big_kitten"
-              latitude=1.3521 longitude=103.8698
-              offset-left=-32 offset-top=-32>
+              latitude=1.3521 longitude=103.8698>
             </mapbox-gl-marker>
 
             <!-- you can also insert any dom element -->
             <mapbox-gl-marker
               latitude=1.3541 longitude=103.8718
-              offset-left=-64 offset-top=-30>
+              offset-top=15>
               <div class="textbox">Some text here</div>
               <div class="arrow-down"></div>
             </mapbox-gl-marker>

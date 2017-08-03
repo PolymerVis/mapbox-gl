@@ -4,9 +4,9 @@
 The `mapbox-gl-marker` element represents a map marker. It is used as a
 child of `mapbox-gl`.
 
-The default anchor is the TOP-LEFT corner of the element.
+The default anchor is the CENTER of the element.
 
-You can either style the element directly, or attached other elements as its
+You can either style the element via CSS selector "div.mapbox-gl-marker", or attached other elements as its
 child as shown in the example below.
 
 <b>Example</b>:
@@ -23,13 +23,12 @@ child as shown in the example below.
   bearing=0>
 
     <mapbox-gl-marker class="big_kitten"
-      latitude=1.3521 longitude=103.8698
-      offset-left=-32 offset-top=-32>
+      latitude=1.3521 longitude=103.8698>
     </mapbox-gl-marker>
 
     <mapbox-gl-marker
       latitude=1.3541 longitude=103.8718
-      offset-left=-64 offset-top=-30>
+      offset-top=15>
       <div class="textbox">Some text here</div>
       <div class="arrow-down"></div>
     </mapbox-gl-marker>
@@ -52,13 +51,20 @@ more details.
       }
     </style>
     <content></content>
-
   </template>
   <script>
     Polymer({
 
       is: 'mapbox-gl-marker',
       properties: {
+        height: {
+          type: Number,
+          value: 24
+        },
+        width: {
+          type: Number,
+          value: 24
+        },
         /*
          * latitude of the marker
          */
@@ -104,16 +110,25 @@ more details.
         marker: {
           type: Object,
           notify: true,
-          readonly: true,
-          computed: '_createMarker(map, latitude, longitude, offsetLeft, offsetTop)'
-        }
+          readonly: true
+        },
+
+        _attached: Boolean
       },
 
       observers: [
-        'updateLatLng(latitude, longitude)'
+        '_createMarker(map, latitude, longitude, offsetLeft, offsetTop)',
+        'updateLatLng(marker, latitude, longitude)'
       ],
 
+      attached: function() {
+        this._attached = true;
+      },
+
       detached: function() {
+        this._attached = false;
+        console.log('remove')
+        console.log(this.marker)
         if (this.marker) {
           this.marker.remove();
         }
@@ -122,16 +137,35 @@ more details.
       /*
        * Updates the latitude and longitude of the marker
        */
-      updateLatLng: function(lat, lng) {
-        if (this.marker) {
-          this.marker.setLngLat([lng, lat]);
+      updateLatLng: function(marker, lat, lng) {
+        if (marker) {
+          marker.setLngLat([lng, lat]);
         }
       },
 
       _createMarker: function(map, lat, lng, offsetLeft, offsetTop) {
-        return new mapboxgl.Marker(this, {offset: [offsetLeft, offsetTop]})
-          .setLngLat([lng, lat])
-          .addTo(map);
+        var children = Array.prototype.slice.call(this.children);
+        var len = children.length;
+        var className = ('mapbox-gl-marker '+this.className).trim();
+        var ele;
+        if (len == 0) {
+          ele = document.createElement('div');
+          ele.className = className;
+        }
+        if (len == 1) {
+          ele = children[0];
+        } else {
+          // if more than 1 ele, create a wrapper
+          ele = document.createElement('div');
+          ele.className = className;
+          for (var i=0; i<len; ++i) {
+            ele.appendChild(children[i]);
+          }
+        }
+
+        this.marker = new mapboxgl.Marker(ele, {offset: [offsetLeft, offsetTop]})
+                                  .setLngLat([lng, lat])
+                                  .addTo(map);
       }
 
     });
