@@ -8,96 +8,65 @@
 
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
     <link rel="import" href="../mapbox-gl.html">
+    <link rel="import" href="../mapbox-layer.html">
+    <link rel="import" href="../geojson-source.html">
 
-    <style is="custom-style">
-      #map{
-        width: 100%;
-        height: 100vh;
-      }
-
-      div.textbox {
-        background-color: #eee;
-        color: #444;
-        padding: 5px;
-        line-height: 20px;
-        width: 128px;
-        height: 20px;
-        border-radius: 5px;
-        text-align: center;
-      }
-
-      div.arrow-down {
-        margin-left: 60px;
-        width: 0;
-        height: 0;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-top: 10px solid #eee;
-      }
-
-
-      .mapbox-gl-marker.big_kitten {
-        background-image: url('https://placekitten.com/g/64/64');
-        border: 2px solid #eee;
-        border-radius: 50%;
-        padding: 0;
-        width: 64px;
-        height: 64px;
-      }
-
-      marked-element {
-        position: fixed;
-        bottom: 0px;
-        right: 0px;
-      }
-    </style>
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <template is="dom-bind" id="app">
-        <!-- please use your own mapbox access token!! -->
-        <mapbox-gl id="map"
-          interactive
-          map="{{map}}"
-          map-style="mapbox://styles/mapbox/dark-v9"
-          access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
-          latitude=1.3521
-          longitude=103.8698
-          zoom=16
-          pitch=45
-          bearing=0
-          events-to-watch="boxzoomend "
-          on-mapbox-gl-boxzoomend ="_handleMapBoxZoomEvent">
+      <h3>Basic mapbox-gl demo</h3>
+      <demo-snippet>
+        <template>
+          <style>
+            mapbox-gl {
+              height: 400px;
+              width: 100%;
+            }
+          </style>
 
-            <!-- style mapbox-gl-marker directly -->
-            <mapbox-gl-marker class="big_kitten"
-              latitude=1.3521 longitude=103.8698>
-            </mapbox-gl-marker>
+          <dom-bind>
+            <template>
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                zoom=2>
+              </mapbox-gl>
 
-            <!-- you can also insert any dom element -->
-            <mapbox-gl-marker
-              latitude=1.3541 longitude=103.8718
-              offset-top=15>
-              <div class="textbox">Some text here</div>
-              <div class="arrow-down"></div>
-            </mapbox-gl-marker>
+              <mapbox-layer
+                map="[[map]]"
+                layer-id="coastline_outline"
+                rendering-type="line"
+                source="geojsonsrc"
+                color="#eee"
+                line-width=2></mapbox-layer>
 
-        </mapbox-gl>
+              <geojson-source
+                map="[[map]]"
+                source-id="geojsonsrc"
+                source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson"></geojson-source>
 
-        <!-- bind map to the building layer -->
-        <mapbox-building-layer layer-id="buildings"
-          map="[[map]]"
-          fill-extrusion-opacity=0.6
-          fill-extrusion-color="#666"></mapbox-building-layer>
+            </template>
+          </dom-bind>
 
-      </template>
+          <script>
+            var autobind = document.querySelector('dom-bind');
+            autobind.key = "pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg";
+            autobind.handleMove = function(e, d) {
+              console.log(d);
+            };
+          </script>
+        </template>
+      </demo-snippet>
     </div>
-<script>
-var app = document.querySelector('#app');
-app._handleMapBoxZoomEvent = function(e, info) {
-  alert(info.boxZoomBounds);
-};
-</script>
   </body>
 </html>
