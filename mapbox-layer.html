@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="./layer-behavior.html">
 
 <!--
@@ -36,66 +36,73 @@ A generic mapbox layer.
   source-id="geojsonsrc"
   source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson"></geojson-source>
 ```
-
+@customElement
+@polymer
 @demo demo/geojson.html
 -->
 
 <dom-module id="mapbox-layer">
   <script>
-  Polymer({
-  is: 'mapbox-layer',
-  behaviors: [MapboxGLPolymer.LayerBehavior],
-  properties: {
-    /*
-     * Name of a source description to be used for this layer.
-     */
-    source: {
-      type: String
-    },
-    /*
-     * Layer to use from a vector tile source. Required if the source
-     * supports multiple layers.
-     */
-    sourceLayer: {
-      type: String
-    }
-  },
+  const MapboxGLPolymerLayerMixin = Polymer.mixinBehaviors([MapboxGLPolymer.LayerBehavior], Polymer.Element);
+  class MapboxLayer extends MapboxGLPolymerLayerMixin {
+    static get is() { return 'mapbox-layer'; }
 
-  observers: ['_mapReady(map, _layer)'],
-
-  _mapReady: function(map, _layer) {
-    if (!map || !_layer) return;
-    var self = this;
-    var loaded = map.loaded();
-
-    if (loaded) {
-      return this._sourceReady();
+    static get properties() {
+      return {
+        /*
+         * Name of a source description to be used for this layer.
+         */
+        source: {
+          type: String
+        },
+        /*
+         * Layer to use from a vector tile source. Required if the source
+         * supports multiple layers.
+         */
+        sourceLayer: {
+          type: String
+        }
+      };
     }
 
-    map.on('load', function() {
-      self._sourceReady();
-    });
-  },
+    static get observers() {
+      return ['_mapReady(map, _layer)'];
+    }
 
-  _addLayer: function() {
-    if (this._added) return;
-    this.map.addLayer(this._layer);
-    this._added = true;
-    this.fire('layer-added', this.map);
-  },
+    _mapReady(map, _layer) {
+      if (!map || !_layer) return;
+      var self = this;
+      var loaded = map.loaded();
 
-  _sourceReady: function() {
-    if (!this.source) return this._addLayer();
-    var self = this;
-    var src = this.map.getSource(this.source);
-    if (!src) {
-      this.map.on('sourcedata', function() {
-        self._addLayer();
-      });
-    } else {
-      this._addLayer();
+      if (loaded) {
+        return this._sourceReady();
+      }
+
+      map.on('load', this._sourceReady.bind(this));
+    }
+
+    _addLayer() {
+      if (this._added) return;
+      this.map.addLayer(this._layer);
+      this._added = true;
+      this.dispatchEvent(new CustomEvent('layer-added', {detail:this.map}));
+    }
+
+    _sourceReady() {
+      if (!this.source) return this._addLayer();
+      var self = this;
+      var src = this.map.getSource(this.source);
+      if (!src) {
+        this.map.on('sourcedata', function() {
+          self._addLayer();
+        });
+      } else {
+        this._addLayer();
+      }
     }
   }
-});
+
+  window.customElements.define(MapboxLayer.is, MapboxLayer);
+
 </script>
 </dom-module>
