@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../shadycss/apply-shim.html">
+
+    <link rel="import" href="../mapbox-gl.html">
+    <link rel="import" href="../mapbox-gl-marker.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic mapbox-gl demo</h3>
+      <demo-snippet>
+        <template>
+          <custom-style>
+            <style is="custom-style">
+              mapbox-gl {
+                height: 400px;
+                width: 100%;
+              }
+
+              mapbox-gl  {
+                --mapbox-gl-marker: {
+                  border: 1px solid #888;
+                  color: #eee;
+                  text-align: center;
+                  font-size: 11px;
+                  line-height: 11px;
+                };
+              }
+
+            </style>
+          </custom-style>
+
+          <dom-bind>
+            <template>
+
+              <mapbox-gl
+                id="map"
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                latitude=1.3521
+                longitude=103.8698
+                zoom=15
+                pitch=45
+                bearing=0>
+
+                <!-- style mapbox-gl-marker directly -->
+                <mapbox-gl-marker
+                  latitude=1.3521
+                  longitude=103.8698
+                  width=64
+                  height=64
+                  border-radius="50%"
+                  background-image="https://placekitten.com/g/64/64">
+                </mapbox-gl-marker>
+
+                <mapbox-gl-marker
+                  show-arrow
+                  arrow-color="#fefefe"
+                  latitude=1.3523
+                  longitude=103.8655
+                  background-color="rgba(200,200,200,0.3)"
+                  width=128
+                  height=12>
+                  [[msg]]
+                </mapbox-gl-marker>
+
+              </mapbox-gl>
+
+            </template>
+          </dom-bind>
+
+          <script>
+            var autobind = document.querySelector('dom-bind');
+            // please use your own mapbox key!!!
+            autobind.key = "pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg";
+            autobind.msg = "Some random text"
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
