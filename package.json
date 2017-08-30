@@ -39,14 +39,15 @@
     "url": "https://github.com/PolymerVis/mapbox-gl/issues"
   },
   "devDependencies": {
-    "polymer-cli": "^1.5.2",
+    "bower": "^1.8.0",
     "eslint": "^3.19.0",
     "eslint-config-prettier": "^1.7.0",
     "eslint-plugin-html": "^2.0.1",
+    "eslint-plugin-prettier": "^2.0.1",
     "husky": "^0.13.3",
     "lint-staged": "^3.4.1",
-    "prettier": "^1.2.2",
-    "eslint-plugin-prettier": "^2.0.1"
+    "polymer-cli": "^1.5.2",
+    "prettier": "^1.2.2"
   },
   "homepage": "https://www.webcomponents.org/element/PolymerVis/mapbox-gl"
 }

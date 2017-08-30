@@ -41,13 +41,12 @@ more details.
 ```
 @customElement
 @polymer
-@demo demo/geojson.html
-@demo demo/heatmap.html
+@demo demo/index.html Basic demo
+
 -->
 
 <dom-module id="geojson-source">
   <script>
-
   class GeojsonSource extends Polymer.Element {
     static get is() { return 'geojson-source'; }
     static get properties() {
@@ -79,8 +78,8 @@ more details.
         },
         /*
          * Optional number.  Defaults to 18.
-         * Maximum zoom level at which to create vector tiles (higher means greater
-         * detail at high zoom levels).
+         * Maximum zoom level at which to create vector tiles (higher means
+         * greater detail at high zoom levels).
          */
         maxzoom: {
           type: Number,
@@ -168,7 +167,7 @@ more details.
             })
           );
         });
-      } else if (data) {
+      } else {
         map.addSource(
           srcId,
           self._setClusterConf({

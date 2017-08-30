@@ -38,13 +38,12 @@ A generic mapbox layer.
 ```
 @customElement
 @polymer
-@demo demo/geojson.html
+@demo demo/index.html Basic demo
 -->
 
 <dom-module id="mapbox-layer">
   <script>
-  const MapboxGLPolymerLayerMixin = Polymer.mixinBehaviors([MapboxGLPolymer.LayerBehavior], Polymer.Element);
-  class MapboxLayer extends MapboxGLPolymerLayerMixin {
+  class MapboxLayer extends Polymer.mixinBehaviors([MapboxGLPolymer.LayerBehavior], Polymer.Element) {
     static get is() { return 'mapbox-layer'; }
 
     static get properties() {
@@ -71,7 +70,6 @@ A generic mapbox layer.
 
     _mapReady(map, _layer) {
       if (!map || !_layer) return;
-      var self = this;
       var loaded = map.loaded();
 
       if (loaded) {
