@@ -1,0 +1,23 @@
+{
+  "entrypoint": "mapbox-gl.html",
+  "fragments": [
+    "mapbox-gl-marker.html",
+    "mapbox-layer.html",
+    "mapbox-building-layer.html",
+    "mapbox-heatmap-layer.html",
+    "geojson-source.html"
+  ],
+  "lint": {
+    "rules": [
+      "polymer-2"
+    ]
+  },
+  "builds": [{
+    "name": "es5",
+    "js": {"minify": true, "compile": true},
+    "css": {"minify": true},
+    "html": {"minify": true},
+    "addServiceWorker": false,
+    "addPushManifest": false
+  }]
+}

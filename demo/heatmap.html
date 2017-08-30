@@ -6,49 +6,76 @@
 
     <title>mapbox-gl demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
     <link rel="import" href="../mapbox-gl.html">
+    <link rel="import" href="../mapbox-heatmap-layer.html">
+    <link rel="import" href="../geojson-source.html">
 
-    <style is="custom-style">
-      #map{
-        width: 100%;
-        height: 100vh;
-      }
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
 
-    </style>
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <template is="dom-bind">
-        <!-- please use your own mapbox access token!! -->
-        <mapbox-gl id="map"
-          interactive
-          map="{{map}}"
-          map-style="mapbox://styles/mapbox/dark-v9"
-          access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
-          latitude=40.66995747013945
-          longitude=-103.59179687498357
-          zoom=3></mapbox-gl>
+      <h3>Basic mapbox-gl demo</h3>
+      <demo-snippet>
+        <template>
+          <style>
+            mapbox-gl {
+              height: 400px;
+              width: 100%;
+            }
+          </style>
+          <dom-bind>
+            <template>
+              <!-- please use your own mapbox access token!! -->
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                map-style-url="mapbox://styles/mapbox/dark-v9"
+                latitude=40.66995747013945
+                longitude=-103.59179687498357
+                zoom=3></mapbox-gl>
 
-        <mapbox-heatmap-layer
-          map="[[map]]"
-          layer-id="heatmap"
-          source="geojsonsrc"
-          radius=80
-          color="rgba(0, 200, 0, 0.3)"
-          opacity=0.2
-          levels='[{"count": 0, "color": "#EEEEEE", "radius": 2, "opacity": 0.5}, {"count": 5, "radius": 80, "color": "#4CAF50"}, {"count": 8, "color": "#FFC107"}, {"count": 10, "color": "#F44336"}]'></mapbox-heatmap-layer>
+              <geojson-source
+                cluster
+                cluster-max-zoom=15
+                cluster-radius=20
+                map="[[map]]"
+                source-id="geojsonsrc"
+                source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_parks_and_protected_lands_point.geojson"></geojson-source>
 
-        <geojson-source
-          cluster
-          cluster-max-zoom=15
-          cluster-radius=20
-          map="[[map]]"
-          source-id="geojsonsrc"
-          source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_parks_and_protected_lands_point.geojson"></geojson-source>
+              <mapbox-heatmap-layer
+                map="[[map]]"
+                layer-id="heatmap"
+                source="geojsonsrc"
+                radius=80
+                opacity=0.2
+                levels='[[levels]]'></mapbox-heatmap-layer>
 
-      </template>
+            </template>
+          </dom-bind>
+
+          <script>
+            var autobind = document.querySelector('dom-bind');
+            autobind.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+            autobind.levels = [
+              {'count': 0, 'color': '#EEEEEE', 'radius': 2, 'opacity': 0.5},
+              {'count': 5, 'radius': 80, 'color': '#4CAF50'},
+              {'count': 8, 'color': '#FFC107'},
+              {'count': 10, 'color': '#F44336'}];
+
+          </script>
+        </template>
+      </demo-snippet>
     </div>
   </body>
 </html>

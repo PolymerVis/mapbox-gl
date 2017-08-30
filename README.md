@@ -59,7 +59,7 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
   <mapbox-gl id="map"
     interactive
     map="{{map}}"
-    map-style="mapbox://styles/mapbox/dark-v9"
+    map-style-url="mapbox://styles/mapbox/dark-v9"
     script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
     access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
     latitude=1.3521
@@ -116,7 +116,7 @@ Note that you will need to bind the corresponding `map` object from
 <mapbox-gl id="map"
   interactive
   map="{{map}}"
-  map-style="mapbox://styles/mapbox/dark-v9"
+  map-style-url="mapbox://styles/mapbox/dark-v9"
   access-token="<MAPBOX_ACCESS_TOKEN>"
   latitude=1.3521
   longitude=103.8698
@@ -141,7 +141,7 @@ Note that you will need to bind the corresponding `map` object from
 <geojson-source
   map="[[map]]"
   source-id="geojsonsrc"
-  source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson"></geojson-source>
+  source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson"></geojson-source>
 ```
 
 ### Add building layer
@@ -187,13 +187,13 @@ of the `mapbox-gl` element.
 
 </mapbox-gl>
 ```
-  
+
 ### Data-driven styling
-To create a data-driven style for a attribute, just pass in a JSON object 
-instead of a constant variable. 
-  
+To create a data-driven style for a attribute, just pass in a JSON object
+instead of a constant variable.
+
 more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
-  
+
 <b>Example</b>
 ```html
 
@@ -217,9 +217,9 @@ more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
   <geojson-source
     map="[[map]]"
     source-id="geojsonsrc"
-    source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
+    source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
 ```
-  
+
 ### Create a heatmap
 To create a heatmap, create a `geojson-source` with `cluster` to loaded a
 clustered data. Then create a `mapbox-heatmap-layer` with the corresponding
@@ -252,7 +252,7 @@ clustered data. Then create a `mapbox-heatmap-layer` with the corresponding
     cluster-radius=20
     map="[[map]]"
     source-id="geojsonsrc"
-    source-data="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_parks_and_protected_lands_point.geojson"></geojson-source>
+    source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_parks_and_protected_lands_point.geojson"></geojson-source>
 ```
 
 ```javascript

@@ -213,6 +213,65 @@
        */
       circleStrokeOpacity: Number,
       /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * The opacity of the entire fill extrusion layer. This is rendered on
+       * a per-layer, not per-feature, basis, and data-driven styling is not
+       * available.
+       */
+      fillExtrusionOpacity: {
+        type: Number
+      },
+      /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * The base color of the extruded fill. The extrusion's surfaces will be
+       * shaded differently based on this color in combination with the root
+       * light settings. If this color is specified as rgba with an alpha
+       * component, the alpha component will be ignored; use
+       * fill-extrusion-opacity to set layer opacity.
+       */
+      fillExtrusionColor: {
+        type: String
+      },
+      /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * The geometry's offset. Values are [x, y] where negatives indicate
+       * left and up (on the flat plane), respectively.
+       */
+      fillExtrusionTranslate: {
+        type: Array
+      },
+      /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * Controls the translation reference point (map or viewport).
+       */
+      fillExtrusionTranslateAnchor: {
+        type: String
+      },
+      /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * Name of image in sprite to use for drawing images on extruded fills.
+       * For seamless patterns, image width and height must be a factor of
+       * two (2, 4, 8, ..., 512).
+       */
+      fillExtrusionPattern: {
+        type: String
+      },
+      /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * The height (in meters) with which to extrude this layer.
+       */
+      fillExtrusionHeight: {
+        type: Number
+      },
+      /*
+       * requires `rendering-type` to be `fill-extrusion`.
+       * The height with which to extrude the base of this layer.
+       * Must be less than or equal to fill-extrusion-height
+       */
+      fillExtrusionBase: {
+        type: Number
+      },
+      /*
        * Requires renderingType to be 'symbol'. Value to use for a text label.
        * Feature properties are specified using
        * tokens like {field_name}. (Token replacement is only supported for
@@ -263,16 +322,39 @@
        * The color with which the text will be drawn. Defaults to #000000
        */
       textColor: String,
+      /*
+       * A string with space delimited
+       * (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to
+       * listen to.
+       * The corresponding event with be prefix with `mapbox-layer-`.
+       * e.g. `click` will result with `mapbox-layer-click` event to be fired.
+       *
+       * ```html
+       * <mapbox-gl events-to-watch="rotate zoomend"
+       *  on-mapbox-gl-move="handleMove"
+       *  on-mapbox-gl-rotate="handleRotate"
+       *  on-mapbox-gl-zoomend="handleZoomend"></mapbox-gl>
+       * ```
+       *
+       */
+      eventsToWatch: {
+        type: String,
+        observer: '_eventsToWatchChanged'
+      },
+
       _antialias: {
         type: Boolean,
         computed: '_not(noAntialias)'
       },
-      _added: Boolean,
-      _layer: Object,
       _visibility: {
         type: String,
         computed: '_if(hidden, "none", "visible")'
-      }
+      },
+      _added: Boolean,
+      _layer: Object,
+      _clearEvents: Array,
+      _watchEvents: Array
+
     },
 
     observers: [
@@ -291,13 +373,22 @@
       '_setPaintProperty(layerId, "blur", blur, renderingType, _added)',
       '_setPaintProperty(layerId, "circle-radius", radius, _added)',
 
-      '_setPaintProperty(layerId, "fill-antialias", _antialias, _added)',
-      '_setPaintProperty(layerId, "fill-outline-color", outlineColor, _added)',
 
       '_setPaintProperty(layerId, "line-dasharray", lineDasharray, _added)',
       '_setPaintProperty(layerId, "line-width", lineWidth, _added)',
       '_setPaintProperty(layerId, "line-gap-width", lineGapWidth, _added)',
       '_setPaintProperty(layerId, "line-offset", lineOffset, _added)',
+
+      '_setPaintProperty(layerId, "fill-antialias", _antialias, _added)',
+      '_setPaintProperty(layerId, "fill-outline-color", outlineColor, _added)',
+
+      '_setPaintProperty(layerId, "fill-extrusion-translate-anchor", fillExtrusionTranslateAnchor, _added)',
+      '_setPaintProperty(layerId, "fill-extrusion-pattern", fillExtrusionPattern, _added)',
+      '_setPaintProperty(layerId, "fill-extrusion-opacity", fillExtrusionOpacity, _added)',
+      '_setPaintProperty(layerId, "fill-extrusion-color", fillExtrusionColor, _added)',
+      '_setPaintProperty(layerId, "fill-extrusion-translate", fillExtrusionTranslate, _added)',
+      '_setPaintProperty(layerId, "fill-extrusion-height", fillExtrusionHeight, _added)',
+      '_setPaintProperty(layerId, "fill-extrusion-base", fillExtrusionBase, _added)',
 
       '_setLayoutProperty(layerId, "visibility", _visibility, _added)',
       '_setLayoutProperty(layerId, "line-cap", lineCap, _added)',
@@ -318,7 +409,10 @@
 
       '_setPaintProperty(layerId, "circle-pitch-scale", circlePitchScale, _added)',
       '_setPaintProperty(layerId, "circle-stroke-width", circleStrokeWidth, _added)',
-      '_setPaintProperty(layerId, "circle-stroke-color", circleStrokeColor, _added)'
+      '_setPaintProperty(layerId, "circle-stroke-color", circleStrokeColor, _added)',
+
+      '_clearListeners(map, _clearEvents)',
+      '_forwardEvents(map, _watchEvents)'
     ],
 
     _not: function(val) {
@@ -332,6 +426,53 @@
     _setFilter: function(map, layerId, filter) {
       if (!map || !layerId || !this._added) return;
       return map.setFilter(layerId, filter);
+    },
+
+    _eventsToWatchChanged: function(newstr, oldstr) {
+      if (oldstr) {
+        this._clearEvents = oldstr.trim().split(' ');
+      }
+
+      if (newstr) {
+        this._watchEvents = newstr.trim().split(' ');
+      }
+    },
+
+    _clearListeners: function(map, _clearEvents) {
+      if (!_clearEvents || !map) return;
+      for (var i = 0, len = _clearEvents.length; i < len; ++i) {
+        this._clearListener(_clearEvents[i].trim());
+      }
+    },
+
+    _clearListener: function(name) {
+      if (this._listeners[name]) {
+        this.map.off(name, this.layerId, this._listeners[name]);
+        this._listeners[name] = null;
+      }
+    },
+
+    _forwardEvents: function(map, _watchEvents) {
+      if (!_watchEvents || !map) return;
+      this._listeners = this._listeners || Object.create(null);
+      for (var i = 0, len = _watchEvents.length; i < len; ++i) {
+        this._forwardEvent(_watchEvents[i].trim());
+      }
+    },
+
+    _forwardEvent: function(name, fn) {
+      if (fn) {
+        this._listeners[name] = function(event) {
+          fn(event);
+          this.dispatchEvent(new CustomEvent('mapbox-layer-' + name, {detail: event}));
+        }.bind(this);
+      } else {
+        this._listeners[name] = function(event) {
+          this.dispatchEvent(new CustomEvent('mapbox-layer-' + name, {detail: event}));
+        }.bind(this);
+      }
+
+      this.map.on(name, this.layerId, this._listeners[name]);
     },
 
     _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {

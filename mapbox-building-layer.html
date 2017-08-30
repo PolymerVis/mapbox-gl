@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="./fill-extrusion-layer-behavior.html">
+<link rel="import" href="./mapbox-layer.html">
 
 <!--
 A variant of the `mapbox-fill-extrusion-layer` where the building info is
@@ -32,80 +32,83 @@ To add a building layer, just bind the corresponding `map` object from
 See https://www.mapbox.com/mapbox-gl-js/style-spec/#layers-fill-extrusion for
 more details.
 
-@demo demo/index.html
+@demo demo/building.html 3d building demo
 -->
 
 <dom-module id="mapbox-building-layer">
   <script>
-  Polymer({
-  is: 'mapbox-building-layer',
-  behaviors: [MapboxGLPolymer.FillExtrusionLayerBehavior],
-  properties: {
-    /*
+  class MapboxBuildingLayer extends MapboxLayer {
+    static get is() { return 'mapbox-building-layer'; }
+
+    static get properties() {
+      return {
+        renderingType: {
+          type: String,
+          value: 'fill-extrusion'
+        },
+        /*
          * Name of a source description to be used for this layer.
          */
-    source: {
-      type: String,
-      value: 'composite',
-    },
-    /*
+        source: {
+          type: String,
+          value: 'composite'
+        },
+        /*
          * Layer to use from a vector tile source. Required if the source
          * supports multiple layers.
          */
-    sourceLayer: {
-      type: String,
-      value: 'building',
-    },
-    /*
+        sourceLayer: {
+          type: String,
+          value: 'building'
+        },
+        /*
          * A expression specifying conditions on source features. Only features
          * that match the filter are displayed.
+         *
+         * @type {Array<predicate, field, condition>}
          */
-    filter: {
-      type: Array,
-      value: function() {
-        return ['==', 'extrude', 'true'];
-      },
-    },
+        filter: {
+          type: Array,
+          value: function() {
+            return ['==', 'extrude', 'true'];
+          }
+        },
 
-    /*
+        /*
          * The height (in meters) with which to extrude this layer.
+         *
+         * @type {{type: string, property: string}}
          */
-    fillExtrusionHeight: {
-      type: Object,
-      value: function() {
-        return {
-          type: 'identity',
-          property: 'height',
-        };
-      },
-    },
-    /*
+        fillExtrusionHeight: {
+          type: Object,
+          value: function() {
+            return {
+              type: 'identity',
+              property: 'height'
+            };
+          }
+        },
+        /*
          * The height with which to extrude the base of this layer.
-         * Must be less than or equal to fill-extrusion-height
+         * Must be less than or equal to fill-extrusion-height.
+         *
+         * @type {{type: string, property: string}}
          */
-    fillExtrusionBase: {
-      type: Object,
-      value: function() {
-        return {
-          type: 'identity',
-          property: 'min_height',
-        };
-      },
-    },
-  },
+        fillExtrusionBase: {
+          type: Object,
+          value: function() {
+            return {
+              type: 'identity',
+              property: 'min_height'
+            };
+          }
+        }
 
-  observers: ['_mapReady(map, _layer, _paint)'],
+      };
+    }
+  }
 
-  _mapReady: function(map, _layer, _paint) {
-    if (!map || !_layer || !_paint) return;
-    var self = this;
-    _layer.paint = _paint;
+  window.customElements.define(MapboxBuildingLayer.is, MapboxBuildingLayer);
 
-    map.on('load', function() {
-      map.addLayer(_layer);
-      self._added = true;
-    });
-  },
-});
 </script>
 </dom-module>

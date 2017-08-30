@@ -1,5 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
-
+<link rel="import" href="../polymer/polymer-element.html">
 <!--
 The `mapbox-gl-marker` element represents a map marker. It is used as a
 child of `mapbox-gl`.
@@ -22,8 +21,13 @@ child as shown in the example below.
   pitch=45
   bearing=0>
 
-    <mapbox-gl-marker class="big_kitten"
-      latitude=1.3521 longitude=103.8698>
+    <mapbox-gl-marker
+      latitude=1.3521
+      longitude=103.8698
+      width=64
+      height=64
+      border-radius="50%"
+      background-image="https://placekitten.com/g/64/64">
     </mapbox-gl-marker>
 
     <mapbox-gl-marker
@@ -39,7 +43,7 @@ child as shown in the example below.
 See https://www.mapbox.com/mapbox-gl-js/api/#Marker for
 more details.
 
-@demo demo/index.html
+@demo demo/markers.html Marker demo
 -->
 
 <dom-module id="mapbox-gl-marker">
@@ -50,13 +54,29 @@ more details.
         padding: 0;
       }
     </style>
-    <content></content>
+
+    <slot></slot>
   </template>
   <script>
-    Polymer({
 
-      is: 'mapbox-gl-marker',
-      properties: {
+  class MapboxGlMarker extends Polymer.Element {
+    static get is() { return 'mapbox-gl-marker'; }
+    static get properties() {
+      return {
+        /* show a down pointing arrow to indicate the actual position. */
+        showArrow: {
+          type: Boolean,
+          value: false
+        },
+        /* color of the arrow */
+        arrowColor: {
+          type: String,
+          value: '#444'
+        },
+        /* css border-radius style */
+        borderRadius: {
+          type: String
+        },
         height: {
           type: Number,
           value: 24
@@ -76,6 +96,18 @@ more details.
          */
         longitude: {
           type: Number
+        },
+        /*
+         * background color for the marker
+         */
+        backgroundColor: {
+          type: String
+        },
+        /*
+         * url to the image to use for the background of the marker
+         */
+        backgroundImage: {
+          type: String
         },
         /*
          * POSTIVE values denotes the number of pixels to offset to the RIGHT,
@@ -110,64 +142,121 @@ more details.
         marker: {
           type: Object,
           notify: true,
-          readonly: true
+          readonly: true,
+          computed: '_createMarker(map, _ele, offsetLeft, offsetTop)'
         },
 
+        _ele: {
+          type: Object,
+          computed: '_createMarkerElement(map)'
+        },
+        _arr: Object,
+
         _attached: Boolean
-      },
+      };
+    }
 
-      observers: [
-        '_createMarker(map, latitude, longitude, offsetLeft, offsetTop)',
-        'updateLatLng(marker, latitude, longitude)'
-      ],
+    static get observers() {
+      return ['updateLatLng(marker, latitude, longitude)',
+              '_updateStyle(_ele, width, height, borderRadius, backgroundColor, backgroundImage)',
+              '_addDownArrow(_ele, showArrow, width, height, arrowColor)']
+    }
 
-      attached: function() {
-        this._attached = true;
-      },
+    connectedCallback() {
+      super.connectedCallback();
+      this._attached = true;
+    }
 
-      detached: function() {
-        this._attached = false;
-        console.log('remove')
-        console.log(this.marker)
-        if (this.marker) {
-          this.marker.remove();
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this._attached = false;
+      if (this.marker) {
+        this.marker.remove();
+      }
+    }
+
+    /*
+     * Updates the latitude and longitude of the marker.
+     */
+    updateLatLng(marker, lat, lng) {
+      if (marker) {
+        marker.setLngLat([lng, lat]);
+      }
+    }
+
+    _createMarkerElement() {
+      var children = this.shadowRoot
+                          .querySelector('slot')
+                          .assignedNodes({flatten:true});
+      var len = children.length;
+      var className = ('mapbox-gl-marker '+this.className).trim();
+      var ele;
+      if (len == 0) {
+        ele = document.createElement('div');
+        ele.className = className;
+      } else {
+        // if more than 1 ele, create a wrapper
+        ele = document.createElement('div');
+        ele.className = className;
+        for (var i=0; i<len; ++i) {
+          ele.appendChild(children[i]);
         }
-      },
-
-      /*
-       * Updates the latitude and longitude of the marker
-       */
-      updateLatLng: function(marker, lat, lng) {
-        if (marker) {
-          marker.setLngLat([lng, lat]);
-        }
-      },
-
-      _createMarker: function(map, lat, lng, offsetLeft, offsetTop) {
-        var children = Array.prototype.slice.call(this.children);
-        var len = children.length;
-        var className = ('mapbox-gl-marker '+this.className).trim();
-        var ele;
-        if (len == 0) {
-          ele = document.createElement('div');
-          ele.className = className;
-        }
-        if (len == 1) {
-          ele = children[0];
-        } else {
-          // if more than 1 ele, create a wrapper
-          ele = document.createElement('div');
-          ele.className = className;
-          for (var i=0; i<len; ++i) {
-            ele.appendChild(children[i]);
-          }
-        }
-
-        this.marker = new mapboxgl.Marker(ele, {offset: [offsetLeft, offsetTop]})
-                                  .setLngLat([lng, lat])
-                                  .addTo(map);
       }
 
-    });
+      this._ele = ele;
+
+    }
+
+    _createMarker(map, ele, offsetLeft, offsetTop) {
+      if (!map || !ele) return;
+      /* global mapboxgl */
+      return new mapboxgl.Marker(ele, {offset: [offsetLeft, offsetTop]})
+                                .setLngLat([this.longitude, this.latitude])
+                                .addTo(map);
+    }
+
+    _updateStyle(ele, width, height, borderRadius, backgroundColor, backgroundImage) {
+      if (!ele) return;
+      ele.style.height=height+'px';
+      ele.style.width=width+'px';
+      if (borderRadius)
+        ele.style.borderRadius = borderRadius;
+      if (backgroundColor)
+        ele.style.backgroundColor = backgroundColor;
+      if (backgroundImage) {
+        ele.style.backgroundImage = `url(${backgroundImage})`;
+      }
+      if (this._arr) {
+        this._arr.style.transform = `translateX(${width/2}px)`;
+      }
+    }
+
+    _addDownArrow(ele, showArrow, width, height, arrowColor) {
+      if (!ele) return;
+      if (!showArrow) {
+        if (this._arr) {
+          ele.removeChild(this._arr);
+          this.offsetTop = 0;
+        }
+        return;
+      }
+      var arr = this._arr || document.createElement('div');
+      arr.style.transform = `translateX(${width/2}px)`;
+      arr.style.marginLeft = '-8px';
+      arr.style.position = 'absolute';
+      arr.style.bottom = '-8px';
+      arr.style.width = '0px';
+      arr.style.height = '0px';
+      arr.style.borderLeft = '8px solid transparent';
+      arr.style.borderRight = '8px solid transparent';
+      arr.style.borderTop = `8px solid ${arrowColor}`;
+      this._arr = arr;
+      this.offsetTop = -(0.5 * height) - 8;
+
+      ele.appendChild(arr);
+    }
+  }
+
+  window.customElements.define(MapboxGlMarker.is, MapboxGlMarker);
   </script>
 </dom-module>
