@@ -1,4 +1,6 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/utils/flattened-nodes-observer.html">
+<link rel="import" href="../shadycss/apply-shim.html">
 <!--
 [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js/api/) is a JavaScript library
 that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
@@ -164,47 +166,60 @@ Custom property | Description | Default
 
 @customElement
 @polymer
-@demo demo/index.html
+@demo demo/index.html Basic demo
 -->
 <dom-module id="mapbox-gl">
   <template>
     <style>
       :host {
         display: block;
+        overflow: hidden;
       }
 
       #map {
+        position: relative;
         width: 100%;
         height: 100%;
-        @apply(--mapbox-map);
+        @apply --mapbox-map;
       }
+
+      .mapbox-gl-marker {
+        position: absolute;
+        @apply --mapbox-gl-marker;
+      }
+
     </style>
     <div id="map"></div>
+    <slot></slot>
   </template>
 
   <script>
-  
+
     class MapboxGl extends Polymer.Element {
       static get is() { return 'mapbox-gl'; }
       static get properties() {
         return {
           /*
-           * If the attribute is present no mouse, touch, or keyboard listeners will be attached to the map, so it will not respond to interaction.
+           * If the attribute is present no mouse, touch, or keyboard listeners
+           * will be attached to the map, so it will not respond to interaction.
            */
           interactive: Boolean,
           /*
-           * Your [access token](https://www.mapbox.com/help/define-access-token/) to mapbox
+           * Your [access token](https://www.mapbox.com/help/define-access-token/)
+           * to mapbox
            */
           accessToken: String,
           /*
-           * You can enter the url to ur mapbox-gl-js script if it is hosted external (e.g. cdn)
+           * You can enter the url to ur mapbox-gl-js script if it is hosted
+           * external (e.g. cdn)
            */
           scriptSrc: {
             type: String,
             value: 'https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'
           },
           /*
-           * You can enter the url to ur mapbox-gl-js stylesheet if it is hosted external (e.g. cdn)
+           * You can enter the url to ur mapbox-gl-js stylesheet if it is
+           * hosted external (e.g. cdn)
            */
           cssSrc: {
             type: String,
@@ -251,7 +266,8 @@ Custom property | Description | Default
             value: 1
           },
           /*
-           * The initial pitch (tilt) of the map, measured in degrees away from the plane of the screen (0-60).
+           * The initial pitch (tilt) of the map, measured in degrees away from
+           * the plane of the screen (0-60).
            */
           pitch: {
             type: Number,
@@ -259,7 +275,8 @@ Custom property | Description | Default
             value: 0
           },
           /*
-           * The initial bearing (rotation) of the map, measured in degrees counter-clockwise from north.
+           * The initial bearing (rotation) of the map, measured in degrees
+           * counter-clockwise from north.
            */
           bearing: {
             type: Number,
@@ -267,7 +284,8 @@ Custom property | Description | Default
             value: 0
           },
           /*
-           * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance returned by mapboxgl-js.
+           * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance
+           * returned by mapboxgl-js.
            */
           map: {
             type: Object,
@@ -276,7 +294,16 @@ Custom property | Description | Default
           },
           /*
            * The map's Mapbox style. This must be an a JSON object conforming to
-           * the schema described in the Mapbox Style Specification , or a URL to such JSON.
+           * the schema described in the Mapbox Style Specification.
+           *
+           */
+          mapStyle: {
+            type: Object
+          },
+          /*
+           * The map's Mapbox style. This must be URL to an a JSON object
+           * conforming to the schema described in the Mapbox Style
+           * Specification.
            *
            * To load a style from the Mapbox API, you can use a URL of the form
            * `mapbox://styles/:owner/:style`, where :owner is your Mapbox account
@@ -290,10 +317,11 @@ Custom property | Description | Default
            * - mapbox://styles/mapbox/satellite-streets-v9
            *
            * Tilesets hosted with Mapbox can be style-optimized if you append
-           * ?optimize=true to the end of your style URL, like `mapbox://styles/mapbox/streets-v9?optimize=true`.
+           * ?optimize=true to the end of your style URL, like
+           * `mapbox://styles/mapbox/streets-v9?optimize=true`.
            */
-          mapStyle: {
-            type: Object,
+          mapStyleUrl: {
+            type: String,
             value: 'mapbox://styles/mapbox/dark-v9'
           },
           /*
@@ -315,7 +343,8 @@ Custom property | Description | Default
             }
           },
           /*
-           * `mapbox-gl` accepts elements with attribute `mapbox-gl-marker` as a child.
+           * `mapbox-gl` accepts elements with attribute `mapbox-gl-marker`
+           * as a child.
            */
           markers: {
             type: Array,
@@ -325,8 +354,11 @@ Custom property | Description | Default
             }
           },
           /*
-           * A string with space delimited (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to listen to.
-           * NOTE: `move` is watched by default, aka, a `mapbox-gl-move` event will be fired whenever the map moves.
+           * A string with space delimited
+           * (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to
+           * listen to.
+           * NOTE: `move` is watched by default, aka, a `mapbox-gl-move`
+           * event will be fired whenever the map moves.
            * The corresponding event with be prefix with `mapbox-gl-`.
            * e.g. `move` will result with `mapbox-gl-move` event to be fired.
            *
@@ -356,6 +388,7 @@ Custom property | Description | Default
         return [
           '_updateMap(loaded, accessToken)',
           '_updateStyle(map, mapStyle)',
+          '_updateStyle(map, mapStyleUrl)',
           '_setCenter(map, latitude, longitude)',
           '_clearListeners(map, _clearEvents)',
           '_forwardEvents(map, _watchEvents)'
@@ -364,13 +397,12 @@ Custom property | Description | Default
 
       connectedCallback() {
         super.connectedCallback();
-        var self = this;
         this.loaded = window.mapboxgl && true;
         // mapboxgl not loaded, load mapboxgl
         if (!this.loaded) {
           var script = document.createElement('script');
           script.src = this.scriptSrc;
-          script.onload = _ => {this.loaded=true;};
+          script.onload = () => {this.loaded=true;};
           var css = document.createElement('link');
           css.href = this.cssSrc;
           css.rel = 'stylesheet';
@@ -378,7 +410,11 @@ Custom property | Description | Default
           this.appendChild(script);
           this.appendChild(css);
         }
-        this._updateChildren();
+
+        var slot = this.shadowRoot.querySelector('slot');
+        this._childrenObserver = new Polymer.FlattenedNodesObserver(
+          slot, this._slotChanged.bind(this));
+
       }
 
       disconnectedCallback() {
@@ -391,18 +427,32 @@ Custom property | Description | Default
 
       // watch for future updates for the layers
       _observeChildren() {
-        if (this._childrenObserver) {
-          return;
+        // if (this._childrenObserver) {
+        //   return;
+        // }
+        // this._childrenObserver = new MutationObserver(
+        //   this._updateChildren.bind(this)
+        // );
+        // this._childrenObserver.observe(this, {
+        //   childList: true
+        // });
+      }
+
+      _slotChanged({addedNodes}) {
+        this.markers = this.shadowRoot
+                    .querySelector('slot')
+                    .assignedNodes({flatten:true})
+                    .filter(n=>n.nodeName=='MAPBOX-GL-MARKER');
+
+        if (this.map) {
+          addedNodes
+            .filter(n=>n.nodeName=='MAPBOX-GL-MARKER')
+            .forEach(n=>{n.map=this.map;});
         }
-        this._childrenObserver = new MutationObserver(
-          this._updateChildren.bind(this)
-        );
-        this._childrenObserver.observe(this, {
-          childList: true
-        });
       }
 
       _updateChildren() {
+
         /*
         var map = this.map;
         // update deck-gl
@@ -485,17 +535,17 @@ Custom property | Description | Default
         this._centerDebouncer = Polymer.Debouncer.debounce(
           this._centerDebouncer,
           Polymer.Async.timeOut.after(500),
-          _ => map.setCenter([this.longitude, this.latitude])
+          () => map.setCenter([this.longitude, this.latitude])
         );
       }
 
       _createMap() {
-        var self = this;
         var mod = function(value, divisor) {
           var modulus = value % divisor;
           return modulus < 0 ? divisor + modulus : modulus;
         };
         this._listeners = Object.create(null);
+        /* global mapboxgl */
         mapboxgl.accessToken = this.accessToken;
         var opts = {
           container: this.$.map,
@@ -508,7 +558,7 @@ Custom property | Description | Default
           maxZoom: this.maxZoom,
           minZoom: this.minZoom
         };
-        var mapMoveListener = event => {
+        var mapMoveListener = () => {
           if (this._centerDebouncer)
             this._centerDebouncer.cancel();
 
@@ -521,9 +571,9 @@ Custom property | Description | Default
         };
         var map = new mapboxgl.Map(opts);
         this.map = map;
-        this.markers.forEach(function(node) {
-          node.map = map;
-        });
+        if (this.markers) {
+          this.markers.forEach(n=>{n.map=map;});
+        }
         this._forwardEvent('move', mapMoveListener);
         this.dispatchEvent(new CustomEvent('mapbox-gl-ready', {detail: this.map}));
       }

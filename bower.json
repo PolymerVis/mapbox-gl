@@ -13,11 +13,12 @@
     "map"
   ],
   "authors": [
-     "eterna2 <eterna2@hotmail.com>"
-   ],
-  "license": "MIT",  
+    "eterna2 <eterna2@hotmail.com>"
+  ],
+  "license": "MIT",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#^2.0.0",
+    "shadycss": "^1.0.5"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",

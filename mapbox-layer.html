@@ -38,7 +38,7 @@ A generic mapbox layer.
 ```
 @customElement
 @polymer
-@demo demo/geojson.html
+@demo demo/index.html Basic demo
 -->
 
 <dom-module id="mapbox-layer">
@@ -71,7 +71,6 @@ A generic mapbox layer.
 
     _mapReady(map, _layer) {
       if (!map || !_layer) return;
-      var self = this;
       var loaded = map.loaded();
 
       if (loaded) {
