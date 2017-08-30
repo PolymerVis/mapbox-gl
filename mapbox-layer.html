@@ -43,8 +43,7 @@ A generic mapbox layer.
 
 <dom-module id="mapbox-layer">
   <script>
-  const MapboxGLPolymerLayerMixin = Polymer.mixinBehaviors([MapboxGLPolymer.LayerBehavior], Polymer.Element);
-  class MapboxLayer extends MapboxGLPolymerLayerMixin {
+  class MapboxLayer extends Polymer.mixinBehaviors([MapboxGLPolymer.LayerBehavior], Polymer.Element) {
     static get is() { return 'mapbox-layer'; }
 
     static get properties() {
