@@ -40,6 +40,14 @@
         type: String
       },
       /*
+       * Define the source data directly inside this layer.
+       *
+       * @type {{type: string, data: object}}
+       */
+      sourceData: {
+        type: Object
+      },
+      /*
        * Layer to use from a vector tile source. Required if the source
        * supports multiple layers.
        */
@@ -360,6 +368,7 @@
     observers: [
       '_generateLayerProp(layerId, renderingType, minZoom, maxZoom)',
       '_updateLayerProp("source", source, _layer)',
+      '_updateLayerProp("source", sourceData, _layer)',
       '_updateLayerProp("source-layer", sourceLayer, _layer)',
       '_updateLayerProp("filter", filter, _layer)',
 
