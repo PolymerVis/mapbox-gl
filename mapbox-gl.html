@@ -512,6 +512,7 @@ Custom property | Description | Default
       }
 
       _updateMap() {
+        if (!this.loaded || !this.accessToken) return;
         if (this.map) return;
         this._mapDebouncer = Polymer.Debouncer.debounce(
           this._mapDebouncer,
