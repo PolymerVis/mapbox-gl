@@ -103,43 +103,14 @@ Sample of input for `source-data` for `mapbox-layer`
     return 'mapbox-layer';
   }
 
-  static get properties() {
-    return {
-      /*
-         * Name of a source description to be used for this layer.
-         */
-      source: {
-        type: String
-      },
-      /*
-         * Define the source data directly inside this layer.
-         *
-         * @type {{type: string, data: object}}
-         */
-      sourceData: {
-        type: Object
-      },
-      /*
-         * Layer to use from a vector tile source. Required if the source
-         * supports multiple layers.
-         */
-      sourceLayer: {
-        type: String
-      }
-    };
-  }
-
   static get observers() {
-    return ['_mapReady(map, _layer)'];
+    return ['_mapReady(map, _layer.source)'];
   }
 
-  _mapReady(map, _layer) {
-    if (!map || !_layer) return;
-    var loaded = map.loaded();
+  _mapReady(map) {
+    if (!map || !this._layer.source) return;
 
-    if (loaded) {
-      return this._sourceReady();
-    }
+    if (map.loaded()) return this._sourceReady();
 
     map.on('load', this._sourceReady.bind(this));
   }
@@ -152,24 +123,15 @@ Sample of input for `source-data` for `mapbox-layer`
   }
 
   _sourceReady() {
-    if (this._layer.source && typeof this._layer.source !== 'string')
-      return this._addLayer();
-
-    var self = this;
-    // via source string
-    if (this.source) {
-      var src = this.map.getSource(this.source);
-      // does source exist?
-      if (!src) {
-        this.map.on('sourcedata', function() {
-          // if source loaded then add layer
-          if (self.map.getSource(self.source)) self._addLayer();
-        });
-      } else {
-        // if source exist just add layer
-        this._addLayer();
-      }
+    var source = this._layer.source;
+    // load after source is ready
+    if (typeof source === 'string' && !this.map.getSource(source)) {
+      return this.map.on(
+        'sourcedata',
+        () => this.map.getSource(source) && this._addLayer()
+      );
     }
+    return this._addLayer();
   }
 }
 
