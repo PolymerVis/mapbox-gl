@@ -95,72 +95,84 @@ Sample of input for `source-data` for `mapbox-layer`
 
 <dom-module id="mapbox-layer">
   <script>
-  class MapboxLayer extends Polymer.mixinBehaviors([MapboxGLPolymer.LayerBehavior], Polymer.Element) {
-    static get is() { return 'mapbox-layer'; }
+  class MapboxLayer extends Polymer.mixinBehaviors(
+  [MapboxGLPolymer.LayerBehavior],
+  Polymer.Element
+) {
+  static get is() {
+    return 'mapbox-layer';
+  }
 
-    static get properties() {
-      return {
-        /*
+  static get properties() {
+    return {
+      /*
          * Name of a source description to be used for this layer.
          */
-        source: {
-          type: String
-        },
-        /*
+      source: {
+        type: String
+      },
+      /*
          * Define the source data directly inside this layer.
          *
          * @type {{type: string, data: object}}
          */
-        sourceData: {
-          type: Object
-        },
-        /*
+      sourceData: {
+        type: Object
+      },
+      /*
          * Layer to use from a vector tile source. Required if the source
          * supports multiple layers.
          */
-        sourceLayer: {
-          type: String
-        }
-      };
-    }
-
-    static get observers() {
-      return ['_mapReady(map, _layer)'];
-    }
-
-    _mapReady(map, _layer) {
-      if (!map || !_layer) return;
-      var loaded = map.loaded();
-
-      if (loaded) {
-        return this._sourceReady();
+      sourceLayer: {
+        type: String
       }
+    };
+  }
 
-      map.on('load', this._sourceReady.bind(this));
+  static get observers() {
+    return ['_mapReady(map, _layer)'];
+  }
+
+  _mapReady(map, _layer) {
+    if (!map || !_layer) return;
+    var loaded = map.loaded();
+
+    if (loaded) {
+      return this._sourceReady();
     }
 
-    _addLayer() {
-      if (this._added) return;
-      this.map.addLayer(this._layer);
-      this._added = true;
-      this.dispatchEvent(new CustomEvent('layer-added', {detail:this.map}));
-    }
+    map.on('load', this._sourceReady.bind(this));
+  }
 
-    _sourceReady() {
-      if (!this.source) return this._addLayer();
-      var self = this;
+  _addLayer() {
+    if (this._added) return;
+    this.map.addLayer(this._layer);
+    this._added = true;
+    this.dispatchEvent(new CustomEvent('layer-added', {detail: this.map}));
+  }
+
+  _sourceReady() {
+    if (this._layer.source && typeof this._layer.source !== 'string')
+      return this._addLayer();
+
+    var self = this;
+    // via source string
+    if (this.source) {
       var src = this.map.getSource(this.source);
+      // does source exist?
       if (!src) {
         this.map.on('sourcedata', function() {
-          self._addLayer();
+          // if source loaded then add layer
+          if (self.map.getSource(self.source)) self._addLayer();
         });
       } else {
+        // if source exist just add layer
         this._addLayer();
       }
     }
   }
+}
 
-  window.customElements.define(MapboxLayer.is, MapboxLayer);
-
+window.customElements.define(MapboxLayer.is, MapboxLayer);
 </script>
 </dom-module>
