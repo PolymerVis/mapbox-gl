@@ -40,12 +40,14 @@
         type: String
       },
       /*
-       * Define the source data directly inside this layer.
+       * Define the source data directly inside this layer. `type` is usually
+       * `geojson`, where `data` is the GeoJSON object or an URL to the GeoJSON.
        *
        * @type {{type: string, data: object}}
        */
       sourceData: {
-        type: Object
+        type: Object,
+        observer: '_sourceDataChanged'
       },
       /*
        * Layer to use from a vector tile source. Required if the source
@@ -437,6 +439,14 @@
       return map.setFilter(layerId, filter);
     },
 
+    _sourceDataChanged(v) {
+      if (this.map) {
+        var src = this.map.getSource(this.layerId);
+        var l = this.map.getLayer(this.layerId);
+        src && src.setData(v.data);
+      }
+    },
+
     _eventsToWatchChanged: function(newstr, oldstr) {
       if (oldstr) {
         this._clearEvents = oldstr.trim().split(' ');
@@ -511,6 +521,7 @@
       if (!_layer) return;
       if (value) {
         _layer[key] = value;
+        this.notifyPath(`_layer.${key}`);
       } else if (_layer[key]) {
         delete _layer[key];
       }
@@ -519,7 +530,6 @@
     _updateLayerPropField: function(key, field, value, _layer, renderingType) {
       if (!_layer) return;
       _layer[key] = _layer[key] || {};
-      console.log('1' + renderingType);
       var _field = renderingType + '-' + field ? renderingType : field;
       if (value) {
         _layer[key][_field] = value;
