@@ -1,10 +1,6 @@
 mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/PolymerVis/mapbox-gl)
 ==========
 
-### Usage
-API documentation and Demos [here](https://www.webcomponents.org/element/PolymerVis/mapbox-gl)
-
-
 <!---
 ```
 <custom-element-demo>
@@ -70,6 +66,8 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 
 ```
 
+### Usage
+You can find more examples and documentations at [`mapbox-gl` webcomponents page](https://www.webcomponents.org/element/PolymerVis/mapbox-gl).
 
 ### Installation
 
@@ -77,13 +75,15 @@ API documentation and Demos [here](https://www.webcomponents.org/element/Polymer
 bower install --save mapbox-gl
 ```
 
+### Disclaimers
+PolymerVis is a personal project and is NOT in any way affliated with Mapbox, Polymer or Google.
+
 ### Summary
 
 [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js/api/) is a JavaScript library
 that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
 
-`mapbox-gl` is the Polymer element that wraps around mapbox-gl-js to provide powerful
-mapping capabilities to your app as a webcomponent.
+`mapbox-gl` is the Polymer element that wraps around mapbox-gl-js to provide powerful mapping capabilities to your app as a webcomponent.
 
 <b>Example</b>:
 ```html
@@ -104,6 +104,9 @@ mapping capabilities to your app as a webcomponent.
 To add a geojson layer, you first need to create a `geojson-source` element to
 load the geojson. The data can be a JSON object or the url to a GeoJSON file.
 
+Alternatively, you can bind the data directly to the `mapbox-layer` via
+`source-data` attribute with the format `{type: String, data: String|Object}`.
+
 Then you can render the geojson via the `mapbox-layer`
 (e.g. rendering-type = line or fill).
 
@@ -122,6 +125,7 @@ Note that you will need to bind the corresponding `map` object from
   longitude=103.8698
   zoom=2></mapbox-gl>
 
+<!-- reference source from geojson-source -->
 <mapbox-layer
   map="[[map]]"
   layer-id="coastline_fill"
@@ -130,11 +134,12 @@ Note that you will need to bind the corresponding `map` object from
   color="#009688"
   opacity=0.7></mapbox-layer>
 
+<!-- input source directly into layer -->
 <mapbox-layer
   map="[[map]]"
   layer-id="coastline_outline"
   rendering-type="line"
-  source="geojsonsrc"
+  source-data='{"type": "geojson", "data": "SOME_URL.geojson"}'
   color="#eee"
   line-width=2></mapbox-layer>
 
@@ -211,7 +216,7 @@ more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
     layer-id="country"
     rendering-type="fill"
     source="geojsonsrc"
-    color="{property: 'type', type: 'categorical', stops: [['Africa', '#FAA"], ['Asia', '#AAF']]}"
+    color="{property: 'type', type: 'categorical', stops: [['Africa', '#FAA'], ['Asia', '#AAF']]}"
     filter="['in', 'continent', 'Africa', 'Asia']"></mapbox-layer>
 
   <geojson-source
