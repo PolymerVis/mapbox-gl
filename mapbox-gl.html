@@ -29,6 +29,9 @@ mapping capabilities to your app as a webcomponent.
 To add a geojson layer, you first need to create a `geojson-source` element to
 load the geojson. The data can be a JSON object or the url to a GeoJSON file.
 
+Alternatively, you can bind the data directly to the `mapbox-layer` via
+`source-data` attribute with the format `{type: String, data: String|Object}`.
+
 Then you can render the geojson via the `mapbox-layer`
 (e.g. rendering-type = line or fill).
 
@@ -59,7 +62,7 @@ Note that you will need to bind the corresponding `map` object from
   map="[[map]]"
   layer-id="coastline_outline"
   rendering-type="line"
-  source="geojsonsrc"
+  source-data='{"type": "geojson", "data": "SOME_URL.geojson"}'
   color="#eee"
   line-width=2></mapbox-layer>
 
@@ -111,6 +114,38 @@ of the `mapbox-gl` element.
     </mapbox-gl-marker>
 
 </mapbox-gl>
+```
+  
+### Data-driven styling
+To create a data-driven style for a attribute, just pass in a JSON object
+instead of a constant variable.
+
+more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
+
+<b>Example</b>
+```html
+
+  <mapbox-gl id="map"
+    interactive
+    map="{{map}}"
+    map-style="mapbox://styles/mapbox/dark-v9"
+    access-token="<MAPBOX_ACCESS_TOKEN>"
+    latitude=40.66995747013945
+    longitude=-103.59179687498357
+    zoom=3></mapbox-gl>
+
+  <mapbox-layer
+    map="[[map]]"
+    layer-id="country"
+    rendering-type="fill"
+    source="geojsonsrc"
+    color="{property: 'type', type: 'categorical', stops: [['Africa', '#FAA'], ['Asia', '#AAF']]}"
+    filter="['in', 'continent', 'Africa', 'Asia']"></mapbox-layer>
+
+  <geojson-source
+    map="[[map]]"
+    source-id="geojsonsrc"
+    source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
 ```
 
 ### Create a heatmap
