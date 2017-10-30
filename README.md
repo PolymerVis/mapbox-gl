@@ -5,7 +5,7 @@ mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcom
 ```
 <custom-element-demo>
   <template is="dom-bind">
-    <script src="../webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
     <script src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
     <link rel="import" href="mapbox-gl.html">
