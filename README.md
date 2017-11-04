@@ -4,49 +4,19 @@ mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcom
 <!---
 ```
 <custom-element-demo>
-  <template is="dom-bind">
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"></script>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
-    <link rel="import" href="mapbox-gl.html">
-    <style>
-      #map {
-        height: 300px;
-        width: 420px
-      }
+    <template is="dom-bind" id="demo">
+      <script src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"></script>
+      <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
+      <link rel="import" href="mapbox-gl.html">
+      <style>
+        #map {
+          height: 300px;
+          width: 420px
+        }
+      </style>
+      <next-code-block></next-code-block>
+    </template>
 
-      div.textbox {
-        background-color: #eee;
-        color: #444;
-        padding: 5px;
-        line-height: 20px;
-        width: 128px;
-        height: 20px;
-        border-radius: 5px;
-        text-align: center;
-      }
-
-      div.arrow-down {
-        margin-left: 60px;
-        width: 0;
-        height: 0;
-        border-left: 8px solid transparent;
-        border-right: 8px solid transparent;
-        border-top: 10px solid #eee;
-      }
-
-      mapbox-gl-marker.big_kitten {
-        background-image: url('https://placekitten.com/g/64/64');
-        border: 2px solid #eee;
-        border-radius: 50%;
-        padding: 0;
-        width: 64px;
-        height: 64px;
-      }
-
-    </style>
-    <next-code-block></next-code-block>
-  </template>
 </custom-element-demo>
 ```
 -->
@@ -58,12 +28,9 @@ mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcom
     map-style-url="mapbox://styles/mapbox/dark-v9"
     script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
     access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
-    latitude=1.3521
-    longitude=103.8698
-    zoom=16
+    zoom=10
     pitch=45
     bearing=0></mapbox-gl>
-
 ```
 
 ### Usage
@@ -191,6 +158,29 @@ of the `mapbox-gl` element.
     </mapbox-gl-marker>
 
 </mapbox-gl>
+```
+
+### Handling events
+To handle `click` event on a specific `map-layer`, you can listen for the
+`mapbox-layer-click` event. The event will return the feature of the geometry
+that is clicked upon.
+```html
+<mapbox-layer
+  map="[[map]]"
+  layer-id="coastline_fill"
+  rendering-type="fill"
+  source-data="[[geojsonsrc]]"
+  color="#009688"
+  opacity=0.7
+  events-to-watch="click"
+  on-mapbox-layer-click="handleClick"></mapbox-layer>
+```
+```js
+function handleClick(e, {features}) {
+  if (features.length > 0) {
+    alert(features[0].properties.COSTAL_NAM);
+  }
+}
 ```
 
 ### Data-driven styling

@@ -115,7 +115,7 @@ of the `mapbox-gl` element.
 
 </mapbox-gl>
 ```
-  
+
 ### Data-driven styling
 To create a data-driven style for a attribute, just pass in a JSON object
 instead of a constant variable.
@@ -203,6 +203,10 @@ Custom property | Description | Default
 @customElement
 @polymer
 @demo demo/index.html Basic demo
+@demo demo/building.html 3D buildings
+@demo demo/markers.html Markers
+@demo demo/heatmap.html Heatmap
+@demo demo/databind.html Data-binding & Event-handling
 -->
 <dom-module id="mapbox-gl">
   <template>
@@ -410,13 +414,23 @@ Custom property | Description | Default
             type: String,
             observer: '_eventsToWatchChanged'
           },
+          /**
+           * The number of milliseconds to debounce before synchronization of the
+           * various state.
+           * @type {Number}
+           */
+          debounceTime: {
+            type: Number,
+            value: 300
+          },
           _childrenObserver: Object,
           _mapListener: Object,
           _listeners: Object,
           _clearEvents: Array,
           _watchEvents: Array,
           _mapDebouncer: Object,
-          _centerDebouncer: Object
+          _centerDebouncer: Object,
+          _zoomDebouncer: Object
         };
       }
 
@@ -426,6 +440,7 @@ Custom property | Description | Default
           '_updateStyle(map, mapStyle)',
           '_updateStyle(map, mapStyleUrl)',
           '_setCenter(map, latitude, longitude)',
+          '_setZoom(map, zoom)',
           '_clearListeners(map, _clearEvents)',
           '_forwardEvents(map, _watchEvents)'
         ]
@@ -551,7 +566,7 @@ Custom property | Description | Default
         if (this.map) return;
         this._mapDebouncer = Polymer.Debouncer.debounce(
           this._mapDebouncer,
-          Polymer.Async.timeOut.after(250),
+          Polymer.Async.timeOut.after(this.debounceTime),
           this._createMap.bind(this)
         );
       }
@@ -571,8 +586,17 @@ Custom property | Description | Default
         if (!map) return;
         this._centerDebouncer = Polymer.Debouncer.debounce(
           this._centerDebouncer,
-          Polymer.Async.timeOut.after(500),
+          Polymer.Async.timeOut.after(this.debounceTime),
           () => map.setCenter([this.longitude, this.latitude])
+        );
+      }
+
+      _setZoom(map) {
+        if (!map) return;
+        this._zoomDebouncer = Polymer.Debouncer.debounce(
+          this._zoomDebouncer,
+          Polymer.Async.timeOut.after(this.debounceTime),
+          () => map.setZoom(this.zoom)
         );
       }
 
@@ -595,6 +619,7 @@ Custom property | Description | Default
           maxZoom: this.maxZoom,
           minZoom: this.minZoom
         };
+
         var mapMoveListener = () => {
           if (this._centerDebouncer)
             this._centerDebouncer.cancel();
