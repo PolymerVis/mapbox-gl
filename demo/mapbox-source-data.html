@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-layer demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../mapbox-gl.html">
+    <link rel="import" href="../mapbox-layer.html">
+    <link rel="import" href="../geojson-source.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        mapbox-gl {
+          height: 400px;
+          width: 100%;
+        }
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Declaring GeoJSON directly in the "mapbox-layer"</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind id="demo1">
+            <template>
+
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                latitude=40.7135
+                longitude=-74.0066
+                zoom=1
+                pitch=45></mapbox-gl>
+
+              <mapbox-layer
+                map="[[map]]"
+                layer-id="layer_points"
+                rendering-type="circle"
+                source-data="[[sourceData]]"
+                color="#009688"
+                opacity=0.7></mapbox-layer>
+
+            </template>
+          </dom-bind>
+
+          <script>
+          var demo1 = document.querySelector('dom-bind#demo1');
+
+          // please use your own mapbox key!!!
+          demo1.key =
+            'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+
+          // `source-data` to input directly into mapbox-layer
+          // `source-data` for `mapbox-layer` cannot be changed interactively.
+          // Reference a `geojson-source` as via the `source` attribute
+          // and update the `source-data` for `geojson-source` for interactive
+          // updates.
+          demo1.sourceData = {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-77.03238901390978, 38.913188059745586]
+                  },
+                  properties: {
+                    title: 'Mapbox DC',
+                    icon: 'monument'
+                  }
+                },
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-122.414, 37.776]
+                  },
+                  properties: {
+                    title: 'Mapbox SF',
+                    icon: 'harbor'
+                  }
+                }
+              ]
+            }
+          };
+          </script>
+        </template>
+      </demo-snippet>
+
+      <h3>Referencing data from "geojson-source" in "mapbox-layer"</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind id="demo2">
+            <template>
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                zoom=10>
+              </mapbox-gl>
+
+              <!-- reference `geojsonsrc` -->
+              <mapbox-layer
+                map="[[map]]"
+                source="geojsonsrc"
+                layer-id="coastline_outline"
+                rendering-type="line"
+                color="#eee"
+                line-width=2>
+              </mapbox-layer>
+
+              <!-- reference `geojsonsrc` -->
+              <mapbox-layer
+                map="[[map]]"
+                source="geojsonsrc"
+                layer-id="coastline_fill"
+                rendering-type="fill"
+                color="#009688"
+                opacity=0.7>
+              </mapbox-layer>
+
+              <!-- Load GeoJSON data via `source-url` or `source-data` -->
+              <geojson-source
+                map="[[map]]"
+                source-id="geojsonsrc"
+                source-url="./sg.geojson">
+              </geojson-source>
+
+            </template>
+          </dom-bind>
+
+          <script>
+          var demo2 = document.querySelector('dom-bind#demo2');
+          demo2.key =
+            'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+          </script>
+        </template>
+      </demo-snippet>
+
+      <h3>Real time data using "geojson-source"</h3>
+      <demo-snippet>
+        <template>
+          <dom-bind id="demo3">
+            <template>
+              <button onclick="javascript:AddPoint()">Add point</button>
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                latitude=40.7135
+                longitude=-74.0066
+                zoom=1
+                pitch=45></mapbox-gl>
+
+              <mapbox-layer
+                map="[[map]]"
+                layer-id="layer_points"
+                rendering-type="circle"
+                source="geojsonsrc"
+                color="#009688"
+                opacity=0.7></mapbox-layer>
+
+              <!-- Declare GeoJSON data directly through `source-data` -->
+              <geojson-source
+                map="[[map]]"
+                source-id="geojsonsrc"
+                source-data="[[sourceData]]">
+              </geojson-source>
+
+            </template>
+          </dom-bind>
+
+          <script>
+            var demo3 = document.querySelector('dom-bind#demo3');
+            demo3.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+            demo3.sourceData = {
+              "type": "FeatureCollection",
+              "features": [{
+                  "type": "Feature",
+                  "geometry": {
+                      "type": "Point",
+                      "coordinates": [-77.03238901390978, 38.913188059745586]
+                  },
+                  "properties": {
+                      "title": "Mapbox DC",
+                      "icon": "monument"
+                  }
+              }, {
+                  "type": "Feature",
+                  "geometry": {
+                      "type": "Point",
+                      "coordinates": [-122.414, 37.776]
+                  },
+                  "properties": {
+                      "title": "Mapbox SF",
+                      "icon": "harbor"
+                  }
+              }]
+            };
+
+            // adds a random point, and notify element of array mutation in the
+            // data
+            function AddPoint() {
+              demo3.push('sourceData.features', genPoint());
+            }
+
+            function genPoint() {
+              return {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [rand(-120,-70), rand(0,80)]
+                },
+                "properties": {
+                    "title": "Random point",
+                    "icon": "circle"
+                }
+              };
+            }
+
+            function rand(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+
+          </script>
+        </template>
+      </demo-snippet>
+
+    </div>
+  </body>
+</html>

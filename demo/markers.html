@@ -9,6 +9,7 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../polymer/lib/elements/dom-repeat.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../../shadycss/apply-shim.html">
@@ -81,6 +82,20 @@
                   [[msg]]
                 </mapbox-gl-marker>
 
+                <!-- Add more markers via dom-repeat -->
+                <template is="dom-repeat" items="[[markers]]">
+                  <mapbox-gl-marker
+                    show-arrow
+                    arrow-color="#fefefe"
+                    latitude="[[item.lat]]"
+                    longitude="[[item.lon]]"
+                    background-color="rgba(200,200,200,0.3)"
+                    width=128
+                    height=12>
+                    [[item.msg]]
+                  </mapbox-gl-marker>
+                </template>
+
               </mapbox-gl>
 
             </template>
@@ -91,6 +106,11 @@
             // please use your own mapbox key!!!
             autobind.key = "pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg";
             autobind.msg = "Some random text"
+
+            autobind.markers = [
+              {lat:1.3533, lon:103.8675, msg: "more random text"},
+              {lat:1.3563, lon:103.8675, msg: "even more random text"}
+            ];
           </script>
         </template>
       </demo-snippet>

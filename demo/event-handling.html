@@ -20,52 +20,17 @@
 
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
+        mapbox-gl {
+          height: 400px;
+          width: 100%;
+        }
       </style>
     </custom-style>
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <h3>2 way data-binding: latitude, longitude, and zoom level</h3>
-      <demo-snippet>
-        <template>
-          <style>
-            mapbox-gl {
-              height: 400px;
-              width: 100%;
-            }
-          </style>
 
-          <dom-bind id="demo1">
-            <template>
-              <paper-input value="{{lat}}" label="Latitude"></paper-input>
-              <paper-input value="{{lon}}" label="Longitude"></paper-input>
-              <label>Zoom level</label>
-              <paper-slider editable min="[[minZoom]]" max="[[maxZoom]]" value="{{zoom}}"></paper-slider>
-              <mapbox-gl
-                interactive
-                access-token="[[key]]"
-                map="{{map}}"
-                latitude="{{lat}}"
-                longitude="{{lon}}"
-                zoom="{{zoom}}"
-                max-zoom="[[maxZoom]]"
-                min-zoom="[[minZoom]]">
-              </mapbox-gl>
-
-            </template>
-          </dom-bind>
-
-          <script>
-            var demo1 = document.querySelector('dom-bind#demo1');
-            demo1.maxZoom = 14;
-            demo1.minZoom = 2;
-            demo1.zoom = 10;
-            demo1.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
-          </script>
-        </template>
-      </demo-snippet>
-
-      <h3>Event-handling: Clicking on a specific map-layer</h3>
+      <h3>Event-handling on a specific map-layer</h3>
       <demo-snippet>
         <template>
           <style>
@@ -77,19 +42,14 @@
 
           <dom-bind id="demo2">
             <template>
+              <p>Move your mouse over the different land masses (islands)</p>
               <mapbox-gl
                 interactive
                 access-token="[[key]]"
-                map="{{map}}"></mapbox-gl>
+                map="{{map}}"
+                zoom=9></mapbox-gl>
 
-              <mapbox-layer
-                map="[[map]]"
-                layer-id="coastline_outline"
-                rendering-type="line"
-                source="geojsonsrc"
-                color="#eee"
-                line-width=2></mapbox-layer>
-
+              <!-- layer to watch for mousemove and mouseleave -->
               <mapbox-layer
                 map="[[map]]"
                 layer-id="coastline_fill"
@@ -97,13 +57,29 @@
                 source="geojsonsrc"
                 color="#009688"
                 opacity=0.7
-                events-to-watch="click"
-                on-mapbox-layer-click="handleClick"></mapbox-layer>
+                events-to-watch="mousemove mouseleave"
+                on-mapbox-layer-mousemove="onMousemove"
+                on-mapbox-layer-mouseleave="onMouseleave"></mapbox-layer>
+
+              <!--
+                land mass outline
+                filter upon mousemove and mouseleave
+              -->
+              <mapbox-layer
+                map="[[map]]"
+                layer-id="coastline_outline"
+                rendering-type="line"
+                source="geojsonsrc"
+                color="#fff"
+                line-width=2
+                filter="[[filter]]"></mapbox-layer>
 
               <geojson-source
                 map="[[map]]"
                 source-id="geojsonsrc"
                 source-url="./sg.geojson"></geojson-source>
+
+              <div><pre>[[features]]</pre></div>
 
             </template>
           </dom-bind>
@@ -111,11 +87,19 @@
           <script>
             var demo2 = document.querySelector('dom-bind#demo2');
             demo2.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
-            demo2.handleClick = function(e, {features}) {
+
+            demo2.onMousemove = function(e, {features}) {
               if (features.length > 0) {
-                alert(features[0].properties.COSTAL_NAM);
+                demo2.filter = ['==', 'COSTAL_NAM', features[0].properties.COSTAL_NAM];
+                demo2.set('features', features.map(f=>f.properties.COSTAL_NAM).join('\n'));
               }
             };
+
+            demo2.onMouseleave = function(e) {
+              demo2.filter = null;
+              demo2.features = '';
+            };
+
           </script>
         </template>
       </demo-snippet>

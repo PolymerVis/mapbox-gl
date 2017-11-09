@@ -9,6 +9,8 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../paper-input/paper-input.html">
+    <link rel="import" href="../../paper-slider/paper-slider.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
@@ -23,7 +25,7 @@
   </head>
   <body>
     <div class="vertical-section-container centered">
-      <h3>Basic mapbox-gl demo</h3>
+      <h3>2 way data-binding: latitude, longitude, and zoom level</h3>
       <demo-snippet>
         <template>
           <style>
@@ -33,52 +35,36 @@
             }
           </style>
 
-          <dom-bind>
+          <dom-bind id="demo1">
             <template>
+              <paper-input value="{{lat}}" label="Latitude"></paper-input>
+              <paper-input value="{{lon}}" label="Longitude"></paper-input>
+              <label>Zoom level</label>
+              <paper-slider editable min="[[minZoom]]" max="[[maxZoom]]" value="{{zoom}}"></paper-slider>
               <mapbox-gl
                 interactive
                 access-token="[[key]]"
                 map="{{map}}"
-                zoom=10>
+                latitude="{{lat}}"
+                longitude="{{lon}}"
+                zoom="{{zoom}}"
+                max-zoom="[[maxZoom]]"
+                min-zoom="[[minZoom]]">
               </mapbox-gl>
-
-              <mapbox-layer
-                map="[[map]]"
-                layer-id="coastline_outline"
-                rendering-type="line"
-                source="geojsonsrc"
-                color="#eee"
-                line-width=2></mapbox-layer>
-
-              <mapbox-layer
-                map="[[map]]"
-                layer-id="coastline_fill"
-                rendering-type="fill"
-                source="geojsonsrc"
-                color="#009688"
-                opacity=0.7
-                events-to-watch="click"
-                on-mapbox-layer-click="handleClick"></mapbox-layer>
-
-              <geojson-source
-                map="[[map]]"
-                source-id="geojsonsrc"
-                source-url="./sg.geojson"></geojson-source>
 
             </template>
           </dom-bind>
 
           <script>
-            var autobind = document.querySelector('dom-bind');
-            autobind.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
-            autobind.handleClick = function(e, {features}) {
-              if (features.length > 0) {
-                alert(features[0].properties.COSTAL_NAM);
-              }
-            };
+            var demo1 = document.querySelector('dom-bind#demo1');
+            demo1.maxZoom = 14;
+            demo1.minZoom = 2;
+            demo1.zoom = 10;
+            demo1.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
           </script>
         </template>
       </demo-snippet>
+      
     </div>
   </body>
 </html>

@@ -3,6 +3,8 @@
 <link rel="import" href="../polymer/lib/utils/flattened-nodes-observer.html">
 
 <link rel="import" href="../shadycss/apply-shim.html">
+<link rel="import" href="../shadycss/custom-style-interface.html">
+
 <!--
 [Mapbox GL JS](https://www.mapbox.com/mapbox-gl-js/api/) is a JavaScript library
 that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
@@ -202,11 +204,13 @@ Custom property | Description | Default
 
 @customElement
 @polymer
-@demo demo/index.html Basic demo
-@demo demo/building.html 3D buildings
-@demo demo/markers.html Markers
+@demo demo/index.html Data-binding to Lat, Lon, and Zoom
+@demo demo/event-handling.html Event-handing and Dynamic styling
+@demo demo/mapbox-source-data.html Loading GeoJSON into mapbox-gl
+@demo demo/markers.html Plotting map markers
 @demo demo/heatmap.html Heatmap
-@demo demo/databind.html Data-binding & Event-handling
+@demo demo/building.html 3D buildings
+@demo demo/centered.html Centered map
 -->
 <dom-module id="mapbox-gl">
   <template>
@@ -454,18 +458,53 @@ Custom property | Description | Default
           var script = document.createElement('script');
           script.src = this.scriptSrc;
           script.onload = () => {this.loaded=true;};
-          var css = document.createElement('link');
+          this.appendChild(script);
+
+          /*var css = document.createElement('link');
           css.href = this.cssSrc;
           css.rel = 'stylesheet';
 
-          this.appendChild(script);
-          this.appendChild(css);
+          this.appendChild(css);*/
+          this._loadExternalCss(this.cssSrc);
         }
 
         var slot = this.shadowRoot.querySelector('slot');
         this._childrenObserver = new Polymer.FlattenedNodesObserver(
           slot, this._slotChanged.bind(this));
 
+      }
+      /**
+       * Load the text from an external CSS file, and insert a `style` element
+       * into the shadowRoot.
+       * @param {String}
+       */
+      _loadExternalCss(cssSrc) {
+        var httpRequest = new XMLHttpRequest();
+
+        if (!httpRequest) {
+          return console.warn(`cannot load ${cssSrc}`);
+        }
+        httpRequest.onreadystatechange = ()=>{
+          if (httpRequest.readyState === XMLHttpRequest.DONE) {
+            if (httpRequest.status === 200) {
+              this._loadStyle(httpRequest.responseText);
+            } else {
+              return console.warn(`cannot load ${cssSrc}`);
+            }
+          }
+        };
+        httpRequest.open('GET', cssSrc);
+        httpRequest.send();
+      }
+
+      /**
+       * Insert a `style` element from the text in a css file
+       * @param {String}
+       */
+      _loadStyle(cssText) {
+        var style = document.createElement('style');
+        style.textContent = cssText;
+        this.shadowRoot.appendChild(style);
       }
 
       disconnectedCallback() {

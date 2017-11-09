@@ -41,8 +41,7 @@ more details.
 ```
 @customElement
 @polymer
-@demo demo/index.html Basic demo
-
+@demo demo/mapbox-source-data.html Loading GeoJSON into mapbox-gl
 -->
 
 <dom-module id="geojson-source">
@@ -133,7 +132,7 @@ more details.
 
     static get observers() {
       return [
-        '_setData(sourceData, map, sourceId)',
+        '_setData(sourceData, map, sourceId, sourceData.features.*)',
         '_setData(sourceUrl, map, sourceId)'
       ];
     }
