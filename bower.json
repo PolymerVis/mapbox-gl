@@ -19,7 +19,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "shadycss": "^1.0.5",
-    "polymer-vis": "PolymerVis/polymer-vis#^2.0.2"
+    "polymer-vis": "PolymerVis/polymer-vis#^2.0.3"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
