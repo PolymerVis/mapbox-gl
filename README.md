@@ -176,7 +176,7 @@ the `mapbox-gl-geocoder` is a child of `mapbox-gl`.
 
 </mapbox-gl>
 ```
-  
+
 ### Handling events
 To handle `click` event on a specific `map-layer`, you can listen for the
 `mapbox-layer-click` event. The event will return the feature of the geometry
@@ -223,13 +223,28 @@ more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
     layer-id="country"
     rendering-type="fill"
     source="geojsonsrc"
-    color="{property: 'type', type: 'categorical', stops: [['Africa', '#FAA'], ['Asia', '#AAF']]}"
-    filter="['in', 'continent', 'Africa', 'Asia']"></mapbox-layer>
+    color="[[color]]"
+    filter="[[filter]]"></mapbox-layer>
 
   <geojson-source
     map="[[map]]"
     source-id="geojsonsrc"
     source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
+```
+color
+```js
+{
+  property: 'continent',
+  type: 'categorical',
+  stops: [
+    ['Africa', '#FAA'],
+    ['Asia', '#AAF']
+  ]
+}
+```
+filter
+```js
+['in', 'continent', 'Africa', 'Asia']
 ```
 
 ### Create a heatmap
