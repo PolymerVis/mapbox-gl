@@ -150,6 +150,46 @@ more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
     source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
 ```
 
+### Add a Geocoder control
+To add a search input to `mapbox-gl`, you can use the `mapbox-gl-geocoder` element
+which uses the Mapbox Geocoding API to search for places. You just need to ensure
+the `mapbox-gl-geocoder` is a child of `mapbox-gl`.
+
+<b>Example</b>
+```html
+<mapbox-gl interactive access-token="[accessToken]">
+
+  <mapbox-gl-geocoder
+    fly-to
+    limit=5
+    placeholder="Type to search"></mapbox-gl-geocoder>
+
+</mapbox-gl>
+```
+
+### Handling events
+To handle `click` event on a specific `map-layer`, you can listen for the
+`mapbox-layer-click` event. The event will return the feature of the geometry
+that is clicked upon.
+```html
+<mapbox-layer
+  map="[[map]]"
+  layer-id="coastline_fill"
+  rendering-type="fill"
+  source-data="[[geojsonsrc]]"
+  color="#009688"
+  opacity=0.7
+  events-to-watch="click"
+  on-mapbox-layer-click="handleClick"></mapbox-layer>
+```
+```js
+function handleClick(e, {features}) {
+  if (features.length > 0) {
+    alert(features[0].properties.COSTAL_NAM);
+  }
+}
+```
+
 ### Create a heatmap
 To create a heatmap, create a `geojson-source` with `cluster` to loaded a
 clustered data. Then create a `mapbox-heatmap-layer` with the corresponding
@@ -208,6 +248,7 @@ Custom property | Description | Default
 @demo demo/event-handling.html Event-handing and Dynamic styling
 @demo demo/mapbox-source-data.html Loading GeoJSON into mapbox-gl
 @demo demo/markers.html Plotting map markers
+@demo demo/geocoder.html Adding Geocoder control
 @demo demo/heatmap.html Heatmap
 @demo demo/building.html 3D buildings
 @demo demo/centered.html Centered map
@@ -243,108 +284,120 @@ Custom property | Description | Default
       static get is() { return 'mapbox-gl'; }
       static get properties() {
         return {
-          /*
+          /**
            * If the attribute is present no mouse, touch, or keyboard listeners
            * will be attached to the map, so it will not respond to interaction.
+           * @type {Boolean}
            */
           interactive: Boolean,
-          /*
+          /**
            * Your [access token](https://www.mapbox.com/help/define-access-token/)
-           * to mapbox
+           * to mapbox.
+           * @type {String}
            */
           accessToken: String,
-          /*
+          /**
            * You can enter the url to ur mapbox-gl-js script if it is hosted
            * external (e.g. cdn)
+           * @type {String}
            */
           scriptSrc: {
             type: String,
-            value: 'https://api.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'
+            value: 'https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.js'
           },
-          /*
+          /**
            * You can enter the url to ur mapbox-gl-js stylesheet if it is
            * hosted external (e.g. cdn)
+           * @type {String}
            */
           cssSrc: {
             type: String,
-            value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css'
+            value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css'
           },
-          /*
+          /**
            * A latitude to center the map on.
+           * @type {Number}
            */
           latitude: {
             type: Number,
             notify: true,
             value: 1.3521
           },
-          /*
+          /**
            * A longitude to center the map on.
+           * @type {Number}
            */
           longitude: {
             type: Number,
             notify: true,
             value: 103.8198
           },
-          /*
+          /**
            * The initial zoom level of the map.
+           * @type {Number}
            */
           zoom: {
             type: Number,
             notify: true,
             value: 11
           },
-          /*
+          /**
            * The maximum zoom level of the map (1-20).
+           * @type {Number}
            */
           maxZoom: {
             type: Number,
             notify: true,
             value: 20
           },
-          /*
+          /**
            * The minimum  zoom level of the map (1-20).
+           * @type {Number}
            */
           minZoom: {
             type: Number,
             notify: true,
             value: 1
           },
-          /*
+          /**
            * The initial pitch (tilt) of the map, measured in degrees away from
            * the plane of the screen (0-60).
+           * @type {Number}
            */
           pitch: {
             type: Number,
             notify: true,
             value: 0
           },
-          /*
+          /**
            * The initial bearing (rotation) of the map, measured in degrees
            * counter-clockwise from north.
+           * @type {Number}
            */
           bearing: {
             type: Number,
             notify: true,
             value: 0
           },
-          /*
+          /**
            * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance
            * returned by mapboxgl-js.
+           * @type {Mapbox.map}
            */
           map: {
             type: Object,
             notify: true,
             readonly: true
           },
-          /*
+          /**
            * The map's Mapbox style. This must be an a JSON object conforming to
            * the schema described in the Mapbox Style Specification.
-           *
+           * @type {Object}
            */
           mapStyle: {
             type: Object
           },
-          /*
+          /**
            * The map's Mapbox style. This must be URL to an a JSON object
            * conforming to the schema described in the Mapbox Style
            * Specification.
@@ -363,21 +416,24 @@ Custom property | Description | Default
            * Tilesets hosted with Mapbox can be style-optimized if you append
            * ?optimize=true to the end of your style URL, like
            * `mapbox://styles/mapbox/streets-v9?optimize=true`.
+           * @type {String}
            */
           mapStyleUrl: {
             type: String,
             value: 'mapbox://styles/mapbox/dark-v9'
           },
-          /*
+          /**
            * `true` if mapboxgl-js script has been loaded
+           * @type {Boolean}
            */
           loaded: {
             type: Boolean,
             notify: true,
             value: false
           },
-          /*
+          /**
            * `mapbox-gl` accepts `deck-gl` element as a child.
+           * @type {HTMLElement[]}
            */
           targets: {
             type: Array,
@@ -386,9 +442,10 @@ Custom property | Description | Default
               return [];
             }
           },
-          /*
+          /**
            * `mapbox-gl` accepts elements with attribute `mapbox-gl-marker`
            * as a child.
+           * @type {HTMLElement[]}
            */
           markers: {
             type: Array,
@@ -397,7 +454,7 @@ Custom property | Description | Default
               return [];
             }
           },
-          /*
+          /**
            * A string with space delimited
            * (map events)[https://www.mapbox.com/mapbox-gl-js/api/#Map] to
            * listen to.
@@ -412,6 +469,7 @@ Custom property | Description | Default
            *  on-mapbox-gl-rotate="handleRotate"
            *  on-mapbox-gl-zoomend="handleZoomend"></mapbox-gl>
            * ```
+           * @type {String}
            *
            */
           eventsToWatch: {
@@ -427,6 +485,7 @@ Custom property | Description | Default
             type: Number,
             value: 300
           },
+          _controls: Array,
           _childrenObserver: Object,
           _mapListener: Object,
           _listeners: Object,
@@ -529,14 +588,16 @@ Custom property | Description | Default
       }
 
       _slotChanged({addedNodes}) {
-        this.markers = this.shadowRoot
+        var nodes = this.shadowRoot
                     .querySelector('slot')
-                    .assignedNodes({flatten:true})
-                    .filter(n=>n.nodeName=='MAPBOX-GL-MARKER');
+                    .assignedNodes({flatten:true});
+
+        this.markers = nodes.filter(n=>n.nodeName=='MAPBOX-GL-MARKER');
+        this._controls = nodes.filter(n=>n.nodeName=='MAPBOX-GL-GEOCODER');
 
         if (this.map) {
           addedNodes
-            .filter(n=>n.nodeName=='MAPBOX-GL-MARKER')
+            .filter(n=>n.nodeName=='MAPBOX-GL-MARKER' || n.nodeName=='MAPBOX-GL-GEOCODER')
             .forEach(n=>{n.map=this.map;});
         }
       }
@@ -674,6 +735,9 @@ Custom property | Description | Default
         this.map = map;
         if (this.markers) {
           this.markers.forEach(n=>{n.map=map;});
+        }
+        if (this._controls) {
+          this._controls.forEach(n=>{n.map=map;});
         }
         this._forwardEvent('move', mapMoveListener);
         this.dispatchEvent(new CustomEvent('mapbox-gl-ready', {detail: this.map}));

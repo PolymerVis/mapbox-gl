@@ -1,2 +1,8 @@
 bower_components/
-node_modules/
+node_modules/*
+node_modules/mapbox/*
+!node_modules/mapbox/dist/*
+node_modules/mapbox-gl/*
+!node_modules/mapbox-gl/dist/*
+node_modules/@mapbox/mapbox-gl-geocoder/*
+!node_modules/@mapbox/mapbox-gl-geocoder/dist/*
