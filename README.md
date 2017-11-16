@@ -160,6 +160,23 @@ of the `mapbox-gl` element.
 </mapbox-gl>
 ```
 
+### Add a Geocoder control
+To add a search input to `mapbox-gl`, you can use the `mapbox-gl-geocoder` element
+which uses the Mapbox Geocoding API to search for places. You just need to ensure
+the `mapbox-gl-geocoder` is a child of `mapbox-gl`.
+
+<b>Example</b>
+```html
+<mapbox-gl interactive access-token="[accessToken]">
+
+  <mapbox-gl-geocoder
+    fly-to
+    limit=5
+    placeholder="Type to search"></mapbox-gl-geocoder>
+
+</mapbox-gl>
+```
+  
 ### Handling events
 To handle `click` event on a specific `map-layer`, you can listen for the
 `mapbox-layer-click` event. The event will return the feature of the geometry

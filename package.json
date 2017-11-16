@@ -49,5 +49,10 @@
     "polymer-cli": "^1.5.2",
     "prettier": "^1.2.2"
   },
-  "homepage": "https://www.webcomponents.org/element/PolymerVis/mapbox-gl"
+  "homepage": "https://www.webcomponents.org/element/PolymerVis/mapbox-gl",
+  "dependencies": {
+    "@mapbox/mapbox-gl-geocoder": "^2.1.2",
+    "mapbox": "^1.0.0-beta9",
+    "mapbox-gl": "^0.42.0"
+  }
 }
