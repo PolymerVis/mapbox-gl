@@ -141,14 +141,30 @@ more details @ https://www.mapbox.com/mapbox-gl-js/style-spec/#types-function
     layer-id="country"
     rendering-type="fill"
     source="geojsonsrc"
-    color="{property: 'type', type: 'categorical', stops: [['Africa', '#FAA'], ['Asia', '#AAF']]}"
-    filter="['in', 'continent', 'Africa', 'Asia']"></mapbox-layer>
+    color="[[color]]"
+    filter="[[filter]]"></mapbox-layer>
 
   <geojson-source
     map="[[map]]"
     source-id="geojsonsrc"
     source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson"></geojson-source>
 ```
+color
+```js
+{
+  property: 'continent',
+  type: 'categorical',
+  stops: [
+    ['Africa', '#FAA'],
+    ['Asia', '#AAF']
+  ]
+}
+```
+filter
+```js
+['in', 'continent', 'Africa', 'Asia']
+```
+
 
 ### Add a Geocoder control
 To add a search input to `mapbox-gl`, you can use the `mapbox-gl-geocoder` element
@@ -248,6 +264,7 @@ Custom property | Description | Default
 @demo demo/event-handling.html Event-handing and Dynamic styling
 @demo demo/mapbox-source-data.html Loading GeoJSON into mapbox-gl
 @demo demo/markers.html Plotting map markers
+@demo demo/data-driven.html Data-driven Styling
 @demo demo/geocoder.html Adding Geocoder control
 @demo demo/heatmap.html Heatmap
 @demo demo/building.html 3D buildings
