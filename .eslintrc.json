@@ -5,6 +5,7 @@
   },
   "globals": {
     "Polymer": false,
+    "PolymerVis": true,
     "MapboxGLPolymer": true
   },
   "extends": [
