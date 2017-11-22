@@ -3,6 +3,8 @@
 
 <!--
 `mapbox-gl-geocoder` is a `mapbox-gl` control to search for places using Mapbox Geocoding API.
+You can data-bind to `last-results` for the results for the latest query. Alternatively,
+you can also listen to `results` event.
 
 ```html
 <mapbox-gl interactive access-token="[accessToken]">
@@ -10,7 +12,9 @@
   <mapbox-gl-geocoder
     fly-to
     limit=5
-    placeholder="Type to search"></mapbox-gl-geocoder>
+    placeholder="Type to search"
+    last-results="{{results}}"
+    on-results="onResults"></mapbox-gl-geocoder>
 
 </mapbox-gl>
 ```
@@ -45,7 +49,8 @@ class MapboxGlGeocoder extends Polymer.Element {
         type: String
       },
       /**
-       * The [MapboxGeocoder](https://github.com/mapbox/mapbox-gl-geocoder) object.
+       * The [MapboxGeocoder](https://github.com/mapbox/mapbox-gl-geocoder)
+       * object.
        * @type {MapboxGeocoder}
        */
       geocoder: {
@@ -64,7 +69,8 @@ class MapboxGlGeocoder extends Polymer.Element {
         value: 16
       },
       /**
-       * Animating the map to a selected result will be enabled if `flyTo` is set.
+       * Animating the map to a selected result will be enabled if `flyTo` is
+       * set.
        * @type {Boolean}
        */
       flyTo : {
@@ -89,7 +95,8 @@ class MapboxGlGeocoder extends Polymer.Element {
         value: null
       },
       /**
-       * This is a bounding box given as an array in the format `[minX, minY, maxX, maxY]`.
+       * This is a bounding box given as an array in the format
+       * `[minX, minY, maxX, maxY]`.
        * Search results will be limited to the bounding box.
        * @type {Array}
        */
@@ -98,7 +105,9 @@ class MapboxGlGeocoder extends Polymer.Element {
         value: null
       },
       /**
-       * A comma separated list of [types](https://www.mapbox.com/developers/api/geocoding/#filter-type) that filter results to match those specified.
+       * A comma separated list of
+       * [types](https://www.mapbox.com/developers/api/geocoding/#filter-type)
+       * that filter results to match those specified.
        * @type {String}
        */
       types: {
@@ -106,7 +115,8 @@ class MapboxGlGeocoder extends Polymer.Element {
         value: null
       },
       /**
-       * A comma separated list of country codes to limit results to specified country or countries.
+       * A comma separated list of country codes to limit results to specified
+       * country or countries.
        * @type {String}
        */
       country: {
@@ -130,7 +140,8 @@ class MapboxGlGeocoder extends Polymer.Element {
         value: 5
       },
       /**
-       * Specify the language to use for response text and query result weighting.
+       * Specify the language to use for response text and query result
+       * weighting.
        * Options are IETF language tags comprised of a mandatory ISO 639-1
        * language code and optionally one or more IETF subtags for country or
        * script. More than one value can also be specified, separated by commas.
@@ -151,7 +162,8 @@ class MapboxGlGeocoder extends Polymer.Element {
           'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.min.js'
       },
       /**
-       * You can enter the url to ur mapbox-gl-geocoder stylesheet if it is hosted
+       * You can enter the url to ur mapbox-gl-geocoder stylesheet if it is
+       * hosted
        * externally (e.g. cdn)
        * @type {String}
        */
@@ -159,6 +171,15 @@ class MapboxGlGeocoder extends Polymer.Element {
         type: String,
         value:
           'https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.1.1/mapbox-gl-geocoder.css'
+      },
+      /**
+       * The latest results returned by the query.
+       * @type {{features: Array}}
+       */
+      lastResults: {
+        type: Object,
+        readOnly: true,
+        notify: true
       },
       _ready: Boolean,
       _cssReady: Boolean
@@ -173,6 +194,7 @@ class MapboxGlGeocoder extends Polymer.Element {
     super.connectedCallback();
 
     this._onError = this._onError.bind(this);
+    this._onResults = this._onResults.bind(this);
 
     if (!window.MapboxGeocoder) {
       if (this.parentNode.nodeName === 'MAPBOX-GL') {
@@ -199,6 +221,7 @@ class MapboxGlGeocoder extends Polymer.Element {
     super.disconnectedCallback();
     if (this.geocoder) {
       this.geocoder.off('error', this._onError);
+      this.geocoder.off('results', this._onResults);
     }
   }
 
@@ -207,8 +230,8 @@ class MapboxGlGeocoder extends Polymer.Element {
     var _keydown = MapboxGeocoder.prototype._onKeyDown;
     // monkey patching
     MapboxGeocoder.prototype._onKeyDown = function(e) {
-      // events from shadowRoot are targetted to the root element of the shadowRoot
-      // instead of the actual active element
+      // events from shadowRoot are targetted to the root element of the
+      // shadowRoot instead of the actual active element
       // to prevent this retargeting, a proxy object is passed in instead
       _keydown.call(this, {target: {value: e.target.value}});
     };
@@ -226,11 +249,28 @@ class MapboxGlGeocoder extends Polymer.Element {
       language: this.language
     }));
     this.geocoder.on('error', this._onError);
+    this.geocoder.on('results', this._onResults);
   }
 
-  _onError(e) {
-    console.warn(error);
-    this.dispatchEvent(new CustomEvent('error', { details: error }));
+  /**
+   * Fired when a new set of query results are available.
+   *
+   * @event results
+   * @param {{features: Array}} results query results
+   */
+  _onResults(results) {
+    this._setLastResults(results);
+    this.dispatchEvent(new CustomEvent('results', {detail: results}));
+  }
+
+  /**
+   * Fired whenever an error is encountered.
+   *
+   * @event results
+   * @param {String} error error message
+   */
+   _onError(error) {
+    this.dispatchEvent(new CustomEvent('error', { detail: error }));
   }
 
   _mapReady(map) {

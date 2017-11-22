@@ -6,7 +6,8 @@
   "globals": {
     "Polymer": false,
     "PolymerVis": true,
-    "MapboxGLPolymer": true
+    "MapboxGLPolymer": true,
+    "MapboxGeocoder": false
   },
   "extends": [
     "eslint:recommended",

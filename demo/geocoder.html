@@ -9,6 +9,7 @@
     <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../polymer/lib/elements/dom-repeat.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
 
@@ -27,24 +28,42 @@
     </custom-style>
   </head>
   <body>
-    <div class="vertical-section-container centered">
-      <h3>Adding Geocoder control to mapbox-gl</h3>
-      <demo-snippet>
-        <template>
-          <!-- Please use your own access token -->
-          <mapbox-gl
-            interactive
-            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
+<div class="vertical-section-container centered">
+<h3>Adding Geocoder control to mapbox-gl</h3>
+<demo-snippet>
+<template>
+<dom-bind>
+<template>
+  <!-- Please use your own access token -->
+  <mapbox-gl
+    interactive
+    access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
 
-            <mapbox-gl-geocoder
-              fly-to
-              limit=5
-              placeholder="Type to search"></mapbox-gl-geocoder>
+    <mapbox-gl-geocoder
+      fly-to
+      limit=5
+      placeholder="Type to search"
+      last-results="{{results}}"
+      on-results="onResults"></mapbox-gl-geocoder>
 
-          </mapbox-gl>
-        </template>
-      </demo-snippet>
+  </mapbox-gl>
+  <h4>Query results ([[number]])</h4>
+  <template is="dom-repeat" items="[[results.features]]">
+    <div>[[item.place_name]]</div>
+  </template>
 
-    </div>
-  </body>
+</template>
+</dom-bind>
+<script>
+var demo = document.querySelector('dom-bind');
+demo.number = 0;
+demo.onResults = function(e, results) {
+  demo.number = results.features.length;
+};
+</script>
+</template>
+</demo-snippet>
+
+</div>
+</body>
 </html>
