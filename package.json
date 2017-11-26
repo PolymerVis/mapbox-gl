@@ -10,14 +10,7 @@
     "pretest": "npm run lint",
     "test": "npm run wct",
     "wct": "xvfb-run polymer test --expanded",
-    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
-    "precommit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --write",
-      "git add"
-    ]
+    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check"
   },
   "repository": {
     "type": "git",
@@ -44,7 +37,6 @@
     "eslint-config-prettier": "^1.7.0",
     "eslint-plugin-html": "^2.0.1",
     "eslint-plugin-prettier": "^2.0.1",
-    "husky": "^0.13.3",
     "lint-staged": "^3.4.1",
     "polymer-cli": "^1.5.2",
     "prettier": "^1.2.2"

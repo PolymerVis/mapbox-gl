@@ -548,12 +548,14 @@ class MapboxGl extends Polymer.Element {
         null,
         true
       );
-      // Load the text from an external CSS file, and insert a `style` element
-      PolymerVis.insertCssIntoShadowRoot(this.cssSrc, this.shadowRoot, () => {
-        this._cssLoaded = true;
-        this._setLoaded(this._scriptLoaded && this._cssLoaded);
-      });
+
     }
+
+    // Load the text from an external CSS file, and insert a `style` element
+    PolymerVis.insertCssIntoShadowRoot(this.cssSrc, this.shadowRoot, () => {
+      this._cssLoaded = true;
+      this._setLoaded(this._scriptLoaded && this._cssLoaded);
+    });
 
     var slot = this.shadowRoot.querySelector('slot');
     this._childrenObserver = new Polymer.FlattenedNodesObserver(
