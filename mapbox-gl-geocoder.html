@@ -197,15 +197,6 @@ class MapboxGlGeocoder extends Polymer.Element {
     this._onResults = this._onResults.bind(this);
 
     if (!window.MapboxGeocoder) {
-      if (this.parentNode.nodeName === 'MAPBOX-GL') {
-        PolymerVis.insertCssIntoShadowRoot(
-          this.cssSrc,
-          this.parentNode.shadowRoot,
-          () => {this._cssReady = true;},
-          'MapboxGlGeocoder'
-        );
-        this.accessToken = this.parentNode.accessToken;
-      }
       PolymerVis.loadScript(
         this.scriptSrc,
         () => {
@@ -215,6 +206,16 @@ class MapboxGlGeocoder extends Polymer.Element {
         true
       );
     }
+
+    if (this.parentNode.nodeName === 'MAPBOX-GL') {
+      PolymerVis.insertCssIntoShadowRoot(
+        this.cssSrc,
+        this.parentNode.shadowRoot,
+        () => {this._cssReady = true;},
+        'MapboxGlGeocoder'
+      );
+      this.accessToken = this.parentNode.accessToken;
+    }    
   }
 
   disconnectedCallback() {
