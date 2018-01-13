@@ -298,3 +298,5 @@ The following custom properties and mixins are available for styling:
 Custom property | Description | Default
 --- | --- | ---
 `--mapbox-map` | mixin applied to the map div element | `{}`
+`--mapbox-canvas` | mixin applied to the canvas element for the map | `{}`
+`--mapbox-gl-marker` | mixin applied to the marker element | `{}`

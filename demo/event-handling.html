@@ -13,6 +13,7 @@
     <link rel="import" href="../../paper-slider/paper-slider.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../../shadycss/apply-shim.html">
 
     <link rel="import" href="../mapbox-gl.html">
     <link rel="import" href="../mapbox-layer.html">
@@ -30,79 +31,89 @@
   <body>
     <div class="vertical-section-container centered">
 
-      <h3>Event-handling on a specific map-layer</h3>
-      <demo-snippet>
-        <template>
-          <style>
-            mapbox-gl {
-              height: 400px;
-              width: 100%;
-            }
-          </style>
+<h3>Event-handling on a specific map-layer</h3>
+<demo-snippet>
+<template>
 
-          <dom-bind id="demo2">
-            <template>
-              <p>Move your mouse over the different land masses (islands)</p>
-              <mapbox-gl
-                interactive
-                access-token="[[key]]"
-                map="{{map}}"
-                zoom=9></mapbox-gl>
+<custom-style>
+  <style is="custom-style">
+    #map.overSomething {
+      --mapbox-canvas: {
+        cursor: help;
+      };
+    }
+  </style>
+</custom-style>
 
-              <!-- layer to watch for mousemove and mouseleave -->
-              <mapbox-layer
-                map="[[map]]"
-                layer-id="coastline_fill"
-                rendering-type="fill"
-                source="geojsonsrc"
-                color="#009688"
-                opacity=0.7
-                events-to-watch="mousemove mouseleave"
-                on-mapbox-layer-mousemove="onMousemove"
-                on-mapbox-layer-mouseleave="onMouseleave"></mapbox-layer>
+<dom-bind id="demo2">
+  <template>
+    <p>Move your mouse over the different land masses (islands)</p>
+    <mapbox-gl
+      id="map"
+      interactive
+      access-token="[[key]]"
+      map="{{map}}"
+      zoom=9></mapbox-gl>
 
-              <!--
-                land mass outline
-                filter upon mousemove and mouseleave
-              -->
-              <mapbox-layer
-                map="[[map]]"
-                layer-id="coastline_outline"
-                rendering-type="line"
-                source="geojsonsrc"
-                color="#fff"
-                line-width=2
-                filter="[[filter]]"></mapbox-layer>
+    <!-- layer to watch for mousemove and mouseleave -->
+    <mapbox-layer
+      map="[[map]]"
+      layer-id="coastline_fill"
+      rendering-type="fill"
+      source="geojsonsrc"
+      color="#009688"
+      opacity=0.7
+      events-to-watch="mousemove mouseleave"
+      on-mapbox-layer-mousemove="onMousemove"
+      on-mapbox-layer-mouseleave="onMouseleave"></mapbox-layer>
 
-              <geojson-source
-                map="[[map]]"
-                source-id="geojsonsrc"
-                source-url="./sg.geojson"></geojson-source>
+    <!--
+      land mass outline
+      filter upon mousemove and mouseleave
+    -->
+    <mapbox-layer
+      map="[[map]]"
+      layer-id="coastline_outline"
+      rendering-type="line"
+      source="geojsonsrc"
+      color="#fff"
+      line-width=2
+      filter="[[filter]]"></mapbox-layer>
 
-              <div><pre>[[features]]</pre></div>
+    <geojson-source
+      map="[[map]]"
+      source-id="geojsonsrc"
+      source-url="./sg.geojson"></geojson-source>
 
-            </template>
-          </dom-bind>
+    <div><pre>[[features]]</pre></div>
 
-          <script>
-            var demo2 = document.querySelector('dom-bind#demo2');
-            demo2.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+  </template>
+</dom-bind>
 
-            demo2.onMousemove = function(e, {features}) {
-              if (features.length > 0) {
-                demo2.filter = ['==', 'COSTAL_NAM', features[0].properties.COSTAL_NAM];
-                demo2.set('features', features.map(f=>f.properties.COSTAL_NAM).join('\n'));
-              }
-            };
+<script>
+var demo2 = document.querySelector("dom-bind#demo2");
+demo2.key =
+  "pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg";
 
-            demo2.onMouseleave = function(e) {
-              demo2.filter = null;
-              demo2.features = '';
-            };
+demo2.onMousemove = function(e, { features }) {
+  if (features.length > 0) {
+    demo2.$.map.classList.toggle("overSomething", true);
+    demo2.filter = ["==", "COSTAL_NAM", features[0].properties.COSTAL_NAM];
+    demo2.set(
+      "features",
+      features.map(f => f.properties.COSTAL_NAM).join("\n")
+    );
+  }
+};
 
-          </script>
-        </template>
-      </demo-snippet>
+demo2.onMouseleave = function(e) {
+  demo2.$.map.classList.toggle("overSomething", false);
+  demo2.filter = null;
+  demo2.features = "";
+};
+</script>
+</template>
+</demo-snippet>
 
     </div>
   </body>
