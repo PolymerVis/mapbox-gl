@@ -98,6 +98,7 @@
 
               </mapbox-gl>
 
+              <button onclick="javascript:refreshMarkers()">Refresh markers</button>
             </template>
           </dom-bind>
 
@@ -111,7 +112,24 @@
               {lat:1.3533, lon:103.8675, msg: "more random text"},
               {lat:1.3563, lon:103.8675, msg: "even more random text"}
             ];
-          </script>
+
+            function rand(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            function refreshMarkers() {
+              var n = Math.ceil(rand(1, 5)) + 1;
+              var markers = [];
+              while(--n >= 0) {
+                markers.push({
+                  lat: rand(1.350, 1.365),
+                  lon: rand(103.86, 103.87),
+                  msg: `${n} random node`
+                })
+              }
+              autobind.markers = markers;
+            }
+           </script>
         </template>
       </demo-snippet>
     </div>
