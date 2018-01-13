@@ -257,6 +257,9 @@ The following custom properties and mixins are available for styling:
 Custom property | Description | Default
 --- | --- | ---
 `--mapbox-map` | mixin applied to the map div element | `{}`
+`--mapbox-canvas` | mixin applied to the canvas element for the map | `{}`
+`--mapbox-gl-marker` | mixin applied to the marker element | `{}`
+
 
 @customElement
 @polymer
@@ -283,6 +286,10 @@ Custom property | Description | Default
         width: 100%;
         height: 100%;
         @apply --mapbox-map;
+      }
+
+      #map > .mapboxgl-canvas-container.mapboxgl-interactive > canvas {
+        @apply --mapbox-canvas;
       }
 
       .mapbox-gl-marker {
@@ -504,6 +511,15 @@ class MapboxGl extends Polymer.Element {
         type: Number,
         value: 300
       },
+      /**
+       * The map element embedded inside the webcomponent.
+       * @type {HTMLElement}
+       */
+      mapElement: {
+        type: Object,
+        notify: true,
+        readOnly: true
+      },
       _controls: Array,
       _childrenObserver: Object,
       _mapListener: Object,
@@ -537,6 +553,7 @@ class MapboxGl extends Polymer.Element {
 
   connectedCallback() {
     super.connectedCallback();
+    this._setMapElement(this.$.map);
     if (!this.loaded) {
       // dynamically load mapbox-gl-js
       PolymerVis.loadScript(
