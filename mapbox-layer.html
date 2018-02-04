@@ -185,6 +185,13 @@ Sample of input for `source-data` for `mapbox-layer`
   _sourceReady() {
     var source = this._layer.source;
     if (!source && this._layer['source-layer']) return;
+
+    // update source if exist
+    if (typeof source !== 'string' && this.map.getSource(this._layer.id)) {
+      this.map.getSource(this._layer.id).setData(this._layer.source.data);
+      this._layer.source = this._layer.id;
+    }
+
     // load after source is ready
     if (typeof source === 'string' && !this.map.getSource(source)) {
       return this.map.on(

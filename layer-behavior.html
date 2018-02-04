@@ -377,10 +377,11 @@
     },
 
     observers: [
-      '_generateLayerProp(layerId, renderingType, minZoom, maxZoom, source, sourceData, sourceLayer)',
+      '_generateLayerProp(layerId, renderingType, source, sourceData, sourceLayer)',
       '_updateLayerProp("filter", filter, _layer)',
 
       '_setFilter(map, layerId, filter)',
+      '_setLayerZoomRange(minZoom, maxZoom, _added)',
 
       '_setPaintProperty(layerId, "color", color, renderingType, _added)',
       '_setPaintProperty(layerId, "opacity", opacity, renderingType, _added)',
@@ -447,12 +448,16 @@
       // remove old layer
       if (oldId && this.map.getLayer(oldId)) {
         this.map.removeLayer(oldId);
-        console.log('remove '+oldId)
       }
       // reset added
       if (!this.map.getLayer(id)) {
         this._added = false;
       }
+    },
+
+    _setLayerZoomRange(minzoom, maxzoom) {
+      if (!this._added) return;
+      return this.map.setLayerZoomRange(this.layerId, minzoom, maxzoom)
     },
 
     _setFilter: function(map, layerId, filter) {
@@ -515,21 +520,25 @@
       this.map.on(name, this.layerId, this._listeners[name]);
     },
 
-    _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom, source, sourceData, sourceLayer) {
+    _generateLayerProp: function(layerId, renderingType, source, sourceData, sourceLayer) {
       if (!layerId || !renderingType || (!source && !sourceData)) return;
 
-      this._layer = {
+      if (this.map.getLayer(layerId)) {
+        this.map.removeLayer(layerId);
+      }
+
+      var _layer = {
         id: layerId,
-        type: renderingType,
-        minzoom: minZoom,
-        maxzoom: maxZoom
+        type: renderingType
       };
       if (sourceLayer)
-        this._layer['source-layer'] = sourceLayer;
+        _layer['source-layer'] = sourceLayer;
       if (source)
-        this._layer.source = source;
+        _layer.source = source;
       if (sourceData)
-        this._layer.source = sourceData;
+        _layer.source = sourceData;
+
+      this.set('_layer', _layer);
     },
 
     _setPaintProperty: function(layerId, field, value, prefix) {
