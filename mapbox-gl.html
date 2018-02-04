@@ -752,6 +752,10 @@ class MapboxGl extends Polymer.Element {
     };
     var map = new mapboxgl.Map(opts);
     this.map = map;
+    this.map.on('error', e => {
+      this.dispatchEvent(new CustomEvent('error', {detail: e}));
+      console.log(e)
+    });
     if (this.markers) {
       this.markers.forEach(n => {
         n.map = map;

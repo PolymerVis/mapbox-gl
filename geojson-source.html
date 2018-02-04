@@ -61,7 +61,8 @@ more details.
          * source id - unique id for the source layer. (Required)
          */
         sourceId: {
-          type: String
+          type: String,
+          reflectToAttribute: true
         },
         /*
          * geojson url to a geojson file.
@@ -135,6 +136,11 @@ more details.
         '_setData(sourceData, map, sourceId, sourceData.features.*)',
         '_setData(sourceUrl, map, sourceId)'
       ];
+    }
+
+    disconnectedCallback() {
+      super.disconnectedCallback();
+      this.map && this.sourceId && this.map.removeSource(this.sourceId);
     }
 
     _setClusterConf(conf) {
