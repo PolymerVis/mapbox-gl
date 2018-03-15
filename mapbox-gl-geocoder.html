@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
-<link rel="import" href="../polymer-vis/polymer-vis.html">
+<link rel="import" href="../utils-lib/utils-lib.html">
 
 <!--
 `mapbox-gl-geocoder` is a `mapbox-gl` control to search for places using Mapbox Geocoding API.
@@ -215,7 +215,7 @@ class MapboxGlGeocoder extends Polymer.Element {
         'MapboxGlGeocoder'
       );
       this.accessToken = this.parentNode.accessToken;
-    }    
+    }
   }
 
   disconnectedCallback() {
