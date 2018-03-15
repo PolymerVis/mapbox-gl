@@ -18,32 +18,26 @@
        * Unique layer name. (Required)
        */
       layerId: {
-        type: String,
-        reflectToAttribute: true,
-        observer: '_layerIdChanged'
+        type: String
       },
       /*
        * set layer to not visible if true.
        */
       hidden: {
-        type: Boolean,
-        reflectToAttribute: true
+        type: Boolean
       },
       /*
          * Rendering type of this layer.
          * (fill, line, symbol, circle, fill-extrusion, raster, background)
          */
       renderingType: {
-        type: String,
-        reflectToAttribute: true
+        type: String
       },
       /*
        * Name of a source description to be used for this layer.
        */
       source: {
-        type: String,
-        value: '',
-        reflectToAttribute: true
+        type: String
       },
       /*
        * Define the source data directly inside this layer. `type` is usually
@@ -53,7 +47,6 @@
        */
       sourceData: {
         type: Object,
-        value: null,
         observer: '_sourceDataChanged'
       },
       /*
@@ -61,8 +54,7 @@
        * supports multiple layers.
        */
       sourceLayer: {
-        type: String,
-        value: null
+        type: String
       },
       /*
        * The minimum zoom level on which the layer gets parsed and appears on.
@@ -368,72 +360,69 @@
         type: String,
         computed: '_if(hidden, "none", "visible")'
       },
-      _added: String,
+      _added: Boolean,
       _layer: Object,
       _clearEvents: Array,
-      _watchEvents: Array,
-      _attached: Boolean
-
+      _watchEvents: Array
     },
 
     observers: [
-      '_generateLayerProp(layerId, renderingType, source, sourceData, sourceLayer)',
+      '_generateLayerProp(layerId, renderingType, minZoom, maxZoom)',
+      '_updateLayerProp("source", source, _layer)',
+      '_updateLayerProp("source", sourceData, _layer)',
+      '_updateLayerProp("source-layer", sourceLayer, _layer)',
       '_updateLayerProp("filter", filter, _layer)',
 
       '_setFilter(map, layerId, filter)',
-      '_setLayerZoomRange(minZoom, maxZoom, _added)',
 
-      '_setPaintProperty(layerId, "color", color, renderingType, _added)',
-      '_setPaintProperty(layerId, "opacity", opacity, renderingType, _added)',
-      '_setPaintProperty(layerId, "translate", translate, renderingType, _added)',
-      '_setPaintProperty(layerId, "translate-anchor", translateAnchor, renderingType, _added)',
-      '_setPaintProperty(layerId, "pattern", pattern, renderingType, _added)',
-      '_setPaintProperty(layerId, "blur", blur, renderingType, _added)',
-      '_setPaintProperty(layerId, "circle-radius", radius, "", _added)',
+      '_setPaintProperty(map, layerId, "color", color, renderingType, _added)',
+      '_setPaintProperty(map, layerId, "opacity", opacity, renderingType, _added)',
+      '_setPaintProperty(map, layerId, "translate", translate, renderingType, _added)',
+      '_setPaintProperty(map, layerId, "translate-anchor", translateAnchor, renderingType, _added)',
+      '_setPaintProperty(map, layerId, "pattern", pattern, renderingType, _added)',
+      '_setPaintProperty(map, layerId, "blur", blur, renderingType, _added)',
+      '_setPaintProperty(map, layerId, "circle-radius", radius, _added)',
 
+      '_setPaintProperty(map, layerId, "line-dasharray", lineDasharray, null, _added)',
+      '_setPaintProperty(map, layerId, "line-width", lineWidth, null, _added)',
+      '_setPaintProperty(map, layerId, "line-gap-width", lineGapWidth, null, _added)',
+      '_setPaintProperty(map, layerId, "line-offset", lineOffset, null, _added)',
 
-      '_setPaintProperty(layerId, "line-dasharray", lineDasharray, "", _added)',
-      '_setPaintProperty(layerId, "line-width", lineWidth, "", _added)',
-      '_setPaintProperty(layerId, "line-gap-width", lineGapWidth, "", _added)',
-      '_setPaintProperty(layerId, "line-offset", lineOffset, "", _added)',
+      '_setPaintProperty(map, layerId, "fill-antialias", _antialias, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-outline-color", outlineColor, null, _added)',
 
-      '_setPaintProperty(layerId, "fill-antialias", _antialias, "", _added)',
-      '_setPaintProperty(layerId, "fill-outline-color", outlineColor, "", _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-translate-anchor", fillExtrusionTranslateAnchor, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-pattern", fillExtrusionPattern, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-opacity", fillExtrusionOpacity, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-color", fillExtrusionColor, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-translate", fillExtrusionTranslate, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-height", fillExtrusionHeight, null, _added)',
+      '_setPaintProperty(map, layerId, "fill-extrusion-base", fillExtrusionBase, null, _added)',
 
-      '_setPaintProperty(layerId, "fill-extrusion-translate-anchor", fillExtrusionTranslateAnchor, "", _added)',
-      '_setPaintProperty(layerId, "fill-extrusion-pattern", fillExtrusionPattern, "", _added)',
-      '_setPaintProperty(layerId, "fill-extrusion-opacity", fillExtrusionOpacity, "", _added)',
-      '_setPaintProperty(layerId, "fill-extrusion-color", fillExtrusionColor, "", _added)',
-      '_setPaintProperty(layerId, "fill-extrusion-translate", fillExtrusionTranslate, "", _added)',
-      '_setPaintProperty(layerId, "fill-extrusion-height", fillExtrusionHeight, "", _added)',
-      '_setPaintProperty(layerId, "fill-extrusion-base", fillExtrusionBase, "", _added)',
+      '_setLayoutProperty(map, layerId, "visibility", _visibility, _added)',
+      '_setLayoutProperty(map, layerId, "line-cap", lineCap, _added)',
+      '_setLayoutProperty(map, layerId, "line-join", lineJoin, _added)',
+      '_setLayoutProperty(map, layerId, "line-miter-limit", lineMiterLimit, _added)',
+      '_setLayoutProperty(map, layerId, "line-round-limit", lineRoundLimit, _added)',
 
-      '_setLayoutProperty(layerId, "visibility", _visibility, _added)',
-      '_setLayoutProperty(layerId, "line-cap", lineCap, _added)',
-      '_setLayoutProperty(layerId, "line-join", lineJoin, _added)',
-      '_setLayoutProperty(layerId, "line-miter-limit", lineMiterLimit, _added)',
-      '_setLayoutProperty(layerId, "line-round-limit", lineRoundLimit, _added)',
+      '_setLayoutProperty(map, layerId, "text-field", textField, _added)',
+      '_setLayoutProperty(map, layerId, "text-font", textFont, _added)',
+      '_setLayoutProperty(map, layerId, "text-size", textSize, _added)',
+      '_setLayoutProperty(map, layerId, "text-line-height", textLineHeight, _added)',
+      '_setLayoutProperty(map, layerId, "text-max-width", textMaxWidth, _added)',
+      '_setLayoutProperty(map, layerId, "text-justify", textJustify, _added)',
+      '_setLayoutProperty(map, layerId, "text-anchor", textAnchor, _added)',
+      '_setLayoutProperty(map, layerId, "text-offset", textOffset, _added)',
 
-      '_setLayoutProperty(layerId, "text-field", textField, _added)',
-      '_setLayoutProperty(layerId, "text-font", textFont, _added)',
-      '_setLayoutProperty(layerId, "text-size", textSize, _added)',
-      '_setLayoutProperty(layerId, "text-line-height", textLineHeight, _added)',
-      '_setLayoutProperty(layerId, "text-max-width", textMaxWidth, _added)',
-      '_setLayoutProperty(layerId, "text-justify", textJustify, _added)',
-      '_setLayoutProperty(layerId, "text-anchor", textAnchor, _added)',
-      '_setLayoutProperty(layerId, "text-offset", textOffset, _added)',
+      '_setPaintProperty(map, layerId, "text-color", textColor, _added)',
 
-      '_setPaintProperty(layerId, "text-color", textColor, "", _added)',
-
-      '_setPaintProperty(layerId, "circle-pitch-scale", circlePitchScale, "", _added)',
-      '_setPaintProperty(layerId, "circle-stroke-width", circleStrokeWidth, "", _added)',
-      '_setPaintProperty(layerId, "circle-stroke-color", circleStrokeColor, "", _added)',
+      '_setPaintProperty(map, layerId, "circle-pitch-scale", circlePitchScale, _added)',
+      '_setPaintProperty(map, layerId, "circle-stroke-width", circleStrokeWidth, _added)',
+      '_setPaintProperty(map, layerId, "circle-stroke-color", circleStrokeColor, _added)',
 
       '_clearListeners(map, _clearEvents)',
       '_forwardEvents(map, _watchEvents)'
     ],
-
-
 
     _not: function(val) {
       return !val;
@@ -443,32 +432,15 @@
       return predicate ? valtrue : valfalse;
     },
 
-    _layerIdChanged(id, oldId) {
-      if (!this.map) return;
-      // remove old layer
-      if (oldId && this.map.getLayer(oldId)) {
-        this.map.removeLayer(oldId);
-      }
-      // reset added
-      if (!this.map.getLayer(id)) {
-        this._added = false;
-      }
-    },
-
-    _setLayerZoomRange(minzoom, maxzoom) {
-      if (!this._added) return;
-      return this.map.setLayerZoomRange(this.layerId, minzoom, maxzoom)
-    },
-
     _setFilter: function(map, layerId, filter) {
       if (!map || !layerId || !this._added) return;
-      if (this._added !== layerId) return;
       return map.setFilter(layerId, filter);
     },
 
     _sourceDataChanged(v) {
       if (this.map) {
         var src = this.map.getSource(this.layerId);
+        var l = this.map.getLayer(this.layerId);
         src && src.setData(v.data);
       }
     },
@@ -509,54 +481,62 @@
       if (fn) {
         this._listeners[name] = function(event) {
           fn(event);
-          this.dispatchEvent(new CustomEvent('mapbox-layer-' + name, {detail: event}));
+          this.dispatchEvent(
+            new CustomEvent('mapbox-layer-' + name, { detail: event })
+          );
         }.bind(this);
       } else {
         this._listeners[name] = function(event) {
-          this.dispatchEvent(new CustomEvent('mapbox-layer-' + name, {detail: event}));
+          this.dispatchEvent(
+            new CustomEvent('mapbox-layer-' + name, { detail: event })
+          );
         }.bind(this);
       }
 
       this.map.on(name, this.layerId, this._listeners[name]);
     },
 
-    _generateLayerProp: function(layerId, renderingType, source, sourceData, sourceLayer) {
-      if (!layerId || !renderingType || (!source && !sourceData)) return;
+    _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {
+      if (!layerId || !renderingType) return;
 
-      if (this.map.getLayer(layerId)) {
-        this.map.removeLayer(layerId);
-      }
-
-      var _layer = {
+      this._layer = {
         id: layerId,
-        type: renderingType
+        type: renderingType,
+        minzoom: minZoom,
+        maxzoom: maxZoom
       };
-      if (sourceLayer)
-        _layer['source-layer'] = sourceLayer;
-      if (source)
-        _layer.source = source;
-      if (sourceData)
-        _layer.source = sourceData;
-
-      this.set('_layer', _layer);
     },
 
-    _setPaintProperty: function(layerId, field, value, prefix) {
-      if (this._added !== layerId) return;
-      var _field = prefix ? prefix + '-' + field : field;
+    _setPaintProperty: function(map, layerId, field, value, prefix) {
+      if (!this._added || !this.map) return;
+      var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setPaintProperty(layerId, _field, value);
     },
 
-    _setLayoutProperty: function(layerId, field, value, prefix) {
-      if (this._added !== layerId) return;
-      var _field = prefix ? prefix + '-' + field : field;
+    _setLayoutProperty: function(map, layerId, field, value, prefix) {
+      if (!this._added || !this.map) return;
+      var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setLayoutProperty(layerId, _field, value);
     },
 
     _updateLayerProp: function(key, value, _layer) {
       if (!_layer) return;
       if (value) {
-        this.set(['_layer', key], value);
+        _layer[key] = value;
+        this.notifyPath(`_layer.${key}`);
+      } else if (_layer[key]) {
+        delete _layer[key];
+      }
+    },
+
+    _updateLayerPropField: function(key, field, value, _layer, renderingType) {
+      if (!_layer) return;
+      _layer[key] = _layer[key] || {};
+      var _field = renderingType + '-' + field ? renderingType : field;
+      if (value) {
+        _layer[key][_field] = value;
+      } else if (_layer[key][_field]) {
+        delete _layer[key][_field];
       }
     }
   };
