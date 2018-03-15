@@ -789,7 +789,6 @@ class MapboxGl extends Polymer.Element {
     this.map = map;
     this.map.on('error', e => {
       this.dispatchEvent(new CustomEvent('error', { detail: e }));
-      console.log(e);
     });
     if (this.markers) {
       this.markers.forEach(n => {
@@ -818,7 +817,7 @@ class MapboxGl extends Polymer.Element {
   }
 
   _clearListeners(map, _clearEvents) {
-    if (!_clearEvents) return;
+    if (!_clearEvents || !map) return;
     for (var i = 0, len = _clearEvents.length; i < len; ++i) {
       this._clearListener(_clearEvents[i].trim());
     }
@@ -832,7 +831,7 @@ class MapboxGl extends Polymer.Element {
   }
 
   _forwardEvents(map, _watchEvents) {
-    if (!_watchEvents) return;
+    if (!_watchEvents || !map) return;
     for (var i = 0, len = _watchEvents.length; i < len; ++i) {
       this._forwardEvent(_watchEvents[i].trim());
     }
