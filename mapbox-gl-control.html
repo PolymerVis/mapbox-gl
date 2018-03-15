@@ -1,0 +1,123 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<!--
+`mapbox-gl-control` is a generic element for [mapbox controls](https://www.mapbox.com/mapbox-gl-js/api/#icontrol) which you can add to the map.
+
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control
+    icontrol-name="NavigationControl"
+    icontrol-options='{"compass": true}'
+    position="top-right">
+  </mapbox-gl-control>
+
+</mapbox-gl>
+```
+
+You can also pass in an **instance** of any mapbox controls (i.e. the IControl interface) to the `icontrol` attribute instead.
+
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control
+    icontrol="[[someCustomIControlInstance]]"
+    position="top-right">
+  </mapbox-gl-control>
+
+</mapbox-gl>
+```
+
+@customElement
+@polymer
+@demo demo/controls.html Adding mapbox controls
+-->
+
+<dom-module id="mapbox-gl-control">
+<script>
+class MapboxGlControl extends Polymer.Element {
+  static get is() {
+    return 'mapbox-gl-control';
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The mapbox `map` object to add the control to.
+       * @type {Mapbox.map}
+       */
+      map: {
+        type: Object
+      },
+      /**
+       * Where to position the control: `top-left` ,  `top-right`,
+       * `bottom-left`, and  `bottom-right`.
+       * @type {String}
+       */
+      position: {
+        type: String,
+        value: null
+      },
+      /**
+       * The name of the IControl (e.g. `NavigationControl`) to add to the map.
+       * Alternatively, you can pass in the actual reference to a custom IControl
+       * with the `icontrol` property.
+       * @type {String}
+       */
+      icontrolName: {
+        type: String
+      },
+      /**
+       * The options to pass to the constructor for `icontrol`.
+       * @type {Object}
+       */
+      icontrolOptions: {
+        type: Object,
+        value: null
+      },
+      /**
+       * Reference to the IControl instance to add to the map. If this is
+       * provided, `icontrol-name` and `icontrol-options` will be ignored.
+       * @type {Mapbox.IControl}
+       */
+      icontrol: {
+        type: Object,
+        notify: true
+      }
+    };
+  }
+
+  static get observers() {
+    return [
+      '_createIControl(map, icontrolName, icontrolOptions)',
+      '_addControl(map, icontrol, position)'
+    ];
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
+  _createIControl(map, icontrol, icontrolOptions) {
+    if (!map || !icontrol || this.icontrol) return;
+    // name of the control
+    if (typeof icontrol === 'string') {
+      this.icontrol = new mapboxgl[icontrol](icontrolOptions);
+    } else {
+      this.icontrol = new icontrol(icontrolOptions);
+    }
+  }
+
+  _addControl(map, icontrol, position) {
+    if (!map || !icontrol) return;
+    map.addControl(icontrol, position);
+  }
+}
+
+window.customElements.define(MapboxGlControl.is, MapboxGlControl);
+</script>
+</dom-module>

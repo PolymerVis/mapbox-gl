@@ -508,13 +508,13 @@
     },
 
     _setPaintProperty: function(map, layerId, field, value, prefix) {
-      if (!this._added || !this.map) return;
+      if (!this._added || !this.map || !value) return;
       var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setPaintProperty(layerId, _field, value);
     },
 
     _setLayoutProperty: function(map, layerId, field, value, prefix) {
-      if (!this._added || !this.map) return;
+      if (!this._added || !this.map || !value) return;
       var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setLayoutProperty(layerId, _field, value);
     },

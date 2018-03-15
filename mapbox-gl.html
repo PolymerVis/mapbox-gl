@@ -17,7 +17,6 @@ mapping capabilities to your app as a webcomponent.
 <mapbox-gl id="map"
   interactive
   map="{{map}}"
-  script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
   map-style-url="mapbox://styles/mapbox/dark-v9"
   access-token="<MAPBOX_ACCESS_TOKEN>"
   latitude=1.3521
@@ -25,6 +24,17 @@ mapping capabilities to your app as a webcomponent.
   zoom=16
   pitch=45
   bearing=0></mapbox-gl>
+```
+
+### Using a different version of `mapbox-gl-js`
+You can use a different version of mapbox-gl-js by specifying the endpoint to the corresponding library and stylesheet through the `script-src` and `css-src` properties.
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  script-src="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js"
+  css-src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css"></mapbox-gl>
+
 ```
 
 ### Add geojson layer
@@ -249,6 +259,38 @@ levels = [{"count": 0, "color": "#EEEEEE", "radius": 2, "opacity": 0.5},
 
 ```
 
+### Add Controls
+`mapbox-gl-control` is a generic element for [mapbox controls](https://www.mapbox.com/mapbox-gl-js/api/#icontrol) which you can add to the map.
+
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control
+    icontrol-name="NavigationControl"
+    icontrol-options='{"compass": true}'
+    position="top-right">
+  </mapbox-gl-control>
+
+</mapbox-gl>
+```
+
+You can also pass in an **instance** of any mapbox controls (i.e. the IControl interface) to the `icontrol` attribute instead.
+
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control
+    icontrol="[[someCustomIControlInstance]]"
+    position="top-right">
+  </mapbox-gl-control>
+
+</mapbox-gl>
+```
+
 
 ### Styling
 
@@ -328,7 +370,7 @@ class MapboxGl extends Polymer.Element {
        */
       scriptSrc: {
         type: String,
-        value: 'https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.js'
+        value: 'https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'
       },
       /**
        * You can enter the url to ur mapbox-gl-js stylesheet if it is
@@ -337,7 +379,7 @@ class MapboxGl extends Polymer.Element {
        */
       cssSrc: {
         type: String,
-        value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css'
+        value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css'
       },
       /**
        * A latitude to center the map on.
@@ -565,7 +607,6 @@ class MapboxGl extends Polymer.Element {
         null,
         true
       );
-
     }
 
     // Load the text from an external CSS file, and insert a `style` element
@@ -607,19 +648,13 @@ class MapboxGl extends Polymer.Element {
       .querySelector('slot')
       .assignedNodes({ flatten: true });
 
-    this.markers = nodes.filter(n => n.nodeName == 'MAPBOX-GL-MARKER');
-    this._controls = nodes.filter(n => n.nodeName == 'MAPBOX-GL-GEOCODER');
+    this._controls = nodes.filter(n => n.nodeName.slice(0, 6) === 'MAPBOX');
+    this.markers = this._controls.filter(n => n.nodeName == 'MAPBOX-GL-MARKER');
 
     if (this.map) {
-      addedNodes
-        .filter(
-          n =>
-            n.nodeName == 'MAPBOX-GL-MARKER' ||
-            n.nodeName == 'MAPBOX-GL-GEOCODER'
-        )
-        .forEach(n => {
-          n.map = this.map;
-        });
+      addedNodes.filter(n => n.nodeName.slice(0, 6) === 'MAPBOX').forEach(n => {
+        n.map = this.map;
+      });
     }
   }
 
@@ -753,8 +788,8 @@ class MapboxGl extends Polymer.Element {
     var map = new mapboxgl.Map(opts);
     this.map = map;
     this.map.on('error', e => {
-      this.dispatchEvent(new CustomEvent('error', {detail: e}));
-      console.log(e)
+      this.dispatchEvent(new CustomEvent('error', { detail: e }));
+      console.log(e);
     });
     if (this.markers) {
       this.markers.forEach(n => {

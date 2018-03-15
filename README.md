@@ -5,8 +5,6 @@ mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcom
 ```
 <custom-element-demo>
     <template is="dom-bind" id="demo">
-      <script src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"></script>
-      <link href='https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet'>    
       <link rel="import" href="mapbox-gl.html">
       <style>
         #map {
@@ -26,7 +24,6 @@ mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcom
     interactive
     map="{{map}}"
     map-style-url="mapbox://styles/mapbox/dark-v9"
-    script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
     access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
     zoom=10
     pitch=45
@@ -57,7 +54,6 @@ that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
 <mapbox-gl id="map"
   interactive
   map="{{map}}"
-  script-src="https://api.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js"
   map-style="mapbox://styles/mapbox/dark-v9"
   access-token="<MAPBOX_ACCESS_TOKEN>"
   latitude=1.3521
@@ -66,6 +62,18 @@ that uses WebGL to render interactive maps from vector tiles and Mapbox styles..
   pitch=45
   bearing=0></mapbox-gl>
 ```
+
+### Using a different version of `mapbox-gl-js`
+You can use a different version of mapbox-gl-js by specifying the endpoint to the corresponding library and stylesheet through the `script-src` and `css-src` properties.
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  script-src="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js"
+  css-src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css"></mapbox-gl>
+
+```
+
 
 ### Add geojson layer
 To add a geojson layer, you first need to create a `geojson-source` element to
@@ -290,6 +298,38 @@ levels = [{"count": 0, "color": "#EEEEEE", "radius": 2, "opacity": 0.5},
 
 ```
 
+
+### Add Controls
+`mapbox-gl-control` is a generic element for [mapbox controls](https://www.mapbox.com/mapbox-gl-js/api/#icontrol) which you can add to the map.
+
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control
+    icontrol-name="NavigationControl"
+    icontrol-options='{"compass": true}'
+    position="top-right">
+  </mapbox-gl-control>
+
+</mapbox-gl>
+```
+
+You can also pass in an **instance** of any mapbox controls (i.e. the IControl interface) to the `icontrol` attribute instead.
+
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control
+    icontrol="[[someCustomIControlInstance]]"
+    position="top-right">
+  </mapbox-gl-control>
+
+</mapbox-gl>
+```
 
 ### Styling
 

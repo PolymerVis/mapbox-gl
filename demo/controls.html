@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+<title>mapbox-gl demo</title>
+
+<script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+<link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../prism-element/prism-highlighter.html">
+<link rel="import" href="../../prism-element/prism-theme-default.html">
+<link rel="import" href="../../marked-element/marked-element.html">
+
+<link rel="import" href="../mapbox-gl.html">
+<link rel="import" href="../mapbox-gl-control.html">
+
+
+
+<custom-style>
+  <style is="custom-style" include="prism-theme-default iron-flex iron-flex-alignment">
+
+  body {
+    font-family: "Roboto", sans-serif;
+    margin: 0px;
+    @apply --layout-vertical;
+  }
+  mapbox-gl {
+    height: 420px;
+    max-height: 40vh;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  marked-element {
+    padding: 5px;
+    overflow-x: auto;
+    min-width: 320px;
+  }
+
+  section:nth-child(odd) > marked-element,
+  section:nth-child(odd) {
+    background-color:  #fafafa;
+  }
+
+  section:nth-child(even) > marked-element,
+  section:nth-child(even) {
+    background-color:  #eaeaea;
+  }
+
+  h2, h4 {
+    margin: 25px 5px 5px 10px;
+  }
+
+  </style>
+</custom-style>
+</head>
+
+
+<body>
+  <prism-highlighter></prism-highlighter>
+  <h2>mapbox-gl-control demo</h3>
+
+  <section>
+    <h4>1. Declare as a child of mapbox-gl</h4>
+    <div class="layout horizontal wrap">
+
+      <mapbox-gl
+        interactive
+        access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+        latitude=40.7135
+        longitude=-74.0066
+        zoom=15
+        pitch=45>
+
+        <mapbox-gl-control
+          icontrol-name="NavigationControl"
+          icontrol-options='{"zoom": false}'
+          position="top-right"></mapbox-gl-control>
+      </mapbox-gl>
+
+      <marked-element>
+        <div slot="markdown-html"></div>
+        <script type="text/markdown">
+        ```html
+        <mapbox-gl
+          interactive
+          access-token="USE_UR_OWN_TOKEN"
+          latitude=40.7135
+          longitude=-74.0066
+          zoom=15
+          pitch=45>
+
+          <!-- declare as child of mapbox-gl -->
+          <mapbox-gl-control
+            icontrol-name="NavigationControl"
+            icontrol-options='{"compass": true}'
+            position="top-right">
+          </mapbox-gl-control>
+
+        </mapbox-gl>
+        ```
+      </script>
+      </marked-element>
+
+
+    </div>
+  </section>
+
+  <section>
+    <h4>2. Pass in map object</h4>
+    <div class="layout horizontal wrap">
+
+      <dom-bind>
+        <template>
+          <mapbox-gl
+            interactive
+            map="{{map}}"
+            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+            latitude=40.7135
+            longitude=-74.0066
+            zoom=15
+            pitch=45>
+          </mapbox-gl>
+
+          <mapbox-gl-control
+            map="[[map]]"
+            icontrol-name="GeolocateControl"
+            position="top-left"></mapbox-gl-control>
+        </template>
+      </dom-bind>
+
+      <marked-element>
+        <div slot="markdown-html"></div>
+        <script type="text/markdown">
+        ```html
+        <mapbox-gl
+          interactive
+          map="{{map}}"
+          access-token="USE_UR_OWN_TOKEN"
+          latitude=40.7135
+          longitude=-74.0066
+          zoom=15
+          pitch=45></mapbox-gl>
+
+        <!-- Pass in map object -->
+        <mapbox-gl-control
+          map="[[map]]"
+          icontrol-name="GeolocateControl"
+          position="top-left">
+        </mapbox-gl-control>
+        ```
+      </script>
+      </marked-element>
+
+    </div>
+  </section>
+
+</body>
+
+</html>
