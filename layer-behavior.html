@@ -381,7 +381,11 @@
       '_setPaintProperty(map, layerId, "translate-anchor", translateAnchor, renderingType, _added)',
       '_setPaintProperty(map, layerId, "pattern", pattern, renderingType, _added)',
       '_setPaintProperty(map, layerId, "blur", blur, renderingType, _added)',
-      '_setPaintProperty(map, layerId, "circle-radius", radius, _added)',
+
+      '_setPaintProperty(map, layerId, "circle-radius", radius, null, _added)',
+      '_setPaintProperty(map, layerId, "circle-pitch-scale", circlePitchScale, null, _added)',
+      '_setPaintProperty(map, layerId, "circle-stroke-width", circleStrokeWidth, null, _added)',
+      '_setPaintProperty(map, layerId, "circle-stroke-color", circleStrokeColor, null, _added)',
 
       '_setPaintProperty(map, layerId, "line-dasharray", lineDasharray, null, _added)',
       '_setPaintProperty(map, layerId, "line-width", lineWidth, null, _added)',
@@ -399,26 +403,22 @@
       '_setPaintProperty(map, layerId, "fill-extrusion-height", fillExtrusionHeight, null, _added)',
       '_setPaintProperty(map, layerId, "fill-extrusion-base", fillExtrusionBase, null, _added)',
 
-      '_setLayoutProperty(map, layerId, "visibility", _visibility, _added)',
-      '_setLayoutProperty(map, layerId, "line-cap", lineCap, _added)',
-      '_setLayoutProperty(map, layerId, "line-join", lineJoin, _added)',
-      '_setLayoutProperty(map, layerId, "line-miter-limit", lineMiterLimit, _added)',
-      '_setLayoutProperty(map, layerId, "line-round-limit", lineRoundLimit, _added)',
+      '_setPaintProperty(map, layerId, "text-color", textColor, null, _added)',
 
-      '_setLayoutProperty(map, layerId, "text-field", textField, _added)',
-      '_setLayoutProperty(map, layerId, "text-font", textFont, _added)',
-      '_setLayoutProperty(map, layerId, "text-size", textSize, _added)',
-      '_setLayoutProperty(map, layerId, "text-line-height", textLineHeight, _added)',
-      '_setLayoutProperty(map, layerId, "text-max-width", textMaxWidth, _added)',
-      '_setLayoutProperty(map, layerId, "text-justify", textJustify, _added)',
-      '_setLayoutProperty(map, layerId, "text-anchor", textAnchor, _added)',
-      '_setLayoutProperty(map, layerId, "text-offset", textOffset, _added)',
+      '_setLayoutProperty(map, layerId, "text-field", textField, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-font", textFont, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-size", textSize, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-line-height", textLineHeight, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-max-width", textMaxWidth, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-justify", textJustify, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-anchor", textAnchor, null, _added)',
+      '_setLayoutProperty(map, layerId, "text-offset", textOffset, null, _added)',
 
-      '_setPaintProperty(map, layerId, "text-color", textColor, _added)',
-
-      '_setPaintProperty(map, layerId, "circle-pitch-scale", circlePitchScale, _added)',
-      '_setPaintProperty(map, layerId, "circle-stroke-width", circleStrokeWidth, _added)',
-      '_setPaintProperty(map, layerId, "circle-stroke-color", circleStrokeColor, _added)',
+      '_setLayoutProperty(map, layerId, "visibility", _visibility, null, _added)',
+      '_setLayoutProperty(map, layerId, "line-cap", lineCap, null, _added)',
+      '_setLayoutProperty(map, layerId, "line-join", lineJoin, null, _added)',
+      '_setLayoutProperty(map, layerId, "line-miter-limit", lineMiterLimit, null, _added)',
+      '_setLayoutProperty(map, layerId, "line-round-limit", lineRoundLimit, null, _added)',
 
       '_clearListeners(map, _clearEvents)',
       '_forwardEvents(map, _watchEvents)'
