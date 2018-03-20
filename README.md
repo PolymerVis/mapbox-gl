@@ -4,30 +4,37 @@ mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcom
 <!---
 ```
 <custom-element-demo>
-    <template is="dom-bind" id="demo">
-      <link rel="import" href="mapbox-gl.html">
-      <style>
-        #map {
-          height: 300px;
-          width: 420px
-        }
-      </style>
-      <next-code-block></next-code-block>
-    </template>
-
+  <template>
+    <link rel="import" href="mapbox-gl.html">
+    <link rel="import" href="mapbox-building-layer.html">
+    <style>
+      mapbox-gl {
+        height: 300px;
+        width: 420px
+      }
+    </style>
+    <next-code-block></next-code-block>
+  </template>
 </custom-element-demo>
 ```
 -->
 ```html
   <!-- please use your own mapbox access token!! -->
-  <mapbox-gl id="map"
+  <mapbox-gl
     interactive
-    map="{{map}}"
     map-style-url="mapbox://styles/mapbox/dark-v9"
     access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
-    zoom=10
-    pitch=45
-    bearing=0></mapbox-gl>
+    latitude=40.7135
+    longitude=-74.0066
+    zoom=15
+    pitch=45>
+
+    <mapbox-building-layer
+      layer-id="3dbuilding"
+      fill-extrusion-opacity=0.6
+      fill-extrusion-color="#666"></mapbox-building-layer>
+
+  </mapbox-gl>
 ```
 
 ### Usage
@@ -36,7 +43,7 @@ You can find more examples and documentations at [`mapbox-gl` webcomponents page
 ### Installation
 
 ```
-bower install --save mapbox-gl
+bower install --save PolymerVis/mapbox-gl
 ```
 
 ### Disclaimers
@@ -328,6 +335,29 @@ You can also pass in an **instance** of any mapbox controls (i.e. the IControl i
     position="top-right">
   </mapbox-gl-control>
 
+</mapbox-gl>
+```
+
+You can also create your own custom IControl by declaring it as a child of `mapbox-gl-control`. Note that you cannot style it with external stylesheets.
+
+```html
+<mapbox-gl interactive access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control interactive position="top-right">
+
+    <style>
+      #icontrol {
+        color: #fff;
+        text-align: center;
+        background-color: rgba(10,10,10,0.5);
+      }
+    </style>
+    <div id="icontrol">
+      <div>I am a custom Control.</div>
+      <button>Click me!</button>
+    </div>
+
+  </mapbox-gl-control>
 </mapbox-gl>
 ```
 

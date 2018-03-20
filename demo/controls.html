@@ -71,11 +71,7 @@
 
       <mapbox-gl
         interactive
-        access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
-        latitude=40.7135
-        longitude=-74.0066
-        zoom=15
-        pitch=45>
+        access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
 
         <mapbox-gl-control
           icontrol-name="NavigationControl"
@@ -87,18 +83,12 @@
         <div slot="markdown-html"></div>
         <script type="text/markdown">
         ```html
-        <mapbox-gl
-          interactive
-          access-token="USE_UR_OWN_TOKEN"
-          latitude=40.7135
-          longitude=-74.0066
-          zoom=15
-          pitch=45>
+        <mapbox-gl interactive access-token="USE_UR_OWN_TOKEN">
 
           <!-- declare as child of mapbox-gl -->
           <mapbox-gl-control
             icontrol-name="NavigationControl"
-            icontrol-options='{"compass": true}'
+            icontrol-options='{"zoom": false}'
             position="top-right">
           </mapbox-gl-control>
 
@@ -116,20 +106,16 @@
     <div class="layout horizontal wrap">
 
       <dom-bind>
-        <template>
+        <template is="dom-bind">
           <mapbox-gl
             interactive
             map="{{map}}"
-            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
-            latitude=40.7135
-            longitude=-74.0066
-            zoom=15
-            pitch=45>
+            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
           </mapbox-gl>
 
           <mapbox-gl-control
             map="[[map]]"
-            icontrol-name="GeolocateControl"
+            icontrol-name="NavigationControl"
             position="top-left"></mapbox-gl-control>
         </template>
       </dom-bind>
@@ -138,21 +124,70 @@
         <div slot="markdown-html"></div>
         <script type="text/markdown">
         ```html
-        <mapbox-gl
-          interactive
-          map="{{map}}"
-          access-token="USE_UR_OWN_TOKEN"
-          latitude=40.7135
-          longitude=-74.0066
-          zoom=15
-          pitch=45></mapbox-gl>
+        <mapbox-gl interactive map="{{map}}"
+          access-token="USE_UR_OWN_TOKEN"></mapbox-gl>
 
         <!-- Pass in map object -->
-        <mapbox-gl-control
-          map="[[map]]"
-          icontrol-name="GeolocateControl"
+        <mapbox-gl-control map="[[map]]"
+          icontrol-name="NavigationControl"
           position="top-left">
         </mapbox-gl-control>
+        ```
+      </script>
+      </marked-element>
+
+    </div>
+  </section>
+
+  <section>
+    <h4>3. Custom IControl</h4>
+    <div class="layout horizontal wrap">
+      <mapbox-gl
+        interactive
+        access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
+
+        <mapbox-gl-control interactive position="top-right">
+
+          <style>
+            #icontrol {
+              color: #fff;
+              text-align: center;
+              background-color: rgba(10,10,10,0.5);
+            }
+          </style>
+          <div id="icontrol">
+            <div>I am a custom Control.</div>
+            <button>Click me!</button>
+          </div>
+
+        </mapbox-gl-control>
+      </mapbox-gl>
+
+      <marked-element>
+        <div slot="markdown-html"></div>
+        <script type="text/markdown">
+        ```html
+        <mapbox-gl
+          interactive
+          access-token="USE_UR_OWN_TOKEN">
+
+          <mapbox-gl-control interactive
+            position="top-right">
+
+            <style>
+              #icontrol {
+                color: #fff;
+                text-align: center;
+                background-color: rgba(10,10,10,0.5);
+              }
+            </style>
+            <div id="icontrol">
+              <div>I am a custom Control.</div>
+              <button>Click me!</button>
+            </div>
+
+          </mapbox-gl-control>
+        </mapbox-gl>
         ```
       </script>
       </marked-element>

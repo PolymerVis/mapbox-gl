@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/utils/flattened-nodes-observer.html">
 
 <!--
 `mapbox-gl-control` is a generic element for [mapbox controls](https://www.mapbox.com/mapbox-gl-js/api/#icontrol) which you can add to the map.
@@ -32,12 +33,45 @@ You can also pass in an **instance** of any mapbox controls (i.e. the IControl i
 </mapbox-gl>
 ```
 
+You can also create your own custom IControl by declaring it as a child of `mapbox-gl-control`. Note that you cannot style it with external stylesheets.
+
+```html
+<mapbox-gl interactive access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control interactive position="top-right">
+
+    <style>
+      #icontrol {
+        color: #fff;
+        text-align: center;
+        background-color: rgba(10,10,10,0.5);
+      }
+    </style>
+    <div id="icontrol">
+      <div>I am a custom Control.</div>
+      <button>Click me!</button>
+    </div>
+
+  </mapbox-gl-control>
+</mapbox-gl>
+```
+
 @customElement
 @polymer
 @demo demo/controls.html Adding mapbox controls
 -->
 
 <dom-module id="mapbox-gl-control">
+<template>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+
+  <slot></slot>
+
+</template>
 <script>
 class MapboxGlControl extends Polymer.Element {
   static get is() {
@@ -87,7 +121,18 @@ class MapboxGlControl extends Polymer.Element {
       icontrol: {
         type: Object,
         notify: true
-      }
+      },
+      /**
+       * Apply to custom IControl only. Whether the control can be interacted
+       * with.
+       * @type {Boolean}
+       */
+      interactive: {
+        type: Boolean,
+        value: false
+      },
+      _container: Object,
+      _childrenObserver: Polymer.FlattenedNodesObserver
     };
   }
 
@@ -98,8 +143,53 @@ class MapboxGlControl extends Polymer.Element {
     ];
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    var slot = this.shadowRoot.querySelector('slot');
+    this._childrenObserver = new Polymer.FlattenedNodesObserver(
+      slot,
+      this._slotChanged.bind(this)
+    );
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._childrenObserver) {
+      this._childrenObserver.disconnect();
+      this._childrenObserver = null;
+    }
+  }
+
+  _slotChanged({ addedNodes }) {
+    var nodes = this.shadowRoot
+      .querySelector('slot')
+      .assignedNodes({ flatten: true });
+
+    if (nodes.length === 0 || this.icontrol) return;
+
+    var self = this;
+
+    // create custom IControl
+    var CustomIControl = function() {};
+    CustomIControl.prototype.onAdd = function(map) {
+      if (nodes.length == 1) {
+        this._container = nodes[0];
+      } else {
+        this._container = document.createElement('div');
+        nodes.forEach(n => this._container.appendChild(n));
+      }
+      // apply mapbox gl default control style
+      this._container.classList.toggle('interactive', self.interactive);
+      this._container.classList.toggle('slotted-icontrol', true)
+      self._container = this._container;
+      return this._container;
+    };
+    CustomIControl.prototype.onRemove = function() {
+      this._container.parentNode.removeChild(this._container);
+      self._container = null;
+    };
+
+    this.icontrol = new CustomIControl();
   }
 
   _createIControl(map, icontrol, icontrolOptions) {

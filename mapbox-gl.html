@@ -291,6 +291,28 @@ You can also pass in an **instance** of any mapbox controls (i.e. the IControl i
 </mapbox-gl>
 ```
 
+You can also create your own custom IControl by declaring it as a child of `mapbox-gl-control`. Note that you cannot style it with external stylesheets.
+
+```html
+<mapbox-gl interactive access-token="USE_UR_OWN_TOKEN">
+
+  <mapbox-gl-control interactive position="top-right">
+
+    <style>
+      #icontrol {
+        color: #fff;
+        text-align: center;
+        background-color: rgba(10,10,10,0.5);
+      }
+    </style>
+    <div id="icontrol">
+      <div>I am a custom Control.</div>
+      <button>Click me!</button>
+    </div>
+
+  </mapbox-gl-control>
+</mapbox-gl>
+```
 
 ### Styling
 
@@ -314,6 +336,7 @@ Custom property | Description | Default
 @demo demo/heatmap.html Heatmap
 @demo demo/building.html 3D buildings
 @demo demo/centered.html Centered map
+@demo demo/controls.html Add Controls
 -->
 <dom-module id="mapbox-gl">
   <template>
@@ -337,6 +360,10 @@ Custom property | Description | Default
       .mapbox-gl-marker {
         position: absolute;
         @apply --mapbox-gl-marker;
+      }
+
+      .mapboxgl-control-container .slotted-icontrol.interactive {
+        pointer-events: auto;
       }
 
     </style>
