@@ -133,6 +133,7 @@ Sample of input for `source-data` for `mapbox-layer`
 
   static get properties() {
     return {
+      _mapLoaded: Boolean,
       _debouncer: {
         type: Polymer.Debouncer
       }
@@ -140,7 +141,7 @@ Sample of input for `source-data` for `mapbox-layer`
   }
 
   static get observers() {
-    return ['_mapReady(map, _layer.id, _layer.source, _attached)'];
+    return ['_mapReady(map, _layer.id, _layer.source, _attached, _mapLoaded)'];
   }
 
   connectedCallback() {
@@ -169,8 +170,13 @@ Sample of input for `source-data` for `mapbox-layer`
     this.dispatchEvent(new CustomEvent('layer-added', {detail: this.map}));
   }
 
-  _mapReady(map, id, source, attached) {
+  _mapReady(map, id, source, attached, mapLoaded) {
     if (!map || !id || !source || !attached) return;
+    if (!map.polymervis.parent._mapLoaded) {
+      map.polymervis.parent._pendingChildren = map.polymervis.parent._pendingChildren || [];
+      map.polymervis.parent._pendingChildren.push(this);
+      return;
+    }
     this._debouncer = Polymer.Debouncer.debounce(
       this._debouncer,
        Polymer.Async.microTask,

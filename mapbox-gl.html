@@ -599,7 +599,9 @@ class MapboxGl extends Polymer.Element {
       _centerDebouncer: Object,
       _zoomDebouncer: Object,
       _cssLoaded: Boolean,
-      _scriptLoaded: Boolean
+      _scriptLoaded: Boolean,
+      _mapLoaded: Boolean,
+      _pendingChildren: Array
     };
   }
 
@@ -670,7 +672,7 @@ class MapboxGl extends Polymer.Element {
     // });
   }
 
-  _slotChanged({ addedNodes }) {
+  _slotChanged() {
     var nodes = this.shadowRoot
       .querySelector('slot')
       .assignedNodes({ flatten: true });
@@ -678,11 +680,20 @@ class MapboxGl extends Polymer.Element {
     this._controls = nodes.filter(n => n.nodeName.slice(0, 6) === 'MAPBOX');
     this.markers = this._controls.filter(n => n.nodeName == 'MAPBOX-GL-MARKER');
 
-    if (this.map) {
-      addedNodes.filter(n => n.nodeName.slice(0, 6) === 'MAPBOX').forEach(n => {
+    if (this.map && this._mapLoaded) {
+      nodes.filter(n => n.nodeName.slice(0, 6) === 'MAPBOX').forEach(n => {
         n.map = this.map;
       });
     }
+
+    if (this._pendingChildren) {
+      this._pendingChildren.forEach(n => {
+        n.map = this.map;
+        n._mapLoaded = this._mapLoaded;
+      });
+      this._pendingChildren = null;
+    }
+
   }
 
   _updateChildren() {
@@ -813,20 +824,16 @@ class MapboxGl extends Polymer.Element {
       this.bearing = mod(transform.bearing + 180, 360) - 180;
     };
     var map = new mapboxgl.Map(opts);
+    // secret binding for other mapbox elements
+    map.polymervis = {parent: this};
     this.map = map;
+    this.map.on('load', e => {
+      this._mapLoaded = true;
+      this._slotChanged();
+    });
     this.map.on('error', e => {
       this.dispatchEvent(new CustomEvent('error', { detail: e }));
     });
-    if (this.markers) {
-      this.markers.forEach(n => {
-        n.map = map;
-      });
-    }
-    if (this._controls) {
-      this._controls.forEach(n => {
-        n.map = map;
-      });
-    }
     this._forwardEvent('move', mapMoveListener);
     this.dispatchEvent(
       new CustomEvent('mapbox-gl-ready', { detail: this.map })
