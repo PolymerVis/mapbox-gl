@@ -18,7 +18,8 @@
        * Unique layer name. (Required)
        */
       layerId: {
-        type: String
+        type: String,
+        observer: '_layerIdChanged'
       },
       /*
        * set layer to not visible if true.
@@ -360,7 +361,9 @@
         type: String,
         computed: '_if(hidden, "none", "visible")'
       },
-      _added: Boolean,
+      _added: {
+        type: String
+      },
       _layer: Object,
       _clearEvents: Array,
       _watchEvents: Array
@@ -421,7 +424,7 @@
       '_setLayoutProperty(map, layerId, "line-round-limit", lineRoundLimit, null, _added)',
 
       '_clearListeners(map, _clearEvents)',
-      '_forwardEvents(map, _watchEvents)'
+      '_forwardEvents(map, _watchEvents, _added)'
     ],
 
     _not: function(val) {
@@ -469,8 +472,8 @@
       }
     },
 
-    _forwardEvents: function(map, _watchEvents) {
-      if (!_watchEvents || !map) return;
+    _forwardEvents: function(map, _watchEvents, _attached) {
+      if (!_watchEvents || !map || !_attached) return;
       this._listeners = this._listeners || Object.create(null);
       for (var i = 0, len = _watchEvents.length; i < len; ++i) {
         this._forwardEvent(_watchEvents[i].trim());
@@ -496,6 +499,14 @@
       this.map.on(name, this.layerId, this._listeners[name]);
     },
 
+    _layerIdChanged: function(curr, old) {
+      if (!this.map) return;
+      if (this.map.getLayer(old)) {
+        this.map.removeLayer(old);
+        this._added = false;
+      }
+    },
+
     _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {
       if (!layerId || !renderingType) return;
 
@@ -508,13 +519,13 @@
     },
 
     _setPaintProperty: function(map, layerId, field, value, prefix) {
-      if (!this._added || !this.map || !value) return;
+      if (!this._added || !this.map || !value || !this.map.getLayer(layerId)) return;
       var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setPaintProperty(layerId, _field, value);
     },
 
     _setLayoutProperty: function(map, layerId, field, value, prefix) {
-      if (!this._added || !this.map || !value) return;
+      if (!this._added || !this.map || !value || !this.map.getLayer(layerId)) return;
       var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setLayoutProperty(layerId, _field, value);
     },
