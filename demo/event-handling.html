@@ -9,6 +9,9 @@
 <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
 <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+<link rel="import" href="../../polymer/lib/elements/custom-style.html">
+
+<link rel="import" href="../../shadycss/apply-shim.html">
 
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
@@ -44,6 +47,7 @@
 
   marked-element {
     padding: 5px;
+    margin: 5px;
     overflow-x: auto;
   }
 
@@ -129,11 +133,25 @@
     <h4>2. Event-handling on a specific map-layer</h4>
     <div class="layout horizontal wrap">
 
+
+
       <dom-bind id="demo2">
         <template>
+
+          <custom-style>
+            <style is="custom-style">
+              #map2.overSomething {
+                --mapbox-canvas: {
+                  cursor: help;
+                };
+              }
+            </style>
+          </custom-style>
+
           <div class="layout vertical panel">
             <div style="font-size: 11px">Move your mouse over the different land masses (islands)</div>
             <mapbox-gl
+              id="map2"
               interactive
               access-token="[[key]]"
               map="{{map}}"
@@ -157,7 +175,6 @@
               filter upon mousemove and mouseleave
             -->
             <mapbox-layer
-              id="map2"
               map="[[map]]"
               layer-id="coastline_outline"
               rendering-type="line"
@@ -250,7 +267,9 @@
         onMousemove = function(e, { features }) {
           if (features.length > 0) {
             this.$.map.classList.toggle("overSomething", true);
-            this.filter = ["==", "COSTAL_NAM", features[0].properties.COSTAL_NAM];
+            this.filter = ["==",
+                          "COSTAL_NAM",
+                          features[0].properties.COSTAL_NAM];
             this.set(
               "features",
               features.map(f => f.properties.COSTAL_NAM).join("\n")
@@ -263,6 +282,20 @@
           this.filter = null;
           this.features = "";
         };
+        ```
+      </script>
+      </marked-element>
+
+      <marked-element>
+        <div slot="markdown-html"></div>
+        <script type="text/markdown">
+        CSS
+        ```css
+        #map.overSomething {
+          --mapbox-canvas: {
+            cursor: help;
+          };
+        }
         ```
       </script>
       </marked-element>
