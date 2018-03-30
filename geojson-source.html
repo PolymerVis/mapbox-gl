@@ -68,7 +68,8 @@ more details.
          * geojson url to a geojson file.
          */
         sourceUrl: {
-          type: String
+          type: String,
+          observer: '_sourceUrlChanged'
         },
         /*
          * geojson object.
@@ -127,20 +128,29 @@ more details.
          * clustered).
          */
         clusterMaxZoom: Number,
-        _conf: Object
+        _conf: Object,
+        _mapLoaded: Boolean
       };
     }
 
     static get observers() {
       return [
-        '_setData(sourceData, map, sourceId, sourceData.features.*)',
-        '_setData(sourceUrl, map, sourceId)'
+        '_sourceUrlChanged(sourceUrl, _mapLoaded)',
+        '_setData(sourceData, map, sourceId, _mapLoaded, sourceData.features.*)'
       ];
     }
 
     disconnectedCallback() {
       super.disconnectedCallback();
       this.map && this.sourceId && this.map.removeSource(this.sourceId);
+    }
+
+    _sourceUrlChanged(url) {
+      if (!url) return;
+      if (this.map && this._mapLoaded && this.map.getSource(this.sourceId)) {
+        this.map.removeSource(this.sourceId);
+      }
+      this.sourceData = url;
     }
 
     _setClusterConf(conf) {
@@ -152,26 +162,20 @@ more details.
     }
 
     _setData(data, map, srcId) {
-      if (!map || !srcId) return;
+      if (!data || !map || !srcId) return;
+
+      if (!map.polymervis.parent._mapLoaded) {
+        map.polymervis.parent._pendingChildren = map.polymervis.parent._pendingChildren || [];
+        map.polymervis.parent._pendingChildren.push(this);
+        return;
+      }
+
       var src = map.getSource(srcId);
-      var loaded = map.loaded();
       var self = this;
-      if (src && loaded) {
-        src.setData(data);
-      } else if (!loaded) {
-        map.on('load', function() {
-          if (!data || map.getSource(srcId)) return;
-          map.addSource(
-            srcId,
-            self._setClusterConf({
-              type: 'geojson',
-              data: data,
-              maxzoom: self.maxzoom,
-              buffer: self.buffer,
-              tolerance: self.tolerance
-            })
-          );
-        });
+      if (src) {
+        if (typeof data !== 'string') {
+          src.setData(data);
+        }
       } else {
         map.addSource(
           srcId,
