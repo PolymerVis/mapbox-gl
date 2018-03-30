@@ -165,6 +165,7 @@ Sample of input for `source-data` for `mapbox-layer`
   _addLayer() {
     if (!this._attached) return;
     if (this._added == this.layerId) return;
+
     this.map.addLayer(this._layer);
     this._added = this.layerId;
     this.dispatchEvent(new CustomEvent('layer-added', {detail: this.map}));
@@ -189,19 +190,25 @@ Sample of input for `source-data` for `mapbox-layer`
     var source = this._layer.source;
     if (!source && this._layer['source-layer']) return;
 
-    // update source if exist
-    if (typeof source !== 'string' && this.map.getSource(this._layer.id)) {
-      this.map.getSource(this._layer.id).setData(this._layer.source.data);
-      this._layer.source = this._layer.id;
+    var src = this.map.getSource(source);
+    // source id
+    if (typeof source === 'string' && src) {
+      return this._addLayer();
     }
 
-    // load after source is ready
-    if (typeof source === 'string' && !this.map.getSource(source)) {
+    if (typeof source === 'string' && !src) {
       return this.map.on(
         'sourcedata',
         () => this.map.getSource(source) && this._addLayer()
       );
     }
+
+    // update source if exist
+    if (this.map.getSource(this._layer.id)) {
+      this.map.getSource(this._layer.id).setData(this._layer.source.data);
+      this._layer.source = this._layer.id;
+    }
+
     return this._addLayer();
   }
 }

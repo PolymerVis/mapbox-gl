@@ -117,6 +117,9 @@ _pageElementChanged(ele) {
 }
 ```
 
+## Examples
+You should also look at the demos for more in-depth examples for different scenarios.
+
 ### Add geojson layer
 To add a geojson layer, you first need to create a `geojson-source` element to
 load the geojson. The data can be a JSON object or the url to a GeoJSON file.
