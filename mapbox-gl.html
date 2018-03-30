@@ -1,6 +1,8 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/utils/debounce.html">
+<link rel="import" href="../polymer/lib/utils/render-status.html">
 <link rel="import" href="../polymer/lib/utils/flattened-nodes-observer.html">
+<link rel="import" href="../iron-resizable-behavior/iron-resizable-behavior.html">
 
 <link rel="import" href="../shadycss/apply-shim.html">
 <link rel="import" href="../utils-lib/utils-lib.html">
@@ -35,6 +37,41 @@ You can use a different version of mapbox-gl-js by specifying the endpoint to th
   script-src="https://api.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js"
   css-src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css"></mapbox-gl>
 
+```
+
+## Important Notes:
+### Resizing of `mapbox-gl` when it is not visible
+The underlying mapbox library try to handle `resize` events automatically.
+
+In under certain situations (e.g. when the page has `display: none` when using
+`iron-pages` to control the visible pages) the resize will fail and fall-back
+to a default size. However when the pages is made visible again, no `resize`
+event is emitted. And hence, `mapbox-gl` will retain the incorrect size.
+
+To overcome this limitation, you should manually trigger `resize` when the
+`mapbox-gl` element is visible again.
+
+**Example**
+HTML
+```html
+<iron-pages
+    selected="[[page]]"
+    selected-item="{{pageElement}}"
+    attr-for-selected="name"
+    fallback-selection="view404"
+    role="main">
+  <my-view1 name="view1"></my-view1>
+  <mapbox-gl name="view2"></mapbox-gl>
+  <my-view404 name="view404"></my-view404>
+</iron-pages>
+```
+JS
+```
+_pageElementChanged(ele) {
+  if (!ele) return;
+  // call resize if function exist
+  ele.resize && ele.resize();
+}
 ```
 
 ### Add geojson layer
@@ -372,7 +409,7 @@ Custom property | Description | Default
   </template>
 
 <script>
-class MapboxGl extends Polymer.Element {
+class MapboxGl extends Polymer.mixinBehaviors([Polymer.IronResizableBehavior], Polymer.Element) {
   static get is() {
     return 'mapbox-gl';
   }
@@ -601,7 +638,8 @@ class MapboxGl extends Polymer.Element {
       _cssLoaded: Boolean,
       _scriptLoaded: Boolean,
       _mapLoaded: Boolean,
-      _pendingChildren: Array
+      _pendingChildren: Array,
+      _resizeListener: Object
     };
   }
 
@@ -625,7 +663,25 @@ class MapboxGl extends Polymer.Element {
   connectedCallback() {
     super.connectedCallback();
     this._setMapElement(this.$.map);
+    Polymer.RenderStatus.afterNextRender(this, this._init);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._childrenObserver) {
+      this._childrenObserver.disconnect();
+      this._childrenObserver = null;
+    }
+    if (this._resizeListener) {
+      this.removeEventListener('iron-resize', this._resizeListener);
+    }
+  }
+
+  _init() {
     if (!this.loaded) {
+      // listens for resize events
+      this._resizeListener = this.addEventListener('iron-resize', this.resize);
+
       // dynamically load mapbox-gl-js
       PolymerVis.loadScript(
         this.scriptSrc,
@@ -649,14 +705,9 @@ class MapboxGl extends Polymer.Element {
       slot,
       this._slotChanged.bind(this)
     );
-  }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._childrenObserver) {
-      this._childrenObserver.disconnect();
-      this._childrenObserver = null;
-    }
+    // manually trigger resize
+    this.resize();
   }
 
   // watch for future updates for the layers
@@ -769,10 +820,15 @@ class MapboxGl extends Polymer.Element {
     map.setStyle(mapStyle);
   }
 
-  _resize() {
+  /**
+   * Wrapper function over `mapbox` resize function. Manually trigger mapbox to
+   * resize the map canvas.
+   */
+  resize() {
     if (this.map) {
       this.map.resize();
     }
+    return this;
   }
 
   _setCenter(map) {
