@@ -127,14 +127,15 @@ more details.
          * clustered).
          */
         clusterMaxZoom: Number,
-        _conf: Object
+        _conf: Object,
+        _mapLoaded: Boolean
       };
     }
 
     static get observers() {
       return [
-        '_setData(sourceData, map, sourceId, sourceData.features.*)',
-        '_setData(sourceUrl, map, sourceId)'
+        '_setData(sourceData, map, sourceId, sourceData.features.*, _mapLoaded)',
+        '_setData(sourceUrl, map, sourceId, null, _mapLoaded)'
       ];
     }
 
@@ -151,27 +152,20 @@ more details.
       return conf;
     }
 
-    _setData(data, map, srcId) {
+    _setData(data, map, srcId, features, mapLoaded) {
       if (!map || !srcId) return;
+
+      if (!map.polymervis.parent._mapLoaded) {
+        map.polymervis.parent._pendingChildren = map.polymervis.parent._pendingChildren || [];
+        map.polymervis.parent._pendingChildren.push(this);
+        return;
+      }
+
       var src = map.getSource(srcId);
-      var loaded = map.loaded();
       var self = this;
-      if (src && loaded) {
+
+      if (src) {
         src.setData(data);
-      } else if (!loaded) {
-        map.on('load', function() {
-          if (!data || map.getSource(srcId)) return;
-          map.addSource(
-            srcId,
-            self._setClusterConf({
-              type: 'geojson',
-              data: data,
-              maxzoom: self.maxzoom,
-              buffer: self.buffer,
-              tolerance: self.tolerance
-            })
-          );
-        });
       } else {
         map.addSource(
           srcId,

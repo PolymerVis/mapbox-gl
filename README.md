@@ -81,6 +81,41 @@ You can use a different version of mapbox-gl-js by specifying the endpoint to th
 
 ```
 
+## Important Notes:
+### Resizing of `mapbox-gl` when it is not visible
+The underlying mapbox library try to handle `resize` events automatically.
+
+In under certain situations (e.g. when the page has `display: none` when using
+`iron-pages` to control the visible pages) the resize will fail and fall-back
+to a default size. However when the pages is made visible again, no `resize`
+event is emitted. And hence, `mapbox-gl` will retain the incorrect size instead
+of resizing to the correct dimension.
+
+To overcome this limitation, you should manually trigger `resize` when the
+`mapbox-gl` element is made visible.
+
+**Example**  
+HTML
+```html
+<iron-pages
+    selected="[[page]]"
+    selected-item="{{pageElement}}"
+    attr-for-selected="name"
+    fallback-selection="view404"
+    role="main">
+  <my-view1 name="view1"></my-view1>
+  <mapbox-gl name="view2"></mapbox-gl>
+  <my-view404 name="view404"></my-view404>
+</iron-pages>
+```
+JS
+```
+_pageElementChanged(ele) {
+  if (!ele) return;
+  // call resize if function exist
+  ele.resize && ele.resize();
+}
+```
 
 ### Add geojson layer
 To add a geojson layer, you first need to create a `geojson-source` element to
