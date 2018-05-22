@@ -213,6 +213,71 @@ of the `mapbox-gl` element.
 </mapbox-gl>
 ```
 
+### Add popup
+`mapbox-gl-popup` can be used to create a pop-up. You can either attach the
+popup to a `mapbox-gl-marker` or trigger it manually with the `opened` property
+or `show` function.
+
+`mapbox-gl-popup` can be styled by setting either `text` or `html` properties.
+Alternatively, you can also pass a `slotted` element (slot="popup-content")
+into the popup (as show below).
+
+<b>Example - Display popup on click</b>
+HTML
+```html
+<mapbox-gl
+  interactive
+  access-token="USE_UR_OWN_TOKEN"
+  events-to-watch="click"
+  on-mapbox-gl-click="handleClick">
+
+  <mapbox-gl-popup close-button close-on-click
+    opened="{{opened}}"
+    latitude="[[lat]]" longitude="[[lng]]">
+    <div slot="popup-content">
+      <p><b>Hi</b></p>
+      <p>You clicked on [[lat]], [[lng]]!</p>
+    </div>
+  </mapbox-gl-popup>
+</mapbox-gl>
+```
+JS
+```js
+handleClick = function(e, details) {
+  var {lngLat: { lat, lng }} = details;
+  this.lat = lat.toFixed(2);
+  this.lng = lng.toFixed(2);
+  this.opened = true;
+}
+```
+
+<b>Example - Attache popup to `mapbox-gl-marker`</b>
+HTML
+```html
+<mapbox-gl id="map" interactive
+  access-token="USE_UR_OWN_TOKEN"
+  latitude=1.3521 longitude=103.8698
+  zoom=15 pitch=45 bearing=0>
+
+  <mapbox-gl-marker
+    id="marker"
+    latitude=1.3521 longitude=103.8698
+    width=64 height=64
+    border-radius="50%"
+    background-image="https://placekitten.com/g/64/64">
+  </mapbox-gl-marker>
+
+  <mapbox-gl-popup
+    for="marker"
+    bottom="[0,-32]"
+    close-button close-on-click
+    latitude=1.3521 longitude=103.8698
+    html="Hello! This is a demo of a <b>popup</b>!">
+  </mapbox-gl-popup>
+
+</mapbox-gl>
+```
+
 ### Add a Geocoder control
 To add a search input to `mapbox-gl`, you can use the `mapbox-gl-geocoder` element
 which uses the Mapbox Geocoding API to search for places. You just need to ensure

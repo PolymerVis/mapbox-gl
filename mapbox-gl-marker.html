@@ -63,6 +63,15 @@ more details.
     static get is() { return 'mapbox-gl-marker'; }
     static get properties() {
       return {
+        /**
+         * Reference to `Mapbox.Popup` instance to display when the marker is
+         * clicked.
+         * @type {Mapbox.Popup}
+         */
+        popup: {
+          type: Object,
+          value: null
+        },
         /* show a down pointing arrow to indicate the actual position. */
         showArrow: {
           type: Boolean,
@@ -145,7 +154,7 @@ more details.
           readonly: true,
           computed: '_createMarker(map, _ele, offsetLeft, offsetTop)'
         },
-
+        _popup: Object,
         _ele: {
           type: Object,
           computed: '_createMarkerElement(map)'
@@ -159,7 +168,8 @@ more details.
     static get observers() {
       return ['updateLatLng(marker, latitude, longitude)',
               '_updateStyle(_ele, width, height, borderRadius, backgroundColor, backgroundImage)',
-              '_addDownArrow(_ele, showArrow, width, height, arrowColor)']
+              '_addDownArrow(_ele, showArrow, width, height, arrowColor)',
+              'setPopup(_popup, marker)']
     }
 
     connectedCallback() {
@@ -182,6 +192,18 @@ more details.
       if (marker) {
         marker.setLngLat([lng, lat]);
       }
+    }
+
+    /**
+     * Attach a `Mapbox.Popup` instance or `mapbox-gl-popup` element to this
+     * marker.
+     * @param {Mapbox.Popup|HTMLElement} popup
+     */
+    setPopup(popup) {
+      if (!popup) return;
+      if (!this.marker) return;
+      this._popup = popup.is === 'mapbox-gl-popup' ? popup.popup : popup;
+      return this.marker.setPopup(this._popup);
     }
 
     _createMarkerElement() {
