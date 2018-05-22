@@ -17,7 +17,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0",
+    "polymer": "Polymer/polymer#^2.6.0",
     "shadycss": "^1.0.5",
     "utils-lib": "PolymerVis/utils-lib#^2.0.0",
     "iron-resizable-behavior": "PolymerElements/iron-resizable-behavior#^2.1.0"
@@ -30,6 +30,6 @@
     "paper-slider": "PolymerElements/paper-slider#^2.0.2"
   },
   "resolutions": {
-    "polymer": "^2.0.0"
+    "polymer": "^2.6.0"
   }
 }
