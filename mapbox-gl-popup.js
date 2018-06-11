@@ -218,7 +218,10 @@ class MapboxGlPopup extends Polymer.Element {
   }
 
   static get observers() {
-    return ['_attachedPopup(popup, opened, attachToMarker, for)'];
+    return [
+      '_attachedPopup(popup, opened, attachToMarker, for)',
+      'setLngLat(longitude, latitude)'
+    ];
   }
 
   connectedCallback() {
