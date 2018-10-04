@@ -1,4 +1,4 @@
-mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/PolymerVis/mapbox-gl)
+mapbox-gl [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/PolymerVis/mapbox-gl) [![Greenkeeper badge](https://badges.greenkeeper.io/PolymerVis/mapbox-gl.svg)](https://greenkeeper.io/)
 ==========
 
 <!---
