@@ -193,7 +193,7 @@ class MapboxGlControl extends Polymer.Element {
   }
 
   _createIControl(map, icontrol, icontrolOptions) {
-    if (!map || !icontrol || this.icontrol) return;
+    if (!map || !icontrol || !this.icontrol) return;
     // name of the control
     if (typeof icontrol === 'string') {
       this.icontrol = new mapboxgl[icontrol](icontrolOptions);
