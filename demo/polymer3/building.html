@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+
+    <script type="module">
+        import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js'; import '@polymer/iron-demo-helpers/demo-snippet.js'; import {} from '@polymer/polymer/lib/elements/dom-bind.js'; import "../mapbox-gl.js"; import "../mapbox-building-layer.js";
+    </script>
+
+
+
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+
+        </style>
+    </custom-style>
+</head>
+
+<body>
+    <div class="vertical-section-container centered">
+        <h3>Basic mapbox-gl demo</h3>
+        <demo-snippet>
+            <template>
+          <style>
+            mapbox-gl {
+              height: 400px;
+              width: 100%;
+            }
+          </style>
+
+          <dom-bind>
+            <template>
+
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                latitude=40.7135
+                longitude=-74.0066
+                zoom=15
+                pitch=45></mapbox-gl>
+
+              <mapbox-building-layer
+                map="[[map]]"
+                layer-id="3dbuilding"
+                fill-extrusion-opacity=0.6
+                fill-extrusion-color="#666"></mapbox-building-layer>
+
+            </template>
+            </dom-bind>
+
+            <script>
+                var autobind = document.querySelector('dom-bind');
+                // please use your own mapbox key!!!
+                autobind.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+            </script>
+            </template>
+        </demo-snippet>
+    </div>
+</body>
+
+</html>

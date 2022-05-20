@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+
+    <script type="module">
+        import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js'; 
+        import '@polymer/iron-demo-helpers/demo-snippet.js'; 
+        import '@polymer/prism-element/prism-highlighter.js'; 
+        import '@polymer/prism-element/prism-theme-default.js'; 
+        import '@polymer/marked-element/marked-element.js';
+        import '@polymer/iron-flex-layout/iron-flex-layout.js'; 
+        import '@polymer/iron-flex-layout/iron-flex-layout-classes.js'; 
+        import {html} from '@polymer/polymer/lib/utils/html-tag.js'; 
+        import "../mapbox-gl.js"; import "../mapbox-gl-control.js"; 
+        import "../geojson-source.js"; 
+        const template = html`
+        <custom-style>
+            <style is="custom-style" include="prism-theme-default iron-flex iron-flex-alignment">
+                body {
+                    font-family: "Roboto", sans-serif;
+                    margin: 0px;
+                    @apply --layout-vertical;
+                }
+                
+                mapbox-gl {
+                    height: 420px;
+                    max-height: 40vh;
+                    width: 100%;
+                    max-width: 420px;
+                }
+                
+                marked-element {
+                    padding: 5px;
+                    overflow-x: auto;
+                    min-width: 320px;
+                }
+                
+                section:nth-child(odd)>marked-element,
+                section:nth-child(odd) {
+                    background-color: #fafafa;
+                }
+                
+                section:nth-child(even)>marked-element,
+                section:nth-child(even) {
+                    background-color: #eaeaea;
+                }
+                
+                h2,
+                h4 {
+                    margin: 25px 5px 5px 10px;
+                }
+            </style>
+        </custom-style>`; document.head.appendChild(template.content);
+    </script>
+
+
+</head>
+
+
+<body>
+    <prism-highlighter></prism-highlighter>
+    <h2>mapbox-gl-control demo</h3>
+
+        <section>
+            <h4>1. Declare as a child of mapbox-gl</h4>
+            <div class="layout horizontal wrap">
+
+                <mapbox-gl interactive access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
+
+                    <mapbox-gl-control icontrol-name="NavigationControl" icontrol-options='{"zoom": false}' position="top-right"></mapbox-gl-control>
+                </mapbox-gl>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        ```html
+                        <mapbox-gl interactive access-token="USE_UR_OWN_TOKEN">
+
+                            <!-- declare as child of mapbox-gl -->
+                            <mapbox-gl-control icontrol-name="NavigationControl" icontrol-options='{"zoom": false}' position="top-right">
+                            </mapbox-gl-control>
+
+                        </mapbox-gl>
+                        ```
+                    </script>
+                </marked-element>
+
+
+            </div>
+        </section>
+
+        <section>
+            <h4>2. Pass in map object</h4>
+            <div class="layout horizontal wrap">
+
+                <dom-bind>
+                    <template is="dom-bind">
+          <mapbox-gl
+            interactive
+            map="{{map}}"
+            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
+          </mapbox-gl>
+
+          <mapbox-gl-control
+            map="[[map]]"
+            icontrol-name="NavigationControl"
+            position="top-left"></mapbox-gl-control>
+        </template>
+                </dom-bind>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        ```html
+                        <mapbox-gl interactive map="{{map}}" access-token="USE_UR_OWN_TOKEN"></mapbox-gl>
+
+                        <!-- Pass in map object -->
+                        <mapbox-gl-control map="[[map]]" icontrol-name="NavigationControl" position="top-left">
+                        </mapbox-gl-control>
+                        ```
+                    </script>
+                </marked-element>
+
+            </div>
+        </section>
+
+        <section>
+            <h4>3. Custom IControl</h4>
+            <div class="layout horizontal wrap">
+                <mapbox-gl interactive access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
+
+                    <mapbox-gl-control interactive position="top-right">
+
+                        <style>
+                            #icontrol {
+                                color: #fff;
+                                text-align: center;
+                                background-color: rgba(10, 10, 10, 0.5);
+                            }
+                        </style>
+                        <div id="icontrol">
+                            <div>I am a custom Control.</div>
+                            <button>Click me!</button>
+                        </div>
+
+                    </mapbox-gl-control>
+                </mapbox-gl>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        ```html
+                        <mapbox-gl interactive access-token="USE_UR_OWN_TOKEN">
+
+                            <mapbox-gl-control interactive position="top-right">
+
+                                <style>
+                                    #icontrol {
+                                        color: #fff;
+                                        text-align: center;
+                                        background-color: rgba(10, 10, 10, 0.5);
+                                    }
+                                </style>
+                                <div id="icontrol">
+                                    <div>I am a custom Control.</div>
+                                    <button>Click me!</button>
+                                </div>
+
+                            </mapbox-gl-control>
+                        </mapbox-gl>
+                        ```
+                    </script>
+                </marked-element>
+
+            </div>
+        </section>
+
+</body>
+
+</html>

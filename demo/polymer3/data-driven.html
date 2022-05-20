@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+
+
+
+
+    <script type="module">
+        import {} from '@polymer/polymer/lib/elements/dom-bind.js'; import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js'; import '@polymer/iron-demo-helpers/demo-snippet.js'; import '@polymer/prism-element/prism-highlighter.js'; import '@polymer/prism-element/prism-theme-default.js';
+        import '@polymer/marked-element/marked-element.js'; import '@polymer/iron-flex-layout/iron-flex-layout.js'; import '@polymer/iron-flex-layout/iron-flex-layout-classes.js'; import {html} from '@polymer/polymer/lib/utils/html-tag.js'; import "../mapbox-gl.js";
+        import "../mapbox-layer.js"; import "../geojson-source.js";
+    </script>
+    <custom-style>
+        <style is="custom-style" include="prism-theme-default iron-flex iron-flex-alignment">
+            body {
+                font-family: "Roboto", sans-serif;
+                margin: 0px;
+                @apply --layout-vertical;
+            }
+            
+            .panel,
+            marked-element,
+            mapbox-gl {
+                width: 100%;
+                max-width: 420px;
+            }
+            
+            mapbox-gl {
+                height: 420px;
+                max-height: 40vh;
+            }
+            
+            marked-element {
+                padding: 5px;
+                margin: 5px;
+                overflow-x: auto;
+            }
+            
+            section:nth-child(odd)>marked-element,
+            section:nth-child(odd) {
+                background-color: #fafafa;
+            }
+            
+            section:nth-child(even)>marked-element,
+            section:nth-child(even) {
+                background-color: #eaeaea;
+            }
+            
+            h2,
+            h4 {
+                margin: 25px 5px 5px 10px;
+            }
+        </style>
+    </custom-style>
+
+
+</head>
+
+
+<body>
+    <prism-highlighter></prism-highlighter>
+    <h2>mapbox-gl-control demo</h3>
+
+        <section>
+            <h4>1. Loading with `source-data` attribute for `mapbox-layer`</h4>
+            <div class="layout horizontal wrap">
+
+                <dom-bind id="demo1">
+                    <template>
+          <mapbox-gl id="map"
+            interactive
+            map="{{map}}"
+            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+            latitude=40
+            longitude=-77
+            zoom=1>
+
+            <mapbox-layer
+              layer-id="country"
+              rendering-type="circle"
+              source-data="[[sourceData]]"
+              color="#eee"></mapbox-layer>
+
+          </mapbox-gl>
+
+          <script>
+            var demo1 = document.querySelector('dom-bind#demo1');
+            demo1.sourceData = {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: [
+                  {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [-77.03, 38.91]
+                    },
+                    properties: {
+                      title: 'Mapbox DC',
+                      icon: 'monument'
+                    }
+                  },
+                  {
+                    type: 'Feature',
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [-122.414, 37.776]
+                    },
+                    properties: {
+                      title: 'Mapbox SF',
+                      icon: 'harbor'
+                    }
+                  }
+                ]
+              }
+            };
+
+          </script>
+          </template>
+
+                </dom-bind>
+
+
+            </div>
+        </section>
+
+
+        <section>
+            <h4>2. Reference to `geojson-source` from `mapbox-layer`</h4>
+            <div class="layout horizontal wrap">
+
+                <dom-bind id="demo2">
+                    <template>
+          <mapbox-gl
+            interactive
+            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+            map="{{map}}"
+            zoom=10>
+
+            <!-- reference `geojsonsrc` -->
+            <mapbox-layer
+              source="geojsonsrc"
+              layer-id="coastline_fill"
+              rendering-type="fill"
+              color="#009688"
+              opacity=0.7>
+            </mapbox-layer>
+
+          </mapbox-gl>
+
+          <!-- Load GeoJSON data via `source-url` or `source-data` -->
+          <geojson-source
+            map="[[map]]"
+            source-id="geojsonsrc"
+            source-url="./sg.geojson">
+          </geojson-source>
+
+        </template>
+                </dom-bind>
+
+
+            </div>
+        </section>
+
+
+        <section>
+            <h4>3. Dynamically update `geojson-source`</h4>
+            <div class="layout horizontal wrap">
+
+                <div class="layout vertical panel">
+                    <dom-bind id="demo3">
+                        <template>
+            <button onclick="javascript:AddPoint()">Add point</button>
+
+            <mapbox-gl
+              interactive
+              latitude=40.7135
+              longitude=-74.0066
+              zoom=1
+              access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+              map="{{map}}"
+              zoom=10>
+
+              <mapbox-layer
+                layer-id="layer_points"
+                rendering-type="circle"
+                source="points"
+                color="#009688"
+                opacity=0.7></mapbox-layer>
+
+            </mapbox-gl>
+
+            <!-- Declare GeoJSON data directly through `source-data` -->
+            <geojson-source
+              map="[[map]]"
+              source-id="points"
+              source-data="[[sourceData]]">
+            </geojson-source>
+
+          <script>
+            var demo3 = document.querySelector('dom-bind#demo3');
+            demo3.sourceData = {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-77.03238901390978, 38.913188059745586]
+                  }
+                },
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-122.414, 37.776]
+                  }
+                }
+              ]
+            };
+
+            // adds a random point, and notify element of array mutation in the
+            // data
+            function AddPoint() {
+              demo3.push('sourceData.features', genPoint());
+            }
+
+            function genPoint() {
+              return {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [rand(-120, -70), rand(0, 60)]
+                }
+              };
+            }
+
+            function rand(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+          </script>
+
+        </template>
+                    </dom-bind>
+                </div>
+
+
+            </div>
+        </section>
+
+        <section>
+            <h4>4. Dynamically update `source-data` of `mapbox-layer`</h4>
+            <div class="layout horizontal wrap">
+
+                <div class="layout vertical panel">
+                    <dom-bind id="demo4">
+                        <template>
+            <button onclick="javascript:AddPoint()">Add point</button>
+
+            <mapbox-gl
+              interactive
+              latitude=40.7135
+              longitude=-74.0066
+              zoom=1
+              access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+              map="{{map}}"
+              zoom=10>
+
+              <mapbox-layer
+                layer-id="layer_points"
+                rendering-type="circle"
+                color="#009688"
+                opacity=0.7
+                source-data="[[_toSourceData(sourceData, sourceData.features.*)]]">
+              </mapbox-layer>
+
+            </mapbox-gl>
+
+          <script>
+            var demo4 = document.querySelector('dom-bind#demo4');
+            demo4._toSourceData = function(data) {
+              return {type: 'geojson', data};
+            };
+            demo4.sourceData = {
+              type: 'FeatureCollection',
+              features: [
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-77.03238901390978, 38.913188059745586]
+                  }
+                },
+                {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [-122.414, 37.776]
+                  }
+                }
+              ]
+            };
+
+            // adds a random point, and notify element of array mutation in the
+            // data
+            function AddPoint() {
+              demo4.push('sourceData.features', genPoint());
+            }
+
+            function genPoint() {
+              return {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [rand(-120, -70), rand(0, 60)]
+                }
+              };
+            }
+
+            function rand(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+          </script>
+
+        </template>
+                    </dom-bind>
+                </div>
+
+
+            </div>
+        </section>
+
+
+</body>
+
+
+</html>

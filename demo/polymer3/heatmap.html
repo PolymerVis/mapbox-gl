@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+    <script type="module">
+      
+      import {} from '@polymer/polymer/lib/elements/dom-bind.js';
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js'; 
+      import '@polymer/iron-demo-helpers/demo-snippet.js';
+      
+      
+    
+      import "../mapbox-gl.js"; 
+      import "../mapbox-heatmap-layer.js"; 
+      import "../geojson-source.js";
+    </script>
+
+  
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>Basic mapbox-gl demo</h3>
+      <demo-snippet>
+        <template>
+          <style>
+            mapbox-gl {
+              height: 400px;
+              width: 100%;
+            }
+          </style>
+          <dom-bind>
+            <template>
+              <!-- please use your own mapbox access token!! -->
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                map-style-url="mapbox://styles/mapbox/dark-v9"
+                latitude=40.66995747013945
+                longitude=-103.59179687498357
+                zoom=3></mapbox-gl>
+
+              <geojson-source
+                cluster
+                cluster-max-zoom=15
+                cluster-radius=20
+                map="[[map]]"
+                source-id="geojsonsrc"
+                source-url="https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_parks_and_protected_lands_point.geojson"></geojson-source>
+
+              <mapbox-heatmap-layer
+                map="[[map]]"
+                layer-id="heatmap"
+                source="geojsonsrc"
+                radius=80
+                opacity=0.2
+                levels='[[levels]]'></mapbox-heatmap-layer>
+
+            </template>
+          </dom-bind>
+
+          <script>
+            var autobind = document.querySelector('dom-bind');
+            autobind.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+            autobind.levels = [
+              {'count': 0, 'color': '#EEEEEE', 'radius': 2, 'opacity': 0.5},
+              {'count': 5, 'radius': 80, 'color': '#4CAF50'},
+              {'count': 8, 'color': '#FFC107'},
+              {'count': 10, 'color': '#F44336'}];
+
+          </script>
+        </template>
+      </demo-snippet>
+    </div>
+  </body>
+</html>
