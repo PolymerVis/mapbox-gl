@@ -443,6 +443,8 @@ class MapboxGL extends mixinBehaviors([IronResizableBehavior], PolymerElement) {
       <style>
         
         :host {
+            width: 100%;
+        height: 100%;
         display: inline-flex;
         overflow: hidden;
       }
@@ -492,7 +494,7 @@ class MapboxGL extends mixinBehaviors([IronResizableBehavior], PolymerElement) {
              */
             scriptSrc: {
                 type: String,
-                value: 'https://api.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.js'
+                value: 'https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.js'
             },
             /**
              * You can enter the url to ur mapbox-gl-js stylesheet if it is
@@ -501,7 +503,7 @@ class MapboxGL extends mixinBehaviors([IronResizableBehavior], PolymerElement) {
              */
             cssSrc: {
                 type: String,
-                value: 'https://api.tiles.mapbox.com/mapbox-gl-js/v0.45.0/mapbox-gl.css'
+                value: 'https://api.mapbox.com/mapbox-gl-js/v2.8.2/mapbox-gl.css'
             },
             /**
              * A latitude to center the map on.
