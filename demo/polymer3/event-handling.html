@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+    <script type="module">
+        import '@polymer/iron-flex-layout/iron-flex-layout.js'; import '@polymer/iron-flex-layout/iron-flex-layout-classes.js'; import {} from '@polymer/polymer/lib/elements/dom-bind.js'; import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js'; import
+        '@polymer/iron-demo-helpers/demo-snippet.js'; import {} from '@polymer/polymer/lib/elements/custom-style.js'; import '@polymer/prism-element/prism-highlighter.js'; import '@polymer/prism-element/prism-theme-default.js'; import '@polymer/marked-element/marked-element.js';
+        import "../apply-shim.js"; import "../mapbox-gl.js"; import "../mapbox-layer.js"; import "../geojson-source.js";
+
+    </script>
+
+
+
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles prism-theme-default iron-flex iron-flex-alignment">
+            body {
+                font-family: "Roboto", sans-serif;
+                margin: 0px;
+                @apply --layout-vertical;
+            }
+            
+            .panel,
+            marked-element,
+            mapbox-gl {
+                width: 100%;
+                max-width: 420px;
+            }
+            
+            mapbox-gl {
+                height: 420px;
+                max-height: 40vh;
+            }
+            
+            marked-element {
+                padding: 5px;
+                margin: 5px;
+                overflow-x: auto;
+            }
+            
+            section:nth-child(odd)>marked-element,
+            section:nth-child(odd) {
+                background-color: #fafafa;
+            }
+            
+            section:nth-child(even)>marked-element,
+            section:nth-child(even) {
+                background-color: #eaeaea;
+            }
+            
+            h2,
+            h4 {
+                margin: 25px 5px 5px 10px;
+            }
+        </style>
+    </custom-style>
+</head>
+
+
+<body>
+    <prism-highlighter></prism-highlighter>
+    <h2>mapbox-gl-control demo</h3>
+
+        <section>
+            <h4>1. Event-handling on a mapbox-gl</h4>
+            <div class="layout horizontal wrap">
+                <dom-bind id="demo1">
+                    <template>
+          <mapbox-gl
+            interactive
+            access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+            events-to-watch="click"
+            on-mapbox-gl-click="handleClick">
+          </mapbox-gl>
+          <script>
+            var demo1 = document.querySelector('dom-bind#demo1');
+            demo1.handleClick = function(e, details) {
+              var {lngLat: { lat, lng }} = details;
+              alert(`Clicked on ${lat.toFixed(3)}, ${lng.toFixed(3)}`)
+            }
+          </script>
+        </template>
+                </dom-bind>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        HTML ```html
+                        <mapbox-gl interactive access-token="USE_UR_OWN_TOKEN" events-to-watch="click" on-mapbox-gl-click="handleClick">
+                        </mapbox-gl>
+                        ```
+                    </script>
+                </marked-element>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        JS ```js handleClick = function(event, details) { var {lngLat: { lat, lng }} = details; var msg = `Clicked on ${lat}, ${lng}` alert(msg); } ```
+                    </script>
+                </marked-element>
+
+            </div>
+        </section>
+
+        <section>
+            <h4>2. Event-handling on a specific map-layer</h4>
+            <div class="layout horizontal wrap">
+
+
+
+                <dom-bind id="demo2">
+                    <template>
+
+          <custom-style>
+            <style is="custom-style">
+              #map2.overSomething {
+                --mapbox-canvas: {
+                  cursor: help;
+                };
+              }
+            </style>
+          </custom-style>
+
+          <div class="layout vertical panel">
+            <div style="font-size: 11px">Move your mouse over the different land masses (islands)</div>
+            <mapbox-gl
+              id="map2"
+              interactive
+              access-token="[[key]]"
+              map="{{map}}"
+              zoom=9></mapbox-gl>
+
+
+            <!-- layer to watch for mousemove and mouseleave -->
+            <mapbox-layer
+              map="[[map]]"
+              layer-id="coastline_fill"
+              rendering-type="fill"
+              source="geojsonsrc"
+              color="#009688"
+              opacity=0.7
+              events-to-watch="mousemove mouseleave"
+              on-mapbox-layer-mousemove="onMousemove"
+              on-mapbox-layer-mouseleave="onMouseleave"></mapbox-layer>
+
+            <!--
+              land mass outline
+              filter upon mousemove and mouseleave
+            -->
+            <mapbox-layer
+              map="[[map]]"
+              layer-id="coastline_outline"
+              rendering-type="line"
+              source="geojsonsrc"
+              color="#fff"
+              line-width=2
+              filter="[[filter]]"></mapbox-layer>
+
+            <geojson-source
+              map="[[map]]"
+              source-id="geojsonsrc"
+              source-url="./sg.geojson"></geojson-source>
+
+            <div><pre>[[features]]</pre></div>
+          </div>
+
+          <script>
+          var demo2 = document.querySelector("dom-bind#demo2");
+          demo2.key =
+            "pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg";
+
+          demo2.onMousemove = function(e, { features }) {
+            if (features.length > 0) {
+              demo2.$.map2.classList.toggle("overSomething", true);
+              demo2.filter = ["==", "COSTAL_NAM", features[0].properties.COSTAL_NAM];
+              demo2.set(
+                "features",
+                features.map(f => f.properties.COSTAL_NAM).join("\n")
+              );
+            }
+          };
+
+          demo2.onMouseleave = function(e) {
+            demo2.$.map2.classList.toggle("overSomething", false);
+            demo2.filter = null;
+            demo2.features = "";
+          };
+          </script>
+        </template>
+                </dom-bind>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        HTML ```html
+                        <mapbox-gl id="map" interactive access-token="[[key]]" map="{{map}}" zoom=9></mapbox-gl>
+
+
+                        <!-- layer to watch for mousemove and mouseleave -->
+                        <mapbox-layer map="[[map]]" layer-id="coastline_fill" rendering-type="fill" source="geojsonsrc" color="#009688" opacity=0.7 events-to-watch="mousemove mouseleave" on-mapbox-layer-mousemove="onMousemove" on-mapbox-layer-mouseleave="onMouseleave"></mapbox-layer>
+
+                        <!--
+          land mass outline
+          filter upon mousemove and mouseleave
+        -->
+                        <mapbox-layer map="[[map]]" layer-id="coastline_outline" rendering-type="line" source="geojsonsrc" color="#fff" line-width=2 filter="[[filter]]"></mapbox-layer>
+
+                        <geojson-source map="[[map]]" source-id="geojsonsrc" source-url="./sg.geojson"></geojson-source>
+                        ```
+                    </script>
+                </marked-element>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        JS ```js onMousemove = function(e, { features }) { if (features.length > 0) { this.$.map.classList.toggle("overSomething", true); this.filter = ["==", "COSTAL_NAM", features[0].properties.COSTAL_NAM]; this.set( "features", features.map(f => f.properties.COSTAL_NAM).join("\n")
+                        ); } }; onMouseleave = function(e) { this.$.map.classList.toggle("overSomething", false); this.filter = null; this.features = ""; }; ```
+                    </script>
+                </marked-element>
+
+                <marked-element>
+                    <div slot="markdown-html"></div>
+                    <script type="text/markdown">
+                        CSS ```css #map.overSomething { --mapbox-canvas: { cursor: help; }; } ```
+                    </script>
+                </marked-element>
+
+            </div>
+        </section>
+
+</body>
+
+</html>

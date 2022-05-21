@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../paper-input/paper-input.html">
+    <link rel="import" href="../../paper-slider/paper-slider.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../mapbox-gl.html">
+    <link rel="import" href="../mapbox-layer.html">
+    <link rel="import" href="../geojson-source.html">
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <div class="vertical-section-container centered">
+      <h3>2 way data-binding: latitude, longitude, and zoom level</h3>
+      <demo-snippet>
+        <template>
+          <style>
+            mapbox-gl {
+              height: 400px;
+              width: 100%;
+            }
+          </style>
+
+          <dom-bind id="demo1">
+            <template>
+              <paper-input value="{{lat}}" label="Latitude"></paper-input>
+              <paper-input value="{{lon}}" label="Longitude"></paper-input>
+              <label>Zoom level</label>
+              <paper-slider editable min="[[minZoom]]" max="[[maxZoom]]" value="{{zoom}}"></paper-slider>
+              <mapbox-gl
+                interactive
+                access-token="[[key]]"
+                map="{{map}}"
+                latitude="{{lat}}"
+                longitude="{{lon}}"
+                zoom="{{zoom}}"
+                max-zoom="[[maxZoom]]"
+                min-zoom="[[minZoom]]">
+              </mapbox-gl>
+
+            </template>
+          </dom-bind>
+
+          <script>
+            var demo1 = document.querySelector('dom-bind#demo1');
+            demo1.maxZoom = 14;
+            demo1.minZoom = 2;
+            demo1.zoom = 10;
+            demo1.key = 'pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg';
+          </script>
+        </template>
+      </demo-snippet>
+
+    </div>
+  </body>
+</html>

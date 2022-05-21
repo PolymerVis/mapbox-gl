@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>mapbox-gl demo</title>
+
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
+    <script type="module">
+      
+      import {} from '@polymer/polymer/lib/elements/dom-bind.js';
+      import {} from '@polymer/polymer/lib/elements/dom-repeat.js'; 
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js'; 
+      import '@polymer/iron-demo-helpers/demo-snippet.js';
+      
+      import "../apply-shim.js";
+    
+      import "../mapbox-gl.js"; 
+      import "../mapbox-layer.js"; 
+      import "../geojson-source.js";
+      import "../mapbox-gl-geocoder.js";
+    </script>
+    
+
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+        mapbox-gl {
+          height: 400px;
+          width: 100%;
+        }
+      </style>
+    </custom-style>
+  </head>
+  <body>
+<div class="vertical-section-container centered">
+<h3>Adding Geocoder control to mapbox-gl</h3>
+<demo-snippet>
+<template>
+<dom-bind>
+<template>
+  <!-- Please use your own access token -->
+  <mapbox-gl
+    interactive
+    access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg">
+
+    <mapbox-gl-geocoder
+      fly-to
+      limit=5
+      placeholder="Type to search"
+      last-results="{{results}}"
+      on-results="onResults"></mapbox-gl-geocoder>
+
+  </mapbox-gl>
+  <h4>Query results ([[number]])</h4>
+  <template is="dom-repeat" items="[[results.features]]">
+    <div>[[item.place_name]]</div>
+  </template>
+
+</template>
+</dom-bind>
+<script>
+var demo = document.querySelector('dom-bind');
+demo.number = 0;
+demo.onResults = function(e, results) {
+  demo.number = results.features.length;
+};
+</script>
+</template>
+</demo-snippet>
+
+</div>
+</body>
+</html>
