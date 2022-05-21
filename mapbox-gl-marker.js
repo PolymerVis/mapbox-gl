@@ -1,10 +1,55 @@
 import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
 
 /**
+ * The `mapbox-gl-marker` element represents a map marker. It is used as a
+child of `mapbox-gl`.
+
+The default anchor is the CENTER of the element.
+
+You can either style the element via CSS selector "div.mapbox-gl-marker", or attached other elements as its
+child as shown in the example below.
+
+<b>Example</b>:
+```html
+<mapbox-gl id="map"
+  interactive
+  map="{{map}}"
+  map-style="mapbox://styles/mapbox/dark-v9"
+  access-token="<MAPBOX_ACCESS_TOKEN>"
+  latitude=1.3521
+  longitude=103.8698
+  zoom=16
+  pitch=45
+  bearing=0>
+
+    <mapbox-gl-marker
+      latitude=1.3521
+      longitude=103.8698
+      width=64
+      height=64
+      border-radius="50%"
+      background-image="https://placekitten.com/g/64/64">
+    </mapbox-gl-marker>
+
+    <mapbox-gl-marker
+      latitude=1.3541 longitude=103.8718
+      offset-top=15>
+      <div class="textbox">Some text here</div>
+      <div class="arrow-down"></div>
+    </mapbox-gl-marker>
+
+</mapbox-gl>
+```
+
+See https://www.mapbox.com/mapbox-gl-js/api/#Marker for
+more details.
+
+
  * @customElement
  * @polymer
+ * @demo demo/markers.html Plotting map markers
  */
-class MapboxPortApp extends PolymerElement {
+class MapboxGlMarker extends PolymerElement {
     static get template() {
         return html `
       <style>
@@ -15,14 +60,7 @@ class MapboxPortApp extends PolymerElement {
       <slot></slot>
     `;
     }
-    static get properties() {
-        return {
-            prop1: {
-                type: String,
-                value: 'mapbox-gl-marker'
-            }
-        };
-    }
+
     static get properties() {
         return {
             /**
@@ -60,13 +98,15 @@ class MapboxPortApp extends PolymerElement {
              * latitude of the marker
              */
             latitude: {
-                type: Number
+                type: Number,
+                reflectToAttribute: true
             },
             /*
              * longitude of the marker
              */
             longitude: {
-                type: Number
+                type: Number,
+                reflectToAttribute: true
             },
             /*
              * background color for the marker
@@ -108,13 +148,19 @@ class MapboxPortApp extends PolymerElement {
                 type: Object
             },
             /*
+             * `map` object returned from mapbox-gl
+             */
+            draggable: {
+                type: Boolean
+            },
+            /*
              * 'mapboxgl.Marker' object
              */
             marker: {
                 type: Object,
                 notify: true,
                 readonly: true,
-                computed: '_createMarker(map, _ele, offsetLeft, offsetTop)'
+                computed: '_createMarker(map, _ele, offsetLeft, offsetTop, draggable)'
             },
             _popup: Object,
             _ele: {
@@ -192,12 +238,24 @@ class MapboxPortApp extends PolymerElement {
 
     }
 
-    _createMarker(map, ele, offsetLeft, offsetTop) {
+    _createMarker(map, ele, offsetLeft, offsetTop, draggable) {
+
         if (!map || !ele) return;
         /* global mapboxgl */
-        return new mapboxgl.Marker(ele, { offset: [offsetLeft, offsetTop] })
+        var marker = new mapboxgl.Marker(ele, { draggable: draggable, offset: [offsetLeft, offsetTop] })
             .setLngLat([this.longitude, this.latitude])
             .addTo(map);
+        if (draggable == undefined) {
+            draggable = false;
+        } else {
+            marker.on("dragend", function() {
+                const lngLat = marker.getLngLat();
+                this.set("latitude", lngLat.lat);
+                this.set("longitude", lngLat.lng);
+            }.bind(this));
+        }
+        //console.log("dragglble", draggable);
+        return marker;
     }
 
     _updateStyle(ele, width, height, borderRadius, backgroundColor, backgroundImage) {
@@ -242,4 +300,4 @@ class MapboxPortApp extends PolymerElement {
     }
 }
 
-window.customElements.define('mapbox-gl-marker', MapboxPortApp);
+window.customElements.define('mapbox-gl-marker', MapboxGlMarker);
