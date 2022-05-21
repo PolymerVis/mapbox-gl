@@ -99,14 +99,16 @@ class MapboxGlMarker extends PolymerElement {
              */
             latitude: {
                 type: Number,
-                reflectToAttribute: true
+                reflectToAttribute: true,
+                notify: true
             },
             /*
              * longitude of the marker
              */
             longitude: {
                 type: Number,
-                reflectToAttribute: true
+                reflectToAttribute: true,
+                notify: true
             },
             /*
              * background color for the marker
