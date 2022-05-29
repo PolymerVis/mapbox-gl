@@ -37,78 +37,64 @@ more details.
 
 <dom-module id="mapbox-building-layer">
   <script>
-  class MapboxBuildingLayer extends MapboxLayer {
-    static get is() { return 'mapbox-building-layer'; }
+    class MapboxBuildingLayer extends MapboxLayer {
+      static get is() {
+        return 'mapbox-building-layer';
+      }
 
-    static get properties() {
-      return {
-        renderingType: {
-          type: String,
-          value: 'fill-extrusion'
-        },
-        /*
-         * Name of a source description to be used for this layer.
-         */
-        source: {
-          type: String,
-          value: 'composite'
-        },
-        /*
-         * Layer to use from a vector tile source. Required if the source
-         * supports multiple layers.
-         */
-        sourceLayer: {
-          type: String,
-          value: 'building'
-        },
-        /*
-         * A expression specifying conditions on source features. Only features
-         * that match the filter are displayed.
-         *
-         * @type {Array<predicate, field, condition>}
-         */
-        filter: {
-          type: Array,
-          value: function() {
-            return ['==', 'extrude', 'true'];
-          }
-        },
+      static get properties() {
+        return {
+          renderingType: {type: String, value: 'fill-extrusion'},
+          /*
+           * Name of a source description to be used for this layer.
+           */
+          source: {type: String, value: 'composite'},
+          /*
+           * Layer to use from a vector tile source. Required if the source
+           * supports multiple layers.
+           */
+          sourceLayer: {type: String, value: 'building'},
+          /*
+           * A expression specifying conditions on source features. Only features
+           * that match the filter are displayed.
+           *
+           * @type {Array<predicate, field, condition>}
+           */
+          filter: {
+            type: Array,
+            value: function() {
+              return ['==', 'extrude', 'true'];
+            }
+          },
 
-        /*
-         * The height (in meters) with which to extrude this layer.
-         *
-         * @type {{type: string, property: string}}
-         */
-        fillExtrusionHeight: {
-          type: Object,
-          value: function() {
-            return {
-              type: 'identity',
-              property: 'height'
-            };
+          /*
+           * The height (in meters) with which to extrude this layer.
+           *
+           * @type {{type: string, property: string}}
+           */
+          fillExtrusionHeight: {
+            type: Object,
+            value: function() {
+              return {type: 'identity', property: 'height'};
+            }
+          },
+          /*
+           * The height with which to extrude the base of this layer.
+           * Must be less than or equal to fill-extrusion-height.
+           *
+           * @type {{type: string, property: string}}
+           */
+          fillExtrusionBase: {
+            type: Object,
+            value: function() {
+              return {type: 'identity', property: 'min_height'};
+            }
           }
-        },
-        /*
-         * The height with which to extrude the base of this layer.
-         * Must be less than or equal to fill-extrusion-height.
-         *
-         * @type {{type: string, property: string}}
-         */
-        fillExtrusionBase: {
-          type: Object,
-          value: function() {
-            return {
-              type: 'identity',
-              property: 'min_height'
-            };
-          }
-        }
 
-      };
+        };
+      }
     }
-  }
 
-  window.customElements.define(MapboxBuildingLayer.is, MapboxBuildingLayer);
-
-</script>
+    window.customElements.define(MapboxBuildingLayer.is, MapboxBuildingLayer);
+  </script>
 </dom-module>

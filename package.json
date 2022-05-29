@@ -1,16 +1,21 @@
 {
   "name": "mapbox-gl",
-  "description": "Polymer 2.0 custom element for mapbox-gl-js. mapbox-gl element uses WebGL to render interactive maps from vector tiles and Mapbox styles. mapbox-gl element is compatible with deck-gl, the Polymer 1.0 element for uber's deck.gl library.",
-  "main": "mapbox-gl-elements.html",
+  "description": "Polymer 3.0 custom element for mapbox-gl-js. mapbox-gl element uses WebGL to render interactive maps from vector tiles and Mapbox styles. mapbox-gl element is compatible with deck-gl, the Polymer 1.0 element for uber's deck.gl library.",
+  "main": "mapbox-gl-elements.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
+    "serve": "polymer serve --npm --module-resolution=node",
+    "build": "polymer build",
     "lint": "eslint *.html && polymer lint",
     "pretest": "npm run lint",
     "test": "npm run wct",
     "wct": "xvfb-run polymer test --expanded",
-    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check"
+    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
+    "format": "webmat",
+    "generate-types": "gen-typescript-declarations --deleteExisting --outDir . --verify",
+    "prepare": "npm run generate-types"
   },
   "repository": {
     "type": "git",
@@ -32,14 +37,18 @@
     "url": "https://github.com/PolymerVis/mapbox-gl/issues"
   },
   "devDependencies": {
-    "bower": "^1.8.0",
+    "@polymer/gen-typescript-declarations": "^1.6.2",
+    "@polymer/iron-demo-helpers": "^3.1.0",
+    "@polymer/iron-resizable-behavior": "^3.0.1",
+    "@polymer/paper-input": "^3.2.1",
+    "@polymer/paper-slider": "^3.0.1",
     "eslint": "^3.19.0",
     "eslint-config-prettier": "^1.7.0",
     "eslint-plugin-html": "^2.0.1",
     "eslint-plugin-prettier": "^2.0.1",
     "lint-staged": "^3.4.1",
-    "polymer-cli": "^1.5.2",
-    "prettier": "^1.2.2"
+    "prettier": "^2.6.2",
+    "webmat": "^0.2.2"
   },
   "homepage": "https://www.webcomponents.org/element/PolymerVis/mapbox-gl",
   "dependencies": {

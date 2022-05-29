@@ -1,76 +1,54 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <script>
-(function(MapboxGLPolymer) {
+  (function(MapboxGLPolymer) {
   /*
-     * @polymerBehavior
-     */
+   * @polymerBehavior
+   */
   MapboxGLPolymer.LayerBehavior = {
     properties: {
       /*
        * The (map)[https://www.mapbox.com/mapbox-gl-js/api/#Map] instance
        * returned by mapboxgl-js
        */
-      map: {
-        type: Object
-      },
+      map: {type: Object},
       /*
        * Unique layer name. (Required)
        */
-      layerId: {
-        type: String,
-        observer: '_layerIdChanged'
-      },
+      layerId: {type: String, observer: '_layerIdChanged'},
       /*
        * set layer to not visible if true.
        */
-      hidden: {
-        type: Boolean
-      },
+      hidden: {type: Boolean},
       /*
-         * Rendering type of this layer.
-         * (fill, line, symbol, circle, fill-extrusion, raster, background)
-         */
-      renderingType: {
-        type: String
-      },
+       * Rendering type of this layer.
+       * (fill, line, symbol, circle, fill-extrusion, raster, background)
+       */
+      renderingType: {type: String},
       /*
        * Name of a source description to be used for this layer.
        */
-      source: {
-        type: String
-      },
+      source: {type: String},
       /*
        * Define the source data directly inside this layer. `type` is usually
        * `geojson`, where `data` is the GeoJSON object or an URL to the GeoJSON.
        *
        * @type {{type: string, data: object}}
        */
-      sourceData: {
-        type: Object,
-        observer: '_sourceDataChanged'
-      },
+      sourceData: {type: Object, observer: '_sourceDataChanged'},
       /*
        * Layer to use from a vector tile source. Required if the source
        * supports multiple layers.
        */
-      sourceLayer: {
-        type: String
-      },
+      sourceLayer: {type: String},
       /*
        * The minimum zoom level on which the layer gets parsed and appears on.
        */
-      minZoom: {
-        type: Number,
-        value: 0
-      },
+      minZoom: {type: Number, value: 0},
       /*
        * The maximum zoom level on which the layer gets parsed and appears on.
        */
-      maxZoom: {
-        type: Number,
-        value: 22
-      },
+      maxZoom: {type: Number, value: 22},
       /*
        * A expression specifying conditions on source features. Only features
        * that match the filter are displayed.
@@ -175,17 +153,17 @@
        */
       lineOffset: Number,
       /*
-      * Optional number.  Units in pixels. Defaults to 0.
-      * Blur applied to the `rendering-type` = `line` or `circle`, in pixels.
-      * 1 blurs the circle such that only the centerpoint is full opacity.
-      */
+       * Optional number.  Units in pixels. Defaults to 0.
+       * Blur applied to the `rendering-type` = `line` or `circle`, in pixels.
+       * 1 blurs the circle such that only the centerpoint is full opacity.
+       */
       blur: Number,
       /*
-      * Optional array.  Units in line widths. Disabled by line-pattern.
-      * Specifies the lengths of the alternating dashes and gaps that form the
-      * dash pattern. The lengths are later scaled by the line width. To
-      * convert a dash length to pixels, multiply the length by the current
-      * line width.
+       * Optional array.  Units in line widths. Disabled by line-pattern.
+       * Specifies the lengths of the alternating dashes and gaps that form the
+       * dash pattern. The lengths are later scaled by the line width. To
+       * convert a dash length to pixels, multiply the length by the current
+       * line width.
        */
       lineDasharray: Array,
       /*
@@ -229,9 +207,7 @@
        * a per-layer, not per-feature, basis, and data-driven styling is not
        * available.
        */
-      fillExtrusionOpacity: {
-        type: Number
-      },
+      fillExtrusionOpacity: {type: Number},
       /*
        * requires `rendering-type` to be `fill-extrusion`.
        * The base color of the extruded fill. The extrusion's surfaces will be
@@ -240,48 +216,36 @@
        * component, the alpha component will be ignored; use
        * fill-extrusion-opacity to set layer opacity.
        */
-      fillExtrusionColor: {
-        type: String
-      },
+      fillExtrusionColor: {type: String},
       /*
        * requires `rendering-type` to be `fill-extrusion`.
        * The geometry's offset. Values are [x, y] where negatives indicate
        * left and up (on the flat plane), respectively.
        */
-      fillExtrusionTranslate: {
-        type: Array
-      },
+      fillExtrusionTranslate: {type: Array},
       /*
        * requires `rendering-type` to be `fill-extrusion`.
        * Controls the translation reference point (map or viewport).
        */
-      fillExtrusionTranslateAnchor: {
-        type: String
-      },
+      fillExtrusionTranslateAnchor: {type: String},
       /*
        * requires `rendering-type` to be `fill-extrusion`.
        * Name of image in sprite to use for drawing images on extruded fills.
        * For seamless patterns, image width and height must be a factor of
        * two (2, 4, 8, ..., 512).
        */
-      fillExtrusionPattern: {
-        type: String
-      },
+      fillExtrusionPattern: {type: String},
       /*
        * requires `rendering-type` to be `fill-extrusion`.
        * The height (in meters) with which to extrude this layer.
        */
-      fillExtrusionHeight: {
-        type: Number
-      },
+      fillExtrusionHeight: {type: Number},
       /*
        * requires `rendering-type` to be `fill-extrusion`.
        * The height with which to extrude the base of this layer.
        * Must be less than or equal to fill-extrusion-height
        */
-      fillExtrusionBase: {
-        type: Number
-      },
+      fillExtrusionBase: {type: Number},
       /*
        * Requires renderingType to be 'symbol'. Value to use for a text label.
        * Feature properties are specified using
@@ -348,22 +312,11 @@
        * ```
        *
        */
-      eventsToWatch: {
-        type: String,
-        observer: '_eventsToWatchChanged'
-      },
+      eventsToWatch: {type: String, observer: '_eventsToWatchChanged'},
 
-      _antialias: {
-        type: Boolean,
-        computed: '_not(noAntialias)'
-      },
-      _visibility: {
-        type: String,
-        computed: '_if(hidden, "none", "visible")'
-      },
-      _added: {
-        type: String
-      },
+      _antialias: {type: Boolean, computed: '_not(noAntialias)'},
+      _visibility: {type: String, computed: '_if(hidden, "none", "visible")'},
+      _added: {type: String},
       _layer: Object,
       _clearEvents: Array,
       _watchEvents: Array
@@ -437,7 +390,8 @@
     },
 
     _setFilter: function(map, layerId, filter) {
-      if (!map || !layerId || !this._added) return;
+      if (!map || !layerId || !this._added)
+        return;
       return map.setFilter(layerId, filter);
     },
 
@@ -460,7 +414,8 @@
     },
 
     _clearListeners: function(map, _clearEvents) {
-      if (!_clearEvents || !map) return;
+      if (!_clearEvents || !map)
+        return;
       for (var i = 0, len = _clearEvents.length; i < len; ++i) {
         this._clearListener(_clearEvents[i].trim());
       }
@@ -474,7 +429,8 @@
     },
 
     _forwardEvents: function(map, _watchEvents, _attached) {
-      if (!_watchEvents || !map || !_attached) return;
+      if (!_watchEvents || !map || !_attached)
+        return;
       this._listeners = this._listeners || Object.create(null);
       for (var i = 0, len = _watchEvents.length; i < len; ++i) {
         this._forwardEvent(_watchEvents[i].trim());
@@ -486,14 +442,12 @@
         this._listeners[name] = function(event) {
           fn(event);
           this.dispatchEvent(
-            new CustomEvent('mapbox-layer-' + name, { detail: event })
-          );
+              new CustomEvent('mapbox-layer-' + name, {detail: event}));
         }.bind(this);
       } else {
         this._listeners[name] = function(event) {
           this.dispatchEvent(
-            new CustomEvent('mapbox-layer-' + name, { detail: event })
-          );
+              new CustomEvent('mapbox-layer-' + name, {detail: event}));
         }.bind(this);
       }
 
@@ -501,7 +455,8 @@
     },
 
     _layerIdChanged: function(curr, old) {
-      if (!this.map) return;
+      if (!this.map)
+        return;
       if (this.map.getLayer(old)) {
         this.map.removeLayer(old);
         this._added = false;
@@ -509,30 +464,30 @@
     },
 
     _generateLayerProp: function(layerId, renderingType, minZoom, maxZoom) {
-      if (!layerId || !renderingType) return;
+      if (!layerId || !renderingType)
+        return;
 
-      this._layer = {
-        id: layerId,
-        type: renderingType,
-        minzoom: minZoom,
-        maxzoom: maxZoom
-      };
+      this._layer =
+          {id: layerId, type: renderingType, minzoom: minZoom, maxzoom: maxZoom};
     },
 
     _setPaintProperty: function(map, layerId, field, value, prefix) {
-      if (!this._added || !this.map || !value || !this.map.getLayer(layerId)) return;
+      if (!this._added || !this.map || !value || !this.map.getLayer(layerId))
+        return;
       var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setPaintProperty(layerId, _field, value);
     },
 
     _setLayoutProperty: function(map, layerId, field, value, prefix) {
-      if (!this._added || !this.map || !value || !this.map.getLayer(layerId)) return;
+      if (!this._added || !this.map || !value || !this.map.getLayer(layerId))
+        return;
       var _field = typeof prefix == 'string' ? prefix + '-' + field : field;
       this.map.setLayoutProperty(layerId, _field, value);
     },
 
     _updateLayerProp: function(key, value, _layer) {
-      if (!_layer) return;
+      if (!_layer)
+        return;
       if (value) {
         _layer[key] = value;
         this.notifyPath(`_layer.${key}`);
@@ -542,7 +497,8 @@
     },
 
     _updateLayerPropField: function(key, field, value, _layer, renderingType) {
-      if (!_layer) return;
+      if (!_layer)
+        return;
       _layer[key] = _layer[key] || {};
       var _field = renderingType + '-' + field ? renderingType : field;
       if (value) {
@@ -552,5 +508,5 @@
       }
     }
   };
-})((window.MapboxGLPolymer = window.MapboxGLPolymer || {}));
+  })((window.MapboxGLPolymer = window.MapboxGLPolymer || {}));
 </script>
