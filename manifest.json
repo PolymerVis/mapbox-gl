@@ -1,0 +1,48 @@
+{
+    "files": {
+      "demo/index.html": {
+        "convertedUrl": "demo/index.html",
+        "exports": {}
+      },
+      "demo/building.html": {
+        "convertedUrl": "demo/building.html",
+        "exports": {}
+      },
+      "demo/centered.html": {
+        "convertedUrl": "demo/centered.html",
+        "exports": {}
+      },
+      "demo/controls.html": {
+        "convertedUrl": "demo/controls.html",
+        "exports": {}
+      },
+      "demo/data-driven.html": {
+        "convertedUrl": "demo/data-driven.html",
+        "exports": {}
+      },
+      "demo/dom-repeat.html": {
+        "convertedUrl": "demo/dom-repeat.html",
+        "exports": {}
+      },
+      "demo/event-handling.html": {
+        "convertedUrl": "demo/event-handling.html",
+        "exports": {}
+      },
+      "demo/geocoder.html": {
+        "convertedUrl": "demo/geocoder.html",
+        "exports": {}
+      },
+      "demo/heatmap.html": {
+        "convertedUrl": "demo/heatmap.html",
+        "exports": {}
+      },
+      "demo/mapbox-source-data.html": {
+        "convertedUrl": "demo/mapbox-source-data.html",
+        "exports": {}
+      },
+      "demo/markers.html": {
+        "convertedUrl": "demo/markers.html",
+        "exports": {}
+      }
+    }
+  }

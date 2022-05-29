@@ -1,22 +1,26 @@
-import { mixinBehaviors } from '@polymer/polymer/lib/legacy/class';
-import { microTask } from '@polymer/polymer/lib/utils/async';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce';
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import "./layer-behaviour.js";
+import './layer-behaviour.js';
+
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class';
+import {microTask} from '@polymer/polymer/lib/utils/async';
+import {Debouncer} from '@polymer/polymer/lib/utils/debounce';
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+
 /**
 A generic mapbox layer where the `layer-id` must be provided. You can design the
 type of layer by inputing the `rendering-type` as well as the corresponding
 attributes for the layer type. You can find out more by either looking at the
-attribute definition at the [MapboxGLPolymer.LayerBehavior page](https://www.webcomponents.org/element/PolymerVis/mapbox-gl/behaviors/MapboxGLPolymer.LayerBehavior)
-or the [mapbox-gl-js documentations](https://www.mapbox.com/mapbox-gl-js/style-spec#layers).
+attribute definition at the [MapboxGLPolymer.LayerBehavior
+page](https://www.webcomponents.org/element/PolymerVis/mapbox-gl/behaviors/MapboxGLPolymer.LayerBehavior)
+or the [mapbox-gl-js
+documentations](https://www.mapbox.com/mapbox-gl-js/style-spec#layers).
 
 ### Data source
-The data source for the layer can be reference from a `geojson-source` through the
-`source` attribute or be directly specified at the `data-source` attribute. Data
-that is specified directly at `data-source` cannot be modified after initialization -
-there is no 2-way binding. For data that can change after initialization, please
-reference it from `geojson-source` and data-bind your variable to the `source-data`
-attribute of the `geojson-source` element.
+The data source for the layer can be reference from a `geojson-source` through
+the `source` attribute or be directly specified at the `data-source` attribute.
+Data that is specified directly at `data-source` cannot be modified after
+initialization - there is no 2-way binding. For data that can change after
+initialization, please reference it from `geojson-source` and data-bind your
+variable to the `source-data` attribute of the `geojson-source` element.
 
 <b>Referencing from `geojson-source`</b>
 ```html
@@ -125,87 +129,83 @@ Sample of input for `source-data` for `mapbox-layer`
  * @customElement
  * @polymer
  */
-class MapboxLayer extends mixinBehaviors([MapboxGLPolymer.LayerBehavior], PolymerElement) {
+export class MapboxLayer extends mixinBehaviors
+([MapboxGLPolymer.LayerBehavior], PolymerElement) {
+  static get properties() {
+    return {_mapLoaded: Boolean, _debouncer: {type: Debouncer}};
+  }
+  static get observers() {
+    return ['_mapReady(map, _layer.id, _layer.source, _attached, _mapLoaded)'];
+  }
 
-    static get properties() {
-        return {
-            _mapLoaded: Boolean,
-            _debouncer: {
-                type: Debouncer
-            }
-        };
+  connectedCallback() {
+    super.connectedCallback();
+    this._attached = true;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._attached = false;
+
+    if (!this.map)
+      return;
+
+    if (this.layerId && this.map.getLayer(this.layerId)) {
+      this.map.removeLayer(this.layerId);
+      this._clearListeners(this.map, this._watchEvents);
+      this._added = false;
     }
-    static get observers() {
-        return ['_mapReady(map, _layer.id, _layer.source, _attached, _mapLoaded)'];
+  }
+
+  _addLayer() {
+    if (!this._attached)
+      return;
+    if (this._added == this.layerId)
+      return;
+
+    this.map.addLayer(this._layer);
+    this._added = this.layerId;
+    this.dispatchEvent(new CustomEvent('layer-added', {detail: this.map}));
+  }
+
+  _mapReady(map, id, source, attached, mapLoaded) {
+    if (!map || !id || !source || !attached)
+      return;
+    if (!map.polymervis.parent._mapLoaded) {
+      map.polymervis.parent._pendingChildren =
+          map.polymervis.parent._pendingChildren || [];
+      map.polymervis.parent._pendingChildren.push(this);
+      return;
+    }
+    this._debouncer = Debouncer.debounce(
+        this._debouncer, microTask, this._sourceReady.bind(this));
+  }
+
+
+  _sourceReady() {
+    var source = this._layer.source;
+    if (!source && this._layer['source-layer'])
+      return;
+
+    var src = this.map.getSource(source);
+    // source id
+    if (typeof source === 'string' && src) {
+      return this._addLayer();
     }
 
-    connectedCallback() {
-        super.connectedCallback();
-        this._attached = true;
+    if (typeof source === 'string' && !src) {
+      return this.map.on(
+          'sourcedata', () => this.map.getSource(source) && this._addLayer());
     }
 
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this._attached = false;
-
-        if (!this.map) return;
-
-        if (this.layerId && this.map.getLayer(this.layerId)) {
-            this.map.removeLayer(this.layerId);
-            this._clearListeners(this.map, this._watchEvents);
-            this._added = false;
-        }
+    // update source if exist
+    if (this.map.getSource(this._layer.id)) {
+      this.map.getSource(this._layer.id).setData(this._layer.source.data);
+      this._layer.source = this._layer.id;
     }
 
-    _addLayer() {
-        if (!this._attached) return;
-        if (this._added == this.layerId) return;
-
-        this.map.addLayer(this._layer);
-        this._added = this.layerId;
-        this.dispatchEvent(new CustomEvent('layer-added', { detail: this.map }));
-    }
-
-    _mapReady(map, id, source, attached, mapLoaded) {
-        if (!map || !id || !source || !attached) return;
-        if (!map.polymervis.parent._mapLoaded) {
-            map.polymervis.parent._pendingChildren = map.polymervis.parent._pendingChildren || [];
-            map.polymervis.parent._pendingChildren.push(this);
-            return;
-        }
-        this._debouncer = Debouncer.debounce(
-            this._debouncer,
-            microTask,
-            this._sourceReady.bind(this)
-        );
-    }
-
-
-    _sourceReady() {
-        var source = this._layer.source;
-        if (!source && this._layer['source-layer']) return;
-
-        var src = this.map.getSource(source);
-        // source id
-        if (typeof source === 'string' && src) {
-            return this._addLayer();
-        }
-
-        if (typeof source === 'string' && !src) {
-            return this.map.on(
-                'sourcedata',
-                () => this.map.getSource(source) && this._addLayer()
-            );
-        }
-
-        // update source if exist
-        if (this.map.getSource(this._layer.id)) {
-            this.map.getSource(this._layer.id).setData(this._layer.source.data);
-            this._layer.source = this._layer.id;
-        }
-
-        return this._addLayer();
-    }
+    return this._addLayer();
+  }
 }
 
 window.customElements.define('mapbox-layer', MapboxLayer);

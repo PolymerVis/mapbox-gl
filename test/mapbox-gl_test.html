@@ -27,7 +27,6 @@
 
     <script>
       suite('mapbox-gl', function() {
-
         test('instantiating the element with default properties works', function() {
           var element = fixture('BasicTestFixture');
           assert.equal(element.prop1, 'mapbox-gl');
@@ -44,7 +43,6 @@
           var elementHeader = elementShadowRoot.querySelector('h2');
           assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
         });
-
       });
     </script>
 

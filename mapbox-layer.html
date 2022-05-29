@@ -123,96 +123,90 @@ Sample of input for `source-data` for `mapbox-layer`
 
 <dom-module id="mapbox-layer">
   <script>
-  class MapboxLayer extends Polymer.mixinBehaviors(
-  [MapboxGLPolymer.LayerBehavior],
-  Polymer.Element
-) {
-  static get is() {
-    return 'mapbox-layer';
-  }
-
-  static get properties() {
-    return {
-      _mapLoaded: Boolean,
-      _debouncer: {
-        type: Polymer.Debouncer
+    class MapboxLayer extends Polymer.mixinBehaviors
+    ([MapboxGLPolymer.LayerBehavior], Polymer.Element) {
+      static get is() {
+        return 'mapbox-layer';
       }
-    };
-  }
 
-  static get observers() {
-    return ['_mapReady(map, _layer.id, _layer.source, _attached, _mapLoaded)'];
-  }
+      static get properties() {
+        return {_mapLoaded: Boolean, _debouncer: {type: Polymer.Debouncer}};
+      }
 
-  connectedCallback() {
-    super.connectedCallback();
-    this._attached = true;
-  }
+      static get observers() {
+        return ['_mapReady(map, _layer.id, _layer.source, _attached, _mapLoaded)'];
+      }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    this._attached = false;
+      connectedCallback() {
+        super.connectedCallback();
+        this._attached = true;
+      }
 
-    if (!this.map) return;
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this._attached = false;
 
-    if (this.layerId && this.map.getLayer(this.layerId)) {
-      this.map.removeLayer(this.layerId);
-      this._clearListeners(this.map, this._watchEvents);
-      this._added = false;
+        if (!this.map)
+          return;
+
+        if (this.layerId && this.map.getLayer(this.layerId)) {
+          this.map.removeLayer(this.layerId);
+          this._clearListeners(this.map, this._watchEvents);
+          this._added = false;
+        }
+      }
+
+      _addLayer() {
+        if (!this._attached)
+          return;
+        if (this._added == this.layerId)
+          return;
+
+        this.map.addLayer(this._layer);
+        this._added = this.layerId;
+        this.dispatchEvent(new CustomEvent('layer-added', {detail: this.map}));
+      }
+
+      _mapReady(map, id, source, attached, mapLoaded) {
+        if (!map || !id || !source || !attached)
+          return;
+        if (!map.polymervis.parent._mapLoaded) {
+          map.polymervis.parent._pendingChildren =
+              map.polymervis.parent._pendingChildren || [];
+          map.polymervis.parent._pendingChildren.push(this);
+          return;
+        }
+        this._debouncer = Polymer.Debouncer.debounce(
+            this._debouncer, Polymer.Async.microTask, this._sourceReady.bind(this));
+      }
+
+
+      _sourceReady() {
+        var source = this._layer.source;
+        if (!source && this._layer['source-layer'])
+          return;
+
+        var src = this.map.getSource(source);
+        // source id
+        if (typeof source === 'string' && src) {
+          return this._addLayer();
+        }
+
+        if (typeof source === 'string' && !src) {
+          return this.map.on(
+              'sourcedata', () => this.map.getSource(source) && this._addLayer());
+        }
+
+        // update source if exist
+        if (this.map.getSource(this._layer.id)) {
+          this.map.getSource(this._layer.id).setData(this._layer.source.data);
+          this._layer.source = this._layer.id;
+        }
+
+        return this._addLayer();
+      }
     }
-  }
 
-  _addLayer() {
-    if (!this._attached) return;
-    if (this._added == this.layerId) return;
-
-    this.map.addLayer(this._layer);
-    this._added = this.layerId;
-    this.dispatchEvent(new CustomEvent('layer-added', {detail: this.map}));
-  }
-
-  _mapReady(map, id, source, attached, mapLoaded) {
-    if (!map || !id || !source || !attached) return;
-    if (!map.polymervis.parent._mapLoaded) {
-      map.polymervis.parent._pendingChildren = map.polymervis.parent._pendingChildren || [];
-      map.polymervis.parent._pendingChildren.push(this);
-      return;
-    }
-    this._debouncer = Polymer.Debouncer.debounce(
-      this._debouncer,
-       Polymer.Async.microTask,
-       this._sourceReady.bind(this)
-      );
-  }
-
-
-  _sourceReady() {
-    var source = this._layer.source;
-    if (!source && this._layer['source-layer']) return;
-
-    var src = this.map.getSource(source);
-    // source id
-    if (typeof source === 'string' && src) {
-      return this._addLayer();
-    }
-
-    if (typeof source === 'string' && !src) {
-      return this.map.on(
-        'sourcedata',
-        () => this.map.getSource(source) && this._addLayer()
-      );
-    }
-
-    // update source if exist
-    if (this.map.getSource(this._layer.id)) {
-      this.map.getSource(this._layer.id).setData(this._layer.source.data);
-      this._layer.source = this._layer.id;
-    }
-
-    return this._addLayer();
-  }
-}
-
-window.customElements.define(MapboxLayer.is, MapboxLayer);
-</script>
+    window.customElements.define(MapboxLayer.is, MapboxLayer);
+  </script>
 </dom-module>

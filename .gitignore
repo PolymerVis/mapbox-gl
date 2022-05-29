@@ -13,3 +13,6 @@ bower_components/
 !/node_modules/mapbox-gl
 /node_modules/mapbox-gl/*
 !/node_modules/mapbox-gl/dist
+
+
+build/

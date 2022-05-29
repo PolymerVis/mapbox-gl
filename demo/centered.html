@@ -1,19 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes"
+    />
 
     <title>mapbox-gl demo</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="https://unpkg.com/@webcomponents/webcomponentsjs@^2.0.0/webcomponents-loader.js"></script>
 
-    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
-    <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html">
+    <script type="module">
+      import "@polymer/iron-flex-layout/iron-flex-layout-classes.js";
+      import "../mapbox-gl.js";
+      import "../mapbox-layer.js";
+      import "../geojson-source.js";
 
-    <link rel="import" href="../mapbox-gl.html">
-    <link rel="import" href="../mapbox-layer.html">
-    <link rel="import" href="../geojson-source.html">
+      import {} from "@polymer/polymer/lib/elements/dom-bind.js";
+    </script>
 
     <custom-style>
       <style is="custom-style" include="iron-flex iron-flex-alignment">
@@ -25,6 +30,7 @@
           padding: 0px;
           background-color: #444;
         }
+
         mapbox-gl {
           width: 80vw;
           height: 80vh;
@@ -32,12 +38,11 @@
       </style>
     </custom-style>
   </head>
+
   <body class="layout vertical center center-justified">
-
-      <mapbox-gl
-        interactive
-        access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"></mapbox-gl>
-
-
+    <mapbox-gl
+      interactive
+      access-token="pk.eyJ1IjoiZXRlcm5hMiIsImEiOiJjaXppZjRoaTIwMmYxMndsNHJ4dzR1eWJsIn0.MvJ5fsV47RHlSAt2fBEKLg"
+    ></mapbox-gl>
   </body>
 </html>

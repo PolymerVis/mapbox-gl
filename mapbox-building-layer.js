@@ -1,5 +1,7 @@
-import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
-import "./mapbox-layer.js";
+import {MapboxLayer} from './mapbox-layer.js';
+
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+
 /**
 A variant of the `mapbox-fill-extrusion-layer` where the building info is
 derive from the building layers in mapbox's street map.
@@ -38,8 +40,8 @@ more details.
  * @polymer
  */
 class MapboxBuildingLayer extends MapboxLayer {
-    static get template() {
-        return html `
+  static get template() {
+    return html`
       <style>
         :host {
           display: block;
@@ -47,74 +49,58 @@ class MapboxBuildingLayer extends MapboxLayer {
       </style>
       <h2>Hello [[prop1]]!</h2>
     `;
-    }
-    static get properties() {
-        return {
-            renderingType: {
-                type: String,
-                value: 'fill-extrusion'
-            },
-            /*
-             * Name of a source description to be used for this layer.
-             */
-            source: {
-                type: String,
-                value: 'composite'
-            },
-            /*
-             * Layer to use from a vector tile source. Required if the source
-             * supports multiple layers.
-             */
-            sourceLayer: {
-                type: String,
-                value: 'building'
-            },
-            /*
-             * A expression specifying conditions on source features. Only features
-             * that match the filter are displayed.
-             *
-             * @type {Array<predicate, field, condition>}
-             */
-            filter: {
-                type: Array,
-                value: function() {
-                    return ['==', 'extrude', 'true'];
-                }
-            },
+  }
+  static get properties() {
+    return {
+      renderingType: {type: String, value: 'fill-extrusion'},
+      /*
+       * Name of a source description to be used for this layer.
+       */
+      source: {type: String, value: 'composite'},
+      /*
+       * Layer to use from a vector tile source. Required if the source
+       * supports multiple layers.
+       */
+      sourceLayer: {type: String, value: 'building'},
+      /*
+       * A expression specifying conditions on source features. Only features
+       * that match the filter are displayed.
+       *
+       * @type {Array<predicate, field, condition>}
+       */
+      filter: {
+        type: Array,
+        value: function() {
+          return ['==', 'extrude', 'true'];
+        }
+      },
 
-            /*
-             * The height (in meters) with which to extrude this layer.
-             *
-             * @type {{type: string, property: string}}
-             */
-            fillExtrusionHeight: {
-                type: Object,
-                value: function() {
-                    return {
-                        type: 'identity',
-                        property: 'height'
-                    };
-                }
-            },
-            /*
-             * The height with which to extrude the base of this layer.
-             * Must be less than or equal to fill-extrusion-height.
-             *
-             * @type {{type: string, property: string}}
-             */
-            fillExtrusionBase: {
-                type: Object,
-                value: function() {
-                    return {
-                        type: 'identity',
-                        property: 'min_height'
-                    };
-                }
-            }
+      /*
+       * The height (in meters) with which to extrude this layer.
+       *
+       * @type {{type: string, property: string}}
+       */
+      fillExtrusionHeight: {
+        type: Object,
+        value: function() {
+          return {type: 'identity', property: 'height'};
+        }
+      },
+      /*
+       * The height with which to extrude the base of this layer.
+       * Must be less than or equal to fill-extrusion-height.
+       *
+       * @type {{type: string, property: string}}
+       */
+      fillExtrusionBase: {
+        type: Object,
+        value: function() {
+          return {type: 'identity', property: 'min_height'};
+        }
+      }
 
-        };
-    }
-
+    };
+  }
 }
 
 window.customElements.define('mapbox-building-layer', MapboxBuildingLayer);
